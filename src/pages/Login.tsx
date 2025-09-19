@@ -3,8 +3,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { Heart, Mail } from "lucide-react";
+import { Heart } from "lucide-react";
 import { Link } from "react-router-dom";
+import kakaoLogo from "@/assets/kakao-logo.png";
 
 const Login = () => {
   return (
@@ -26,10 +27,10 @@ const Login = () => {
           <CardContent className="space-y-4 pt-6">
             {/* Social Login */}
             <Button 
-              variant="outline" 
-              className="w-full h-12 text-base border-border hover:bg-accent"
+              variant="kakao" 
+              className="w-full h-12 text-base font-medium"
             >
-              <Mail className="mr-2 h-5 w-5" />
+              <img src={kakaoLogo} alt="카카오" className="mr-2 h-5 w-5" />
               카카오로 3초만에 시작하기
             </Button>
           </CardContent>
