@@ -3,34 +3,57 @@ import { Button } from "@/components/ui/button";
 import { Heart, Menu, Search, User } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Link } from "react-router-dom";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
-    <nav className="bg-background/95 backdrop-blur-sm border-b border-border sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
-          {/* Logo */}
-          <div className="flex items-center space-x-2">
-            <Heart className="h-8 w-8 text-primary fill-current" />
-            <span className="text-2xl font-handwritten font-bold text-primary">
-              Petner
-            </span>
-          </div>
+    <TooltipProvider>
+      <nav className="bg-background/95 backdrop-blur-sm border-b border-border sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            {/* Logo */}
+            <div className="flex items-center space-x-2">
+              <Heart className="h-8 w-8 text-primary fill-current" />
+              <span className="text-2xl font-handwritten font-bold text-primary">
+                Petner
+              </span>
+            </div>
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
-            <a href="#" className="text-foreground hover:text-primary transition-smooth">
-              Adopt
-            </a>
-            <a href="#" className="text-foreground hover:text-primary transition-smooth">
-              About
-            </a>
-            <a href="#" className="text-foreground hover:text-primary transition-smooth">
-              Register
-            </a>
-          </div>
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex items-center space-x-8">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <a href="#" className="text-foreground hover:text-primary transition-smooth">
+                    Register
+                  </a>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>유기견 등록하기</p>
+                </TooltipContent>
+              </Tooltip>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <a href="#" className="text-foreground hover:text-primary transition-smooth">
+                    Community
+                  </a>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>게시판</p>
+                </TooltipContent>
+              </Tooltip>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <a href="#" className="text-foreground hover:text-primary transition-smooth">
+                    About
+                  </a>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>소개</p>
+                </TooltipContent>
+              </Tooltip>
+            </div>
 
           {/* Search and Actions */}
           <div className="hidden md:flex items-center space-x-4">
@@ -73,13 +96,13 @@ const Navbar = () => {
                 />
               </div>
               <a href="#" className="text-foreground hover:text-primary transition-smooth py-2">
-                Adopt
+                Register
+              </a>
+              <a href="#" className="text-foreground hover:text-primary transition-smooth py-2">
+                Community
               </a>
               <a href="#" className="text-foreground hover:text-primary transition-smooth py-2">
                 About
-              </a>
-              <a href="#" className="text-foreground hover:text-primary transition-smooth py-2">
-                Register
               </a>
               <Button className="bg-primary hover:bg-primary/90 text-primary-foreground w-full" asChild>
                 <Link to="/login">
@@ -90,8 +113,9 @@ const Navbar = () => {
             </div>
           </div>
         )}
-      </div>
-    </nav>
+        </div>
+      </nav>
+    </TooltipProvider>
   );
 };
 
