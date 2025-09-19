@@ -23,20 +23,14 @@ const Login = () => {
         </div>
 
         <Card className="border-border shadow-elegant">
-          <CardHeader className="space-y-1">
-            <CardTitle className="text-2xl text-center">로그인</CardTitle>
-            <CardDescription className="text-center">
-              계정에 로그인하여 반려동물을 찾아보세요
-            </CardDescription>
-          </CardHeader>
-            <CardContent className="space-y-4">
+          <CardContent className="space-y-4 pt-6">
             {/* Social Login */}
             <Button 
               variant="outline" 
               className="w-full h-12 text-base border-border hover:bg-accent"
             >
               <Mail className="mr-2 h-5 w-5" />
-              카카오톡으로 시작하기
+              카카오로 3초만에 시작하기
             </Button>
           </CardContent>
         </Card>
