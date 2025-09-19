@@ -9,6 +9,7 @@ import PetDetail from "./pages/PetDetail";
 import Community from "./pages/Community";
 import PostDetail from "./pages/PostDetail";
 import MyProfile from "./pages/MyProfile";
+import RegisterPet from "./pages/RegisterPet";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -26,6 +27,7 @@ const App = () => (
           <Route path="/community" element={<Community />} />
           <Route path="/post/:id" element={<PostDetail />} />
           <Route path="/profile" element={<MyProfile />} />
+          <Route path="/register" element={<RegisterPet />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

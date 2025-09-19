@@ -36,9 +36,9 @@ const Navbar = () => {
                 </Tooltip>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <a href="#" className="text-foreground hover:text-primary transition-smooth">
+                    <Link to="/register" className="text-foreground hover:text-primary transition-smooth">
                       Register
-                    </a>
+                    </Link>
                   </TooltipTrigger>
                   <TooltipContent>
                     <p>유기견 등록하기</p>
@@ -115,9 +115,9 @@ const Navbar = () => {
               <Link to="/" className="text-foreground hover:text-primary transition-smooth py-2">
                 Home
               </Link>
-              <a href="#" className="text-foreground hover:text-primary transition-smooth py-2">
+              <Link to="/register" className="text-foreground hover:text-primary transition-smooth py-2">
                 Register
-              </a>
+              </Link>
               <Link to="/community" className="text-foreground hover:text-primary transition-smooth py-2">
                 Community
               </Link>
