@@ -8,7 +8,6 @@ interface SearchFiltersProps {
 }
 
 interface FilterState {
-  petType: string;
   age: string;
   size: string;
   gender: string;
@@ -18,7 +17,6 @@ interface FilterState {
 const SearchFilters = ({ onFilterChange }: SearchFiltersProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [filters, setFilters] = useState<FilterState>({
-    petType: "",
     age: "",
     size: "",
     gender: "",
@@ -33,7 +31,6 @@ const SearchFilters = ({ onFilterChange }: SearchFiltersProps) => {
 
   const clearFilters = () => {
     const clearedFilters = {
-      petType: "",
       age: "",
       size: "",
       gender: "",
@@ -73,21 +70,7 @@ const SearchFilters = ({ onFilterChange }: SearchFiltersProps) => {
             )}
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-            <div>
-              <label className="text-sm font-medium text-foreground mb-2 block">동물 종류</label>
-              <Select value={filters.petType} onValueChange={(value) => handleFilterChange("petType", value)}>
-                <SelectTrigger>
-                  <SelectValue placeholder="선택하기" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="dog">강아지</SelectItem>
-                  <SelectItem value="cat">고양이</SelectItem>
-                  <SelectItem value="other">기타</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <div>
               <label className="text-sm font-medium text-foreground mb-2 block">나이</label>
               <Select value={filters.age} onValueChange={(value) => handleFilterChange("age", value)}>
