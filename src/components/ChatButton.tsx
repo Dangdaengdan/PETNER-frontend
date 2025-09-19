@@ -83,6 +83,10 @@ const ChatButton = () => {
       // 실제로는 여기서 서버로 메시지를 전송하고 상태를 업데이트
       console.log("Sending message:", newMessage, "to chat:", selectedChat);
       setNewMessage("");
+    } else if (newMessage.trim() && !selectedChat) {
+      // 새로운 채팅 시작
+      console.log("Starting new chat with message:", newMessage);
+      setNewMessage("");
     }
   };
 
@@ -111,7 +115,7 @@ const ChatButton = () => {
       {/* 채팅 팝업 */}
       {isOpen && (
         <div className="fixed bottom-6 right-6 z-50 animate-scale-in">
-          <Card className="w-80 h-96 shadow-xl border-2">
+          <Card className="w-96 h-[32rem] shadow-xl border-2">
             {/* 채팅 목록 헤더 */}
             {!selectedChat && (
               <CardHeader className="pb-3">
@@ -162,41 +166,64 @@ const ChatButton = () => {
             <CardContent className="p-0 flex flex-col h-full">
               {/* 채팅 목록 */}
               {!selectedChat && (
-                <ScrollArea className="flex-1">
-                  {mockChats.map((chat) => (
-                    <div
-                      key={chat.id}
-                      onClick={() => handleChatSelect(chat.id)}
-                      className="flex items-center gap-3 p-4 hover:bg-muted/50 cursor-pointer border-b border-border transition-colors"
-                    >
-                      <Avatar className="h-10 w-10">
-                        <AvatarFallback className="bg-primary/10 text-primary">
-                          {chat.name.charAt(0)}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center justify-between mb-1">
-                          <h4 className="text-sm font-medium text-foreground truncate">
-                            {chat.name}
-                          </h4>
-                          <span className="text-xs text-muted-foreground">
-                            {chat.time}
-                          </span>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <p className="text-xs text-muted-foreground truncate">
-                            {chat.lastMessage}
-                          </p>
-                          {chat.unread > 0 && (
-                            <span className="bg-accent text-accent-foreground text-xs rounded-full px-2 py-1 min-w-[1.25rem] text-center">
-                              {chat.unread}
+                <>
+                  <ScrollArea className="flex-1">
+                    {mockChats.map((chat) => (
+                      <div
+                        key={chat.id}
+                        onClick={() => handleChatSelect(chat.id)}
+                        className="flex items-center gap-3 p-4 hover:bg-muted/50 cursor-pointer border-b border-border transition-colors"
+                      >
+                        <Avatar className="h-10 w-10">
+                          <AvatarFallback className="bg-primary/10 text-primary">
+                            {chat.name.charAt(0)}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center justify-between mb-1">
+                            <h4 className="text-sm font-medium text-foreground truncate">
+                              {chat.name}
+                            </h4>
+                            <span className="text-xs text-muted-foreground">
+                              {chat.time}
                             </span>
-                          )}
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <p className="text-xs text-muted-foreground truncate">
+                              {chat.lastMessage}
+                            </p>
+                            {chat.unread > 0 && (
+                              <span className="bg-accent text-accent-foreground text-xs rounded-full px-2 py-1 min-w-[1.25rem] text-center">
+                                {chat.unread}
+                              </span>
+                            )}
+                          </div>
                         </div>
                       </div>
+                    ))}
+                  </ScrollArea>
+                  
+                  {/* 새 채팅 시작 입력창 */}
+                  <div className="p-4 border-t border-border">
+                    <div className="flex gap-2">
+                      <Input
+                        placeholder="새로운 채팅을 시작하세요..."
+                        value={newMessage}
+                        onChange={(e) => setNewMessage(e.target.value)}
+                        onKeyPress={handleKeyPress}
+                        className="flex-1"
+                      />
+                      <Button
+                        onClick={handleSendMessage}
+                        size="sm"
+                        className="px-3"
+                        disabled={!newMessage.trim()}
+                      >
+                        <Send className="h-4 w-4" />
+                      </Button>
                     </div>
-                  ))}
-                </ScrollArea>
+                  </div>
+                </>
               )}
 
               {/* 개별 채팅방 */}
