@@ -230,20 +230,20 @@ const ChatButton = () => {
                   </ScrollArea>
 
                   {/* 메시지 입력창 */}
-                  <div className="bg-card px-3 pb-1 pt-2 border-t border-border">
+                  <div className="bg-card px-2 py-1 border-t border-border">
                     <div className="flex gap-2 items-center">
                       <Input
                         placeholder="메시지를 입력하세요"
                         value={newMessage}
                         onChange={(e) => setNewMessage(e.target.value)}
                         onKeyPress={handleKeyPress}
-                        className="flex-1 border-input focus:border-primary focus:ring-primary rounded-full px-4 h-9"
+                        className="flex-1 border-input focus:border-primary focus:ring-primary rounded-full px-4"
                       />
                       <Button
                         onClick={handleSendMessage}
                         size="sm"
                         disabled={!newMessage.trim()}
-                        className="bg-primary hover:bg-primary/90 text-primary-foreground h-9 w-9 rounded-full p-0"
+                        className="bg-primary hover:bg-primary/90 text-primary-foreground h-10 w-10 rounded-full p-0"
                       >
                         <Send className="h-4 w-4" />
                       </Button>
