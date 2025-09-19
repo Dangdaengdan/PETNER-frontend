@@ -99,7 +99,7 @@ const ChatButton = () => {
       {/* 카카오톡 스타일 채팅창 */}
       {isOpen && (
         <div className="fixed bottom-6 right-6 z-50 animate-scale-in">
-          <Card className="w-80 h-[32rem] shadow-2xl border-0 overflow-hidden bg-card">
+          <Card className="w-80 h-[32rem] shadow-2xl border-0 overflow-hidden bg-card p-0">
             {/* 채팅 목록 화면 */}
             {!selectedChat && (
               <>
@@ -230,7 +230,7 @@ const ChatButton = () => {
                   </ScrollArea>
 
                   {/* 메시지 입력창 */}
-                  <div className="bg-card px-3 pb-0 pt-2 border-t border-border">
+                  <div className="bg-card px-3 border-t border-border">
                     <div className="flex gap-2 items-center">
                       <Input
                         placeholder="메시지를 입력하세요"
