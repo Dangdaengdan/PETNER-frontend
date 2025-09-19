@@ -21,7 +21,7 @@ const HeroSection = () => {
         <div className="max-w-2xl">
           <h1 className="text-6xl sm:text-7xl lg:text-8xl font-bold text-foreground mb-6 leading-tight">
             PET:NER
-            <span className="text-primary font-handwritten block">
+            <span className="text-4xl sm:text-5xl lg:text-6xl text-primary font-handwritten block">
               Find Your Forever Friend
             </span>
           </h1>
