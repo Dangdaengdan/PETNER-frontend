@@ -99,7 +99,7 @@ const ChatButton = () => {
       {/* 카카오톡 스타일 채팅창 */}
       {isOpen && (
         <div className="fixed bottom-6 right-6 z-50 animate-scale-in">
-          <Card className="w-80 h-96 shadow-2xl border-0 overflow-hidden bg-white">
+          <Card className="w-80 h-[32rem] shadow-2xl border-0 overflow-hidden bg-white">
             {/* 채팅 목록 화면 */}
             {!selectedChat && (
               <>
@@ -118,7 +118,7 @@ const ChatButton = () => {
 
                 {/* 채팅 목록 */}
                 <div className="bg-white">
-                  <ScrollArea className="h-80">
+                  <ScrollArea className="h-[26rem]">
                     {mockChats.map((chat) => (
                       <div
                         key={chat.id}
@@ -198,7 +198,7 @@ const ChatButton = () => {
                 </div>
 
                 {/* 메시지 영역 */}
-                <div className="bg-[#B2C7D9] flex flex-col h-80">
+                <div className="bg-[#B2C7D9] flex flex-col h-[26rem]">
                   <ScrollArea className="flex-1 p-3">
                     <div className="space-y-2">
                       {currentChat.messages.map((message) => (
