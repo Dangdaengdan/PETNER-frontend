@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Search, MessageSquare, Heart, Calendar } from "lucide-react";
+import { Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Input } from "@/components/ui/input";
@@ -116,7 +117,12 @@ const Community = () => {
         {/* Posts List */}
         <div className="space-y-6">
           {filteredPosts.map((post) => (
-            <Card key={post.id} className="hover:shadow-lg transition-shadow cursor-pointer">
+            <Link 
+              key={post.id} 
+              to={`/post/${post.id}`}
+              className="block"
+            >
+              <Card className="hover:shadow-lg transition-shadow cursor-pointer">
               <CardHeader className="pb-3">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
@@ -156,6 +162,7 @@ const Community = () => {
                 </div>
               </CardContent>
             </Card>
+            </Link>
           ))}
         </div>
 
