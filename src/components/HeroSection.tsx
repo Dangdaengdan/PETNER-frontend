@@ -19,10 +19,10 @@ const HeroSection = () => {
       {/* Content */}
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
         <div className="max-w-2xl">
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-foreground mb-6 leading-tight">
+          <h1 className="text-6xl sm:text-7xl lg:text-8xl font-bold text-foreground mb-6 leading-tight">
             PET:NER
             <span className="text-primary font-handwritten block">
-              <br/>Find Your Forever Friend
+              Find Your Forever Friend
             </span>
           </h1>
           
