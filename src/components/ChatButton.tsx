@@ -89,7 +89,7 @@ const ChatButton = () => {
         <Button
           onClick={handleChatClick}
           size="lg"
-          className="fixed bottom-6 right-6 z-50 w-16 h-16 rounded-full bg-[#FEE500] hover:bg-[#FEE500]/90 text-black shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 animate-fade-in"
+          className="fixed bottom-6 right-6 z-50 w-16 h-16 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 animate-fade-in"
         >
           <MessageCircle className="h-8 w-8" />
           <span className="sr-only">채팅하기</span>
@@ -99,52 +99,52 @@ const ChatButton = () => {
       {/* 카카오톡 스타일 채팅창 */}
       {isOpen && (
         <div className="fixed bottom-6 right-6 z-50 animate-scale-in">
-          <Card className="w-80 h-[32rem] shadow-2xl border-0 overflow-hidden bg-white">
+          <Card className="w-80 h-[32rem] shadow-2xl border-0 overflow-hidden bg-card">
             {/* 채팅 목록 화면 */}
             {!selectedChat && (
               <>
                 {/* 헤더 */}
-                <div className="bg-[#3C1E1E] text-white p-4 flex items-center justify-between">
+                <div className="bg-primary text-primary-foreground p-4 flex items-center justify-between">
                   <h2 className="text-lg font-medium">채팅</h2>
                   <Button
                     variant="ghost"
                     size="sm"
                     onClick={handleClose}
-                    className="h-8 w-8 p-0 text-white hover:bg-white/20"
+                    className="h-8 w-8 p-0 text-primary-foreground hover:bg-primary-foreground/20"
                   >
                     <X className="h-4 w-4" />
                   </Button>
                 </div>
 
                 {/* 채팅 목록 */}
-                <div className="bg-white">
+                <div className="bg-card">
                   <ScrollArea className="h-[26rem]">
                     {mockChats.map((chat) => (
                       <div
                         key={chat.id}
                         onClick={() => handleChatSelect(chat.id)}
-                        className="flex items-center gap-3 p-4 hover:bg-gray-50 cursor-pointer border-b border-gray-100 transition-colors"
+                        className="flex items-center gap-3 p-4 hover:bg-muted/50 cursor-pointer border-b border-border transition-colors"
                       >
                         <Avatar className="h-12 w-12">
-                          <AvatarFallback className="bg-[#FEE500] text-black font-medium">
+                          <AvatarFallback className="bg-primary/10 text-primary font-medium">
                             {chat.name.charAt(0)}
                           </AvatarFallback>
                         </Avatar>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center justify-between mb-1">
-                            <h4 className="text-sm font-medium text-gray-900 truncate">
+                            <h4 className="text-sm font-medium text-foreground truncate">
                               {chat.name}
                             </h4>
-                            <span className="text-xs text-gray-500">
+                            <span className="text-xs text-muted-foreground">
                               {chat.time}
                             </span>
                           </div>
                           <div className="flex items-center justify-between">
-                            <p className="text-xs text-gray-600 truncate">
+                            <p className="text-xs text-muted-foreground truncate">
                               {chat.lastMessage}
                             </p>
                             {chat.unread > 0 && (
-                              <span className="bg-red-500 text-white text-xs rounded-full px-2 py-1 min-w-[1.25rem] text-center">
+                              <span className="bg-accent text-accent-foreground text-xs rounded-full px-2 py-1 min-w-[1.25rem] text-center">
                                 {chat.unread}
                               </span>
                             )}
@@ -161,17 +161,17 @@ const ChatButton = () => {
             {selectedChat && currentChat && (
               <>
                 {/* 채팅방 헤더 */}
-                <div className="bg-[#3C1E1E] text-white p-3 flex items-center gap-3">
+                <div className="bg-primary text-primary-foreground p-3 flex items-center gap-3">
                   <Button
                     variant="ghost"
                     size="sm"
                     onClick={handleBackToList}
-                    className="h-8 w-8 p-0 text-white hover:bg-white/20"
+                    className="h-8 w-8 p-0 text-primary-foreground hover:bg-primary-foreground/20"
                   >
                     <ArrowLeft className="h-4 w-4" />
                   </Button>
                   <Avatar className="h-8 w-8">
-                    <AvatarFallback className="bg-[#FEE500] text-black text-sm">
+                    <AvatarFallback className="bg-primary/10 text-primary text-sm">
                       {currentChat.name.charAt(0)}
                     </AvatarFallback>
                   </Avatar>
@@ -182,7 +182,7 @@ const ChatButton = () => {
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="h-8 w-8 p-0 text-white hover:bg-white/20"
+                      className="h-8 w-8 p-0 text-primary-foreground hover:bg-primary-foreground/20"
                     >
                       <Phone className="h-4 w-4" />
                     </Button>
@@ -190,7 +190,7 @@ const ChatButton = () => {
                       variant="ghost"
                       size="sm"
                       onClick={handleClose}
-                      className="h-8 w-8 p-0 text-white hover:bg-white/20"
+                      className="h-8 w-8 p-0 text-primary-foreground hover:bg-primary-foreground/20"
                     >
                       <X className="h-4 w-4" />
                     </Button>
@@ -198,7 +198,7 @@ const ChatButton = () => {
                 </div>
 
                 {/* 메시지 영역 */}
-                <div className="bg-[#B2C7D9] flex flex-col h-[26rem]">
+                <div className="bg-muted flex flex-col h-[26rem]">
                   <ScrollArea className="flex-1 p-3">
                     <div className="space-y-2">
                       {currentChat.messages.map((message) => (
@@ -210,8 +210,8 @@ const ChatButton = () => {
                             <div
                               className={`rounded-2xl px-3 py-2 text-sm ${
                                 message.sender === "me"
-                                  ? "bg-[#FEE500] text-black ml-auto"
-                                  : "bg-white text-black"
+                                  ? "bg-primary text-primary-foreground ml-auto"
+                                  : "bg-card text-card-foreground"
                               }`}
                             >
                               <p className="break-words">{message.text}</p>
@@ -219,7 +219,7 @@ const ChatButton = () => {
                             <div className={`flex items-center gap-1 mt-1 ${
                               message.sender === "me" ? "justify-end" : "justify-start"
                             }`}>
-                              <span className="text-xs text-gray-600">
+                              <span className="text-xs text-muted-foreground">
                                 {message.time}
                               </span>
                             </div>
@@ -230,20 +230,20 @@ const ChatButton = () => {
                   </ScrollArea>
 
                   {/* 메시지 입력창 */}
-                  <div className="bg-white p-2 border-t border-gray-200">
+                  <div className="bg-card p-2 border-t border-border">
                     <div className="flex gap-2 items-center">
                       <Input
                         placeholder="메시지를 입력하세요"
                         value={newMessage}
                         onChange={(e) => setNewMessage(e.target.value)}
                         onKeyPress={handleKeyPress}
-                        className="flex-1 border-gray-300 focus:border-[#FEE500] focus:ring-[#FEE500] rounded-full px-4"
+                        className="flex-1 border-input focus:border-primary focus:ring-primary rounded-full px-4"
                       />
                       <Button
                         onClick={handleSendMessage}
                         size="sm"
                         disabled={!newMessage.trim()}
-                        className="bg-[#FEE500] hover:bg-[#FEE500]/90 text-black h-10 w-10 rounded-full p-0"
+                        className="bg-primary hover:bg-primary/90 text-primary-foreground h-10 w-10 rounded-full p-0"
                       >
                         <Send className="h-4 w-4" />
                       </Button>
