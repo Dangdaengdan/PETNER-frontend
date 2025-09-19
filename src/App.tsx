@@ -8,6 +8,7 @@ import Login from "./pages/Login";
 import PetDetail from "./pages/PetDetail";
 import Community from "./pages/Community";
 import PostDetail from "./pages/PostDetail";
+import MyProfile from "./pages/MyProfile";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -24,6 +25,7 @@ const App = () => (
           <Route path="/pet/:id" element={<PetDetail />} />
           <Route path="/community" element={<Community />} />
           <Route path="/post/:id" element={<PostDetail />} />
+          <Route path="/profile" element={<MyProfile />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

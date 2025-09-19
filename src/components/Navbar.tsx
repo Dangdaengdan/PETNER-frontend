@@ -76,9 +76,14 @@ const Navbar = () => {
                 className="pl-10 w-64 bg-background border-border"
               />
             </div>
+            <Button variant="outline" asChild>
+              <Link to="/profile">
+                <User className="h-5 w-5 mr-2" />
+                내 정보
+              </Link>
+            </Button>
             <Button className="bg-primary hover:bg-primary/90 text-primary-foreground" asChild>
               <Link to="/login">
-                <User className="h-5 w-5 mr-2" />
                 로그인
               </Link>
             </Button>
@@ -119,9 +124,14 @@ const Navbar = () => {
               <a href="#" className="text-foreground hover:text-primary transition-smooth py-2">
                 About
               </a>
+              <Button variant="outline" className="w-full" asChild>
+                <Link to="/profile">
+                  <User className="h-5 w-5 mr-2" />
+                  내 정보
+                </Link>
+              </Button>
               <Button className="bg-primary hover:bg-primary/90 text-primary-foreground w-full" asChild>
                 <Link to="/login">
-                  <User className="h-5 w-5 mr-2" />
                   로그인
                 </Link>
               </Button>
