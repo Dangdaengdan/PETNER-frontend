@@ -20,9 +20,9 @@ const HeroSection = () => {
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
         <div className="max-w-2xl">
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-foreground mb-6 leading-tight">
-            Find Your
+            AI가 연결하는 특별한 인연
             <span className="text-primary font-handwritten block">
-              Perfect Companion
+              Pet ; Ner
             </span>
           </h1>
           
