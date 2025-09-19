@@ -230,8 +230,8 @@ const ChatButton = () => {
                   </ScrollArea>
 
                   {/* 메시지 입력창 */}
-                  <div className="bg-card px-2 py-1 border-t border-border">
-                    <div className="flex gap-2 items-center">
+                  <div className="bg-card px-2 py-0.5 border-t border-border">
+                    <div className="flex gap-2 items-center py-1">
                       <Input
                         placeholder="메시지를 입력하세요"
                         value={newMessage}
