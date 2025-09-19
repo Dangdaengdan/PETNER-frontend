@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Heart, Menu, Search, User } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { Link } from "react-router-dom";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -40,8 +41,10 @@ const Navbar = () => {
                 className="pl-10 w-64 bg-background border-border"
               />
             </div>
-            <Button variant="ghost" size="icon">
-              <User className="h-5 w-5" />
+            <Button variant="ghost" size="icon" asChild>
+              <Link to="/login">
+                <User className="h-5 w-5" />
+              </Link>
             </Button>
             <Button className="bg-primary hover:bg-primary/90 text-primary-foreground">
               Get Started
