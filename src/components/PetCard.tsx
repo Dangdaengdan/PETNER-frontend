@@ -3,6 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Heart, MapPin, Calendar } from "lucide-react";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 interface PetCardProps {
   id: string;
@@ -15,7 +16,7 @@ interface PetCardProps {
   size: "Small" | "Medium" | "Large";
 }
 
-const PetCard = ({ name, breed, age, location, image, gender, size }: PetCardProps) => {
+const PetCard = ({ id, name, breed, age, location, image, gender, size }: PetCardProps) => {
   const [isFavorited, setIsFavorited] = useState(false);
 
   return (
@@ -71,9 +72,12 @@ const PetCard = ({ name, breed, age, location, image, gender, size }: PetCardPro
 
           <div className="flex gap-2 pt-2">
             <Button 
+              asChild
               className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground transition-smooth"
             >
-              Meet {name}
+              <Link to={`/pet/${id}`}>
+                Meet {name}
+              </Link>
             </Button>
             <Button 
               variant="outline" 
