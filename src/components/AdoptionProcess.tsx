@@ -43,22 +43,19 @@ const AdoptionProcess = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {steps.map((step, index) => {
-            const IconComponent = step.icon;
-            return (
-              <Card key={index} className="text-center border-border hover:shadow-warm transition-smooth group">
-                <CardContent className="p-6">
-                  <div className="relative mb-6">
-                    <div className="w-16 h-16 mx-auto bg-secondary rounded-full flex items-center justify-center group-hover:scale-110 transition-smooth">
-                      <IconComponent className={`h-8 w-8 ${step.color}`} />
-                    </div>
-                    {index < steps.length - 1 && (
-                      <div className="hidden lg:block absolute top-8 left-full w-full h-0.5 bg-border -translate-x-8">
-                        <div className="absolute right-0 top-1/2 transform -translate-y-1/2 w-2 h-2 bg-border rounded-full"></div>
+        <div className="relative">
+          <div className="hidden lg:block absolute top-20 left-0 right-0 h-0.5 bg-border z-0"></div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 relative z-10">
+            {steps.map((step, index) => {
+              const IconComponent = step.icon;
+              return (
+                <Card key={index} className="text-center border-border hover:shadow-warm transition-smooth group bg-background">
+                  <CardContent className="p-6">
+                    <div className="relative mb-6">
+                      <div className="w-16 h-16 mx-auto bg-secondary rounded-full flex items-center justify-center group-hover:scale-110 transition-smooth border-4 border-background">
+                        <IconComponent className={`h-8 w-8 ${step.color}`} />
                       </div>
-                    )}
-                  </div>
+                    </div>
                   
                   <h3 className="text-xl font-semibold text-foreground mb-3 group-hover:text-primary transition-smooth">
                     {step.title}
@@ -71,6 +68,7 @@ const AdoptionProcess = () => {
               </Card>
             );
           })}
+          </div>
         </div>
       </div>
     </section>
