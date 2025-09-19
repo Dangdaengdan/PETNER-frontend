@@ -22,7 +22,7 @@ const HeroSection = () => {
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-foreground mb-6 leading-tight">
             PET:NER
             <span className="text-primary font-handwritten block">
-              <br/></>Find Your Forever Friend
+              <br/>Find Your Forever Friend
             </span>
           </h1>
           
