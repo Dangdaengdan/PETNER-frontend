@@ -65,9 +65,9 @@ const Navbar = () => {
               />
             </div>
             <Button className="bg-primary hover:bg-primary/90 text-primary-foreground" asChild>
-              <Link to="/main">
+              <Link to="/login">
                 <User className="h-5 w-5 mr-2" />
-                My page
+                로그인
               </Link>
             </Button>
           </div>
@@ -105,9 +105,9 @@ const Navbar = () => {
                 About
               </a>
               <Button className="bg-primary hover:bg-primary/90 text-primary-foreground w-full" asChild>
-                <Link to="/main">
+                <Link to="/login">
                   <User className="h-5 w-5 mr-2" />
-                  My page
+                  로그인
                 </Link>
               </Button>
             </div>
