@@ -19,16 +19,15 @@ const HeroSection = () => {
       {/* Content */}
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
         <div className="max-w-2xl">
-          <h1 className="text-6xl sm:text-7xl lg:text-8xl font-bold text-foreground mb-6 leading-tight">
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-foreground mb-6 leading-tight">
             PET:NER
-            <span className="text-4xl sm:text-5xl lg:text-6xl text-primary font-handwritten block">
+            <span className="text-primary font-handwritten block">
               Find Your Forever Friend
             </span>
           </h1>
           
           <p className="text-lg sm:text-xl text-muted-foreground mb-8 leading-relaxed">
-            Thousands of loving pets are waiting for their forever homes. 
-            Discover the joy of adoption and give a rescued animal the love they deserve.
+            반려동물에게는 따뜻한 집이 필요하고, 우리에게는 함께할 친구가 필요합니다. 입양을 통해 서로의 빈자리를 채워보세요.
           </p>
 
           {/* Search Bar */}
