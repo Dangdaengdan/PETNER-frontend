@@ -29,7 +29,7 @@ const Login = () => {
               계정에 로그인하여 반려동물을 찾아보세요
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
+            <CardContent className="space-y-4">
             {/* Social Login */}
             <Button 
               variant="outline" 
@@ -38,54 +38,6 @@ const Login = () => {
               <Mail className="mr-2 h-5 w-5" />
               카카오톡으로 시작하기
             </Button>
-
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <Separator className="w-full" />
-              </div>
-              <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-card px-2 text-muted-foreground">또는</span>
-              </div>
-            </div>
-
-            {/* Email Login Form */}
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="email">이메일</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="이메일을 입력하세요"
-                  className="border-border"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="password">비밀번호</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="비밀번호를 입력하세요"
-                  className="border-border"
-                />
-              </div>
-              
-              <Button className="w-full h-12 bg-primary hover:bg-primary/90 text-primary-foreground">
-                로그인
-              </Button>
-            </div>
-
-            {/* Links */}
-            <div className="text-center space-y-2">
-              <p className="text-sm text-muted-foreground">
-                계정이 없으신가요?{" "}
-                <a href="#" className="text-primary hover:underline font-medium">
-                  회원가입
-                </a>
-              </p>
-              <a href="#" className="text-sm text-muted-foreground hover:text-primary">
-                비밀번호를 잊으셨나요?
-              </a>
-            </div>
           </CardContent>
         </Card>
 
