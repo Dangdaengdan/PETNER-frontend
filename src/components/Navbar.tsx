@@ -26,6 +26,16 @@ const Navbar = () => {
               <div className="hidden md:flex items-center space-x-8">
                 <Tooltip>
                   <TooltipTrigger asChild>
+                    <Link to="/" className="text-foreground hover:text-primary transition-smooth">
+                      Home
+                    </Link>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>home</p>
+                  </TooltipContent>
+                </Tooltip>
+                <Tooltip>
+                  <TooltipTrigger asChild>
                     <a href="#" className="text-foreground hover:text-primary transition-smooth">
                       Register
                     </a>
@@ -36,9 +46,9 @@ const Navbar = () => {
                 </Tooltip>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <a href="#" className="text-foreground hover:text-primary transition-smooth">
+                    <Link to="/community" className="text-foreground hover:text-primary transition-smooth">
                       Community
-                    </a>
+                    </Link>
                   </TooltipTrigger>
                   <TooltipContent>
                     <p>게시판</p>
@@ -97,12 +107,15 @@ const Navbar = () => {
                   className="pl-10 bg-background border-border"
                 />
               </div>
+              <Link to="/" className="text-foreground hover:text-primary transition-smooth py-2">
+                Home
+              </Link>
               <a href="#" className="text-foreground hover:text-primary transition-smooth py-2">
                 Register
               </a>
-              <a href="#" className="text-foreground hover:text-primary transition-smooth py-2">
+              <Link to="/community" className="text-foreground hover:text-primary transition-smooth py-2">
                 Community
-              </a>
+              </Link>
               <a href="#" className="text-foreground hover:text-primary transition-smooth py-2">
                 About
               </a>
