@@ -18,7 +18,7 @@ const HeroSection = () => {
       </div>
 
       {/* Content */}
-      <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+      <div className="relative z-10 mx-auto px-2 sm:px-4 lg:px-6 py-20">
         <div className="max-w-2xl">
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-foreground mb-6 leading-tight">
             PET:NER
