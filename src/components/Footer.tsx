@@ -6,7 +6,7 @@ const Footer = () => {
   return (
     <footer className="bg-foreground text-background">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {/* Brand */}
           <div className="space-y-4">
             <div className="flex items-center space-x-2">
@@ -33,7 +33,7 @@ const Footer = () => {
           </div>
 
           {/* Quick Links */}
-          <div className="space-y-4">
+          <div className="space-y-4 text-right">
             <h3 className="text-lg font-semibold text-background">Quick Links</h3>
             <ul className="space-y-2">
               <li><a href="#" className="text-background/80 hover:text-primary transition-smooth">Adopt a Pet</a></li>
@@ -45,38 +45,21 @@ const Footer = () => {
           </div>
 
           {/* Contact Info */}
-          <div className="space-y-4">
+          <div className="space-y-4 text-right">
             <h3 className="text-lg font-semibold text-background">Contact</h3>
             <div className="space-y-3">
-              <div className="flex items-center space-x-3">
-                <Phone className="h-4 w-4 text-primary" />
+              <div className="flex items-center justify-end space-x-3">
                 <span className="text-background/80">(555) 123-PETS</span>
+                <Phone className="h-4 w-4 text-primary" />
               </div>
-              <div className="flex items-center space-x-3">
-                <Mail className="h-4 w-4 text-primary" />
+              <div className="flex items-center justify-end space-x-3">
                 <span className="text-background/80">hello@petner.com</span>
+                <Mail className="h-4 w-4 text-primary" />
               </div>
-              <div className="flex items-center space-x-3">
+              <div className="flex items-center justify-end space-x-3">
+                <span className="text-background/80 text-right">123 Adoption Lane<br />Pet City, PC 12345</span>
                 <MapPin className="h-4 w-4 text-primary" />
-                <span className="text-background/80">123 Adoption Lane<br />Pet City, PC 12345</span>
               </div>
-            </div>
-          </div>
-
-          {/* Newsletter */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-background">Stay Updated</h3>
-            <p className="text-background/80">
-              Get updates on new pets, adoption events, and pet care tips.
-            </p>
-            <div className="space-y-2">
-              <Input 
-                placeholder="Your email address"
-                className="bg-background/10 border-background/20 text-background placeholder:text-background/60"
-              />
-              <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">
-                Subscribe
-              </Button>
             </div>
           </div>
         </div>
