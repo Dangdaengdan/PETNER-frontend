@@ -166,7 +166,7 @@ const ChatButton = () => {
             <CardContent className="p-0 flex flex-col h-full">
               {/* 채팅 목록 */}
               {!selectedChat && (
-                <>
+                <div className="flex flex-col h-full">
                   <ScrollArea className="flex-1">
                     {mockChats.map((chat) => (
                       <div
@@ -204,7 +204,7 @@ const ChatButton = () => {
                   </ScrollArea>
                   
                   {/* 새 채팅 시작 입력창 */}
-                  <div className="p-4 border-t border-border">
+                  <div className="p-4 border-t border-border bg-background">
                     <div className="flex gap-2">
                       <Input
                         placeholder="새로운 채팅을 시작하세요..."
@@ -223,12 +223,12 @@ const ChatButton = () => {
                       </Button>
                     </div>
                   </div>
-                </>
+                </div>
               )}
 
               {/* 개별 채팅방 */}
               {selectedChat && currentChat && (
-                <>
+                <div className="flex flex-col h-full">
                   {/* 메시지 목록 */}
                   <ScrollArea className="flex-1 p-4">
                     <div className="space-y-3">
@@ -259,7 +259,7 @@ const ChatButton = () => {
                   </ScrollArea>
 
                   {/* 메시지 입력 */}
-                  <div className="p-4 border-t border-border">
+                  <div className="p-4 border-t border-border bg-background">
                     <div className="flex gap-2">
                       <Input
                         placeholder="메시지를 입력하세요..."
@@ -278,7 +278,7 @@ const ChatButton = () => {
                       </Button>
                     </div>
                   </div>
-                </>
+                </div>
               )}
             </CardContent>
           </Card>
