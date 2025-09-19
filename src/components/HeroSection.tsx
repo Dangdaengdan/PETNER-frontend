@@ -54,23 +54,6 @@ const HeroSection = () => {
             <SearchFilters onFilterChange={(filters) => console.log("Filters changed:", filters)} />
           </div>
 
-          {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4">
-            <Button 
-              size="lg" 
-              className="bg-accent hover:bg-accent/90 text-accent-foreground shadow-warm transition-smooth"
-            >
-              <Heart className="mr-2 h-5 w-5 fill-current" />
-              Browse All Pets
-            </Button>
-            <Button 
-              variant="outline" 
-              size="lg"
-              className="border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-smooth"
-            >
-              Learn About Adoption
-            </Button>
-          </div>
 
           {/* Stats */}
           <div className="mt-12 grid grid-cols-3 gap-4 sm:gap-8">
