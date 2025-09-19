@@ -128,72 +128,44 @@ const PetDetail = () => {
     <div className="min-h-screen bg-background">
       <Navbar />
       
-      <main className="mx-auto px-2 sm:px-4 lg:px-6 py-8">
+      <main className="mx-auto px-2 sm:px-4 lg:px-6 py-4">
         {/* Back Button */}
         <Button 
           variant="ghost" 
           onClick={() => navigate('/')}
-          className="mb-6 text-muted-foreground hover:text-foreground"
+          className="mb-4 text-muted-foreground hover:text-foreground"
         >
           <ArrowLeft className="h-4 w-4 mr-2" />
           돌아가기
         </Button>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           {/* Pet Image */}
-          <div className="relative">
-            <Card className="overflow-hidden">
-              <img
-                src={pet.image}
-                alt={`${pet.name} - ${pet.breed}`}
-                className="w-full h-96 lg:h-[500px] object-cover"
-              />
+          <div className="lg:col-span-1">
+            <Card className="overflow-hidden h-fit">
+              <div className="relative">
+                <img
+                  src={pet.image}
+                  alt={`${pet.name} - ${pet.breed}`}
+                  className="w-full h-64 lg:h-80 object-cover"
+                />
+                <button
+                  onClick={() => setIsFavorited(!isFavorited)}
+                  className="absolute top-3 right-3 p-2 rounded-full bg-background/90 backdrop-blur-sm transition-smooth hover:bg-background"
+                >
+                  <Heart
+                    className={`h-5 w-5 transition-smooth ${
+                      isFavorited 
+                        ? "text-accent fill-current" 
+                        : "text-muted-foreground hover:text-accent"
+                    }`}
+                  />
+                </button>
+              </div>
             </Card>
-            <button
-              onClick={() => setIsFavorited(!isFavorited)}
-              className="absolute top-4 right-4 p-3 rounded-full bg-background/90 backdrop-blur-sm transition-smooth hover:bg-background"
-            >
-              <Heart
-                className={`h-6 w-6 transition-smooth ${
-                  isFavorited 
-                    ? "text-accent fill-current" 
-                    : "text-muted-foreground hover:text-accent"
-                }`}
-              />
-            </button>
-          </div>
 
-          {/* Pet Information */}
-          <div className="space-y-6">
-            <div>
-              <h1 className="text-3xl font-bold text-foreground mb-2">{pet.name}</h1>
-              <p className="text-xl text-muted-foreground mb-4">{pet.breed}</p>
-              
-              <div className="flex flex-wrap gap-2 mb-6">
-                <Badge variant="secondary" className="bg-primary/10 text-primary">
-                  {pet.gender}
-                </Badge>
-                <Badge variant="secondary" className="bg-accent/10 text-accent">
-                  {pet.size}
-                </Badge>
-                <Badge variant="secondary" className="bg-secondary text-secondary-foreground">
-                  {pet.age}
-                </Badge>
-              </div>
-
-              <div className="flex items-center gap-4 text-muted-foreground mb-6">
-                <div className="flex items-center gap-2">
-                  <Calendar className="h-5 w-5" />
-                  <span>{pet.age}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <MapPin className="h-5 w-5" />
-                  <span>{pet.location}</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex gap-3">
+            {/* Action Buttons */}
+            <div className="flex gap-3 mt-4">
               <Button 
                 size="lg" 
                 className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground"
@@ -214,52 +186,137 @@ const PetDetail = () => {
                 <Heart className={`h-5 w-5 ${isFavorited ? 'fill-current' : ''}`} />
               </Button>
             </div>
+
+            {/* Care Information Cards */}
+            <div className="space-y-4 mt-4">
+              <Card>
+                <CardContent className="p-4">
+                  <h3 className="text-lg font-semibold text-foreground mb-3 flex items-center gap-2">
+                    <Users className="h-5 w-5" />
+                    성격적 정보
+                  </h3>
+                  <div className="flex flex-wrap gap-2">
+                    {pet.personality.map((trait, index) => (
+                      <Badge key={index} variant="outline" className="text-sm">
+                        {trait}
+                      </Badge>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardContent className="p-4">
+                  <h3 className="text-lg font-semibold text-foreground mb-3">의료 정보</h3>
+                  <p className="text-sm text-muted-foreground">{pet.medicalInfo}</p>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardContent className="p-4">
+                  <h3 className="text-lg font-semibold text-foreground mb-3">담당자 정보</h3>
+                  <p className="text-sm text-muted-foreground">{pet.caretakerInfo}</p>
+                </CardContent>
+              </Card>
+            </div>
           </div>
-        </div>
 
-        {/* Additional Information */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Description */}
-          <Card className="lg:col-span-2">
-            <CardContent className="p-6">
-              <h3 className="text-xl font-semibold text-foreground mb-4">기타 설명</h3>
-              <p className="text-muted-foreground leading-relaxed">
-                {pet.description}
-              </p>
-            </CardContent>
-          </Card>
-
-          {/* Care Information */}
-          <div className="space-y-6">
+          {/* Pet Information */}
+          <div className="lg:col-span-2 space-y-4">
             <Card>
               <CardContent className="p-6">
-                <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
-                  <Users className="h-5 w-5" />
-                  성격적 정보단
-                </h3>
-                <div className="flex flex-wrap gap-2">
-                  {pet.personality.map((trait, index) => (
-                    <Badge key={index} variant="outline" className="text-sm">
-                      {trait}
+                <div className="mb-4">
+                  <h1 className="text-3xl font-bold text-foreground mb-2">{pet.name}</h1>
+                  <p className="text-xl text-muted-foreground mb-4">{pet.breed}</p>
+                  
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    <Badge variant="secondary" className="bg-primary/10 text-primary">
+                      {pet.gender}
                     </Badge>
-                  ))}
+                    <Badge variant="secondary" className="bg-accent/10 text-accent">
+                      {pet.size}
+                    </Badge>
+                    <Badge variant="secondary" className="bg-secondary text-secondary-foreground">
+                      {pet.age}
+                    </Badge>
+                  </div>
+
+                  <div className="flex items-center gap-4 text-muted-foreground">
+                    <div className="flex items-center gap-2">
+                      <Calendar className="h-5 w-5" />
+                      <span>{pet.age}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <MapPin className="h-5 w-5" />
+                      <span>{pet.location}</span>
+                    </div>
+                  </div>
                 </div>
               </CardContent>
             </Card>
 
+            {/* Description */}
             <Card>
               <CardContent className="p-6">
-                <h3 className="text-lg font-semibold text-foreground mb-3">의료 정보</h3>
-                <p className="text-sm text-muted-foreground">{pet.medicalInfo}</p>
+                <h3 className="text-xl font-semibold text-foreground mb-4">기타 설명</h3>
+                <p className="text-muted-foreground leading-relaxed">
+                  {pet.description}
+                </p>
               </CardContent>
             </Card>
 
-            <Card>
-              <CardContent className="p-6">
-                <h3 className="text-lg font-semibold text-foreground mb-3">담당자 정보</h3>
-                <p className="text-sm text-muted-foreground">{pet.caretakerInfo}</p>
-              </CardContent>
-            </Card>
+            {/* Additional Information for larger screens */}
+            <div className="hidden lg:block">
+              <Card>
+                <CardContent className="p-6">
+                  <h3 className="text-xl font-semibold text-foreground mb-4">입양 과정</h3>
+                  <div className="space-y-3 text-muted-foreground">
+                    <div className="flex items-center gap-3">
+                      <span className="w-6 h-6 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-sm font-semibold">1</span>
+                      <span>온라인 신청서 작성</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <span className="w-6 h-6 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-sm font-semibold">2</span>
+                      <span>담당자와 상담 및 만남 예약</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <span className="w-6 h-6 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-sm font-semibold">3</span>
+                      <span>펫과 만남 및 호환성 확인</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <span className="w-6 h-6 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-sm font-semibold">4</span>
+                      <span>입양 완료 및 새 가족 되기</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardContent className="p-6">
+                  <h3 className="text-xl font-semibold text-foreground mb-4">입양 준비사항</h3>
+                  <div className="grid grid-cols-2 gap-4 text-sm text-muted-foreground">
+                    <div>
+                      <h4 className="font-semibold text-foreground mb-2">필수 준비물</h4>
+                      <ul className="space-y-1">
+                        <li>• 급식그릇 및 물그릇</li>
+                        <li>• 침대 또는 쿠션</li>
+                        <li>• 목줄 및 리드줄</li>
+                        <li>• 장난감</li>
+                      </ul>
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-foreground mb-2">환경 준비</h4>
+                      <ul className="space-y-1">
+                        <li>• 안전한 실내 공간 확보</li>
+                        <li>• 위험물질 제거</li>
+                        <li>• 적절한 온도 유지</li>
+                        <li>• 정기적인 운동 계획</li>
+                      </ul>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
           </div>
         </div>
       </main>
