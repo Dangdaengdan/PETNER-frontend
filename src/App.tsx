@@ -11,6 +11,7 @@ import PostDetail from "./pages/PostDetail";
 import MyProfile from "./pages/MyProfile";
 import RegisterPet from "./pages/RegisterPet";
 import NotFound from "./pages/NotFound";
+import ChatButton from "./components/ChatButton";
 
 const queryClient = new QueryClient();
 
@@ -31,6 +32,7 @@ const App = () => (
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
+        <ChatButton />
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
