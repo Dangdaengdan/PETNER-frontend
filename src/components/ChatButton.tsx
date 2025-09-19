@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { MessageCircle, X, Users, ArrowLeft, Send } from "lucide-react";
+import { MessageCircle, X, ArrowLeft, Send, Phone, MoreVertical } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -11,21 +11,21 @@ const mockChats = [
     id: 1, 
     name: "김수진 담당자", 
     lastMessage: "안녕하세요! Buddy에 대해 문의해주셔서 감사합니다.", 
-    time: "2분 전", 
+    time: "14:36", 
     unread: 2,
     messages: [
       { id: 1, text: "안녕하세요! Buddy 입양에 관심을 가져주셔서 감사합니다.", sender: "other", time: "14:30" },
       { id: 2, text: "혹시 Buddy에 대해 더 자세히 알고 싶어서 연락드렸어요.", sender: "me", time: "14:32" },
-      { id: 3, text: "물론입니다! Buddy는 정말 친근하고 활발한 성격을 가지고 있어요.", sender: "other", time: "14:33" },
-      { id: 4, text: "아이들과도 잘 어울리나요?", sender: "me", time: "14:35" },
-      { id: 5, text: "네, 아이들을 정말 좋아해요. 언제 한번 직접 만나보시겠어요?", sender: "other", time: "14:36" }
+      { id: 3, text: "물론입니다! Buddy는 정말 친근하고 활발한 성격을 가지고 있어요. 아이들과도 잘 어울린답니다.", sender: "other", time: "14:33" },
+      { id: 4, text: "그렇군요! 언제 한번 직접 만나볼 수 있을까요?", sender: "me", time: "14:35" },
+      { id: 5, text: "네, 언제든지 가능해요. 평일 오후나 주말 언제든 편하신 시간에 방문해주세요!", sender: "other", time: "14:36" }
     ]
   },
   { 
     id: 2, 
     name: "박지민 담당자", 
     lastMessage: "Whiskers 입양 관련해서 궁금한 점이 있으시면...", 
-    time: "1시간 전", 
+    time: "13:25", 
     unread: 0,
     messages: [
       { id: 1, text: "Whiskers에 대해 문의드립니다.", sender: "me", time: "13:20" },
@@ -36,24 +36,13 @@ const mockChats = [
     id: 3, 
     name: "이동현 담당자", 
     lastMessage: "Charlie는 매우 활발한 성격이라...", 
-    time: "3시간 전", 
+    time: "11:20", 
     unread: 1,
     messages: [
       { id: 1, text: "Charlie에 대해 알고 싶어요.", sender: "me", time: "11:15" },
       { id: 2, text: "Charlie는 매우 활발한 성격이라 충분한 운동이 필요해요.", sender: "other", time: "11:20" },
     ]
-  },
-  { 
-    id: 4, 
-    name: "최영희 담당자", 
-    lastMessage: "Luna 입양 절차에 대해 안내드리겠습니다.", 
-    time: "어제", 
-    unread: 0,
-    messages: [
-      { id: 1, text: "Luna 입양 절차가 어떻게 되나요?", sender: "me", time: "어제 16:30" },
-      { id: 2, text: "Luna 입양 절차에 대해 안내드리겠습니다.", sender: "other", time: "어제 16:35" },
-    ]
-  },
+  }
 ];
 
 const ChatButton = () => {
@@ -79,13 +68,8 @@ const ChatButton = () => {
   };
 
   const handleSendMessage = () => {
-    if (newMessage.trim() && selectedChat) {
-      // 실제로는 여기서 서버로 메시지를 전송하고 상태를 업데이트
-      console.log("Sending message:", newMessage, "to chat:", selectedChat);
-      setNewMessage("");
-    } else if (newMessage.trim() && !selectedChat) {
-      // 새로운 채팅 시작
-      console.log("Starting new chat with message:", newMessage);
+    if (newMessage.trim()) {
+      console.log("Sending message:", newMessage, selectedChat ? `to chat: ${selectedChat}` : "new chat");
       setNewMessage("");
     }
   };
@@ -105,95 +89,62 @@ const ChatButton = () => {
         <Button
           onClick={handleChatClick}
           size="lg"
-          className="fixed bottom-6 right-6 z-50 w-16 h-16 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 animate-fade-in"
+          className="fixed bottom-6 right-6 z-50 w-16 h-16 rounded-full bg-[#FEE500] hover:bg-[#FEE500]/90 text-black shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 animate-fade-in"
         >
           <MessageCircle className="h-8 w-8" />
           <span className="sr-only">채팅하기</span>
         </Button>
       )}
 
-      {/* 채팅 팝업 */}
+      {/* 카카오톡 스타일 채팅창 */}
       {isOpen && (
         <div className="fixed bottom-6 right-6 z-50 animate-scale-in">
-          <Card className="w-96 h-[32rem] shadow-xl border-2">
-            {/* 채팅 목록 헤더 */}
+          <Card className="w-80 h-96 shadow-2xl border-0 overflow-hidden bg-white">
+            {/* 채팅 목록 화면 */}
             {!selectedChat && (
-              <CardHeader className="pb-3">
-                <div className="flex items-center justify-between">
-                  <CardTitle className="flex items-center gap-2">
-                    <Users className="h-5 w-5" />
-                    채팅 목록
-                  </CardTitle>
+              <>
+                {/* 헤더 */}
+                <div className="bg-[#3C1E1E] text-white p-4 flex items-center justify-between">
+                  <h2 className="text-lg font-medium">채팅</h2>
                   <Button
                     variant="ghost"
                     size="sm"
                     onClick={handleClose}
-                    className="h-8 w-8 p-0"
+                    className="h-8 w-8 p-0 text-white hover:bg-white/20"
                   >
                     <X className="h-4 w-4" />
                   </Button>
                 </div>
-              </CardHeader>
-            )}
 
-            {/* 개별 채팅방 헤더 */}
-            {selectedChat && currentChat && (
-              <CardHeader className="pb-3">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={handleBackToList}
-                      className="h-8 w-8 p-0"
-                    >
-                      <ArrowLeft className="h-4 w-4" />
-                    </Button>
-                    <CardTitle className="text-base">{currentChat.name}</CardTitle>
-                  </div>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={handleClose}
-                    className="h-8 w-8 p-0"
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
-                </div>
-              </CardHeader>
-            )}
-
-            <CardContent className="p-0 flex flex-col h-full">
-              {/* 채팅 목록 */}
-              {!selectedChat && (
-                <div className="flex flex-col h-full">
-                  <ScrollArea className="flex-1">
+                {/* 채팅 목록 */}
+                <div className="bg-white">
+                  <ScrollArea className="h-80">
                     {mockChats.map((chat) => (
                       <div
                         key={chat.id}
                         onClick={() => handleChatSelect(chat.id)}
-                        className="flex items-center gap-3 p-4 hover:bg-muted/50 cursor-pointer border-b border-border transition-colors"
+                        className="flex items-center gap-3 p-4 hover:bg-gray-50 cursor-pointer border-b border-gray-100 transition-colors"
                       >
-                        <Avatar className="h-10 w-10">
-                          <AvatarFallback className="bg-primary/10 text-primary">
+                        <Avatar className="h-12 w-12">
+                          <AvatarFallback className="bg-[#FEE500] text-black font-medium">
                             {chat.name.charAt(0)}
                           </AvatarFallback>
                         </Avatar>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center justify-between mb-1">
-                            <h4 className="text-sm font-medium text-foreground truncate">
+                            <h4 className="text-sm font-medium text-gray-900 truncate">
                               {chat.name}
                             </h4>
-                            <span className="text-xs text-muted-foreground">
+                            <span className="text-xs text-gray-500">
                               {chat.time}
                             </span>
                           </div>
                           <div className="flex items-center justify-between">
-                            <p className="text-xs text-muted-foreground truncate">
+                            <p className="text-xs text-gray-600 truncate">
                               {chat.lastMessage}
                             </p>
                             {chat.unread > 0 && (
-                              <span className="bg-accent text-accent-foreground text-xs rounded-full px-2 py-1 min-w-[1.25rem] text-center">
+                              <span className="bg-red-500 text-white text-xs rounded-full px-2 py-1 min-w-[1.25rem] text-center">
                                 {chat.unread}
                               </span>
                             )}
@@ -202,85 +153,105 @@ const ChatButton = () => {
                       </div>
                     ))}
                   </ScrollArea>
-                  
-                  {/* 새 채팅 시작 입력창 */}
-                  <div className="p-4 border-t border-border bg-background">
-                    <div className="flex gap-2">
-                      <Input
-                        placeholder="새로운 채팅을 시작하세요..."
-                        value={newMessage}
-                        onChange={(e) => setNewMessage(e.target.value)}
-                        onKeyPress={handleKeyPress}
-                        className="flex-1"
-                      />
-                      <Button
-                        onClick={handleSendMessage}
-                        size="sm"
-                        className="px-3"
-                        disabled={!newMessage.trim()}
-                      >
-                        <Send className="h-4 w-4" />
-                      </Button>
-                    </div>
+                </div>
+              </>
+            )}
+
+            {/* 개별 채팅방 화면 */}
+            {selectedChat && currentChat && (
+              <>
+                {/* 채팅방 헤더 */}
+                <div className="bg-[#3C1E1E] text-white p-3 flex items-center gap-3">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleBackToList}
+                    className="h-8 w-8 p-0 text-white hover:bg-white/20"
+                  >
+                    <ArrowLeft className="h-4 w-4" />
+                  </Button>
+                  <Avatar className="h-8 w-8">
+                    <AvatarFallback className="bg-[#FEE500] text-black text-sm">
+                      {currentChat.name.charAt(0)}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="flex-1">
+                    <h3 className="text-sm font-medium">{currentChat.name}</h3>
+                  </div>
+                  <div className="flex gap-1">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-8 w-8 p-0 text-white hover:bg-white/20"
+                    >
+                      <Phone className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={handleClose}
+                      className="h-8 w-8 p-0 text-white hover:bg-white/20"
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
                   </div>
                 </div>
-              )}
 
-              {/* 개별 채팅방 */}
-              {selectedChat && currentChat && (
-                <div className="flex flex-col h-full">
-                  {/* 메시지 목록 */}
-                  <ScrollArea className="flex-1 p-4">
-                    <div className="space-y-3">
+                {/* 메시지 영역 */}
+                <div className="bg-[#B2C7D9] flex flex-col h-80">
+                  <ScrollArea className="flex-1 p-3">
+                    <div className="space-y-2">
                       {currentChat.messages.map((message) => (
                         <div
                           key={message.id}
                           className={`flex ${message.sender === "me" ? "justify-end" : "justify-start"}`}
                         >
-                          <div
-                            className={`max-w-[80%] rounded-lg px-3 py-2 text-sm ${
-                              message.sender === "me"
-                                ? "bg-primary text-primary-foreground"
-                                : "bg-muted text-foreground"
-                            }`}
-                          >
-                            <p>{message.text}</p>
-                            <span className={`text-xs mt-1 block ${
-                              message.sender === "me" 
-                                ? "text-primary-foreground/70" 
-                                : "text-muted-foreground"
+                          <div className="max-w-[75%]">
+                            <div
+                              className={`rounded-2xl px-3 py-2 text-sm ${
+                                message.sender === "me"
+                                  ? "bg-[#FEE500] text-black ml-auto"
+                                  : "bg-white text-black"
+                              }`}
+                            >
+                              <p className="break-words">{message.text}</p>
+                            </div>
+                            <div className={`flex items-center gap-1 mt-1 ${
+                              message.sender === "me" ? "justify-end" : "justify-start"
                             }`}>
-                              {message.time}
-                            </span>
+                              <span className="text-xs text-gray-600">
+                                {message.time}
+                              </span>
+                            </div>
                           </div>
                         </div>
                       ))}
                     </div>
                   </ScrollArea>
 
-                  {/* 메시지 입력 */}
-                  <div className="p-4 border-t border-border bg-background">
-                    <div className="flex gap-2">
+                  {/* 메시지 입력창 */}
+                  <div className="bg-white p-3 border-t border-gray-200">
+                    <div className="flex gap-2 items-center">
                       <Input
-                        placeholder="메시지를 입력하세요..."
+                        placeholder="메시지를 입력하세요"
                         value={newMessage}
                         onChange={(e) => setNewMessage(e.target.value)}
                         onKeyPress={handleKeyPress}
-                        className="flex-1"
+                        className="flex-1 border-gray-300 focus:border-[#FEE500] focus:ring-[#FEE500] rounded-full px-4"
                       />
                       <Button
                         onClick={handleSendMessage}
                         size="sm"
-                        className="px-3"
                         disabled={!newMessage.trim()}
+                        className="bg-[#FEE500] hover:bg-[#FEE500]/90 text-black h-10 w-10 rounded-full p-0"
                       >
                         <Send className="h-4 w-4" />
                       </Button>
                     </div>
                   </div>
                 </div>
-              )}
-            </CardContent>
+              </>
+            )}
           </Card>
         </div>
       )}
