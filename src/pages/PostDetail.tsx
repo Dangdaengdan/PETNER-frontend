@@ -96,8 +96,8 @@ const PostDetail = () => {
               <div className="flex items-center gap-4">
                 <div className="flex items-center gap-2">
                   <Avatar className="h-8 w-8">
-                    <AvatarFallback className="bg-primary/10">
-                      <User className="h-4 w-4" />
+                    <AvatarFallback className="bg-primary/10 text-primary">
+                      {post.author[0]}
                     </AvatarFallback>
                   </Avatar>
                   <span className="font-medium">{post.author}</span>
@@ -162,7 +162,7 @@ const PostDetail = () => {
               {commentsData.map((comment) => (
                 <div key={comment.id} className="flex gap-3">
                   <Avatar className="h-8 w-8 mt-1">
-                    <AvatarFallback className="bg-primary/10">
+                    <AvatarFallback className="bg-primary/10 text-primary">
                       {comment.author[0]}
                     </AvatarFallback>
                   </Avatar>
