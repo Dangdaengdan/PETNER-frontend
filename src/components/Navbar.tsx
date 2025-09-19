@@ -13,46 +13,48 @@ const Navbar = () => {
       <nav className="bg-background/95 backdrop-blur-sm border-b border-border sticky top-0 z-50">
         <div className="mx-auto px-2 sm:px-4 lg:px-6">
           <div className="flex justify-between items-center h-16">
-            {/* Logo */}
-            <div className="flex items-center space-x-2">
-              <Heart className="h-8 w-8 text-primary fill-current" />
-              <span className="text-2xl font-handwritten font-bold text-primary">
-                Petner
-              </span>
-            </div>
-
-            {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center space-x-8">
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <a href="#" className="text-foreground hover:text-primary transition-smooth">
-                    Register
-                  </a>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>유기견 등록하기</p>
-                </TooltipContent>
-              </Tooltip>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <a href="#" className="text-foreground hover:text-primary transition-smooth">
-                    Community
-                  </a>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>게시판</p>
-                </TooltipContent>
-              </Tooltip>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <a href="#" className="text-foreground hover:text-primary transition-smooth">
-                    About
-                  </a>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>소개</p>
-                </TooltipContent>
-              </Tooltip>
+            {/* Logo and Navigation */}
+            <div className="flex items-center space-x-8">
+              <div className="flex items-center space-x-2">
+                <Heart className="h-8 w-8 text-primary fill-current" />
+                <span className="text-2xl font-handwritten font-bold text-primary">
+                  Petner
+                </span>
+              </div>
+              
+              {/* Desktop Navigation */}
+              <div className="hidden md:flex items-center space-x-8">
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <a href="#" className="text-foreground hover:text-primary transition-smooth">
+                      Register
+                    </a>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>유기견 등록하기</p>
+                  </TooltipContent>
+                </Tooltip>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <a href="#" className="text-foreground hover:text-primary transition-smooth">
+                      Community
+                    </a>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>게시판</p>
+                  </TooltipContent>
+                </Tooltip>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <a href="#" className="text-foreground hover:text-primary transition-smooth">
+                      About
+                    </a>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>소개</p>
+                  </TooltipContent>
+                </Tooltip>
+              </div>
             </div>
 
           {/* Search and Actions */}
