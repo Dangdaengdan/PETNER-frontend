@@ -14,27 +14,27 @@ import Footer from "@/components/Footer";
 
 // 임시 데이터
 const userData = {
-  name: "김민수",
-  email: "minsu.kim@email.com",
+  name: "Cardi B",
+  email: "offset@email.com",
   phone: "010-1234-5678",
   location: "서울 강남구",
-  joinDate: "2024-01-15",
+  joinDate: "2025-01-15",
   profileImage: "/api/placeholder/150/150"
 };
 
 const adoptionApplications = [
   {
     id: 1,
-    petName: "해피",
-    petImage: "/src/assets/dog-1.jpg",
+    petName: "똥깨",
+    petImage: "/src/assets/dog1.jpg",
     status: "심사중",
     applicationDate: "2024-03-01",
     shelter: "강남 동물보호소"
   },
   {
     id: 2,
-    petName: "루비",
-    petImage: "/src/assets/cat-1.jpg",
+    petName: "땅콩이",
+    petImage: "/src/assets/dog3.jpg",
     status: "승인됨",
     applicationDate: "2024-02-15",
     shelter: "서초 동물보호소"
@@ -51,7 +51,7 @@ const myPosts = [
   },
   {
     id: 2,
-    title: "고양이 화장실 훈련 후기",
+    title: "배변훈련 후기",
     date: "2024-02-28",
     views: 89,
     comments: 12

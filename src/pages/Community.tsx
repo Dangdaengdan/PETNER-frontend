@@ -81,13 +81,13 @@ const Community = () => {
       <main className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-foreground mb-4">커뮤니티</h1>
-          <p className="text-muted-foreground text-lg">반려동물 입양과 보호에 관한 이야기를 나누어요</p>
+          <h1 className="text-4xl font-bold text-center mb-4">게시판</h1>
+          <p className="text-center text-lg">유기견 입양 및 보호 정보 공유 공간</p>
         </div>
 
         {/* Search Bar */}
         <div className="mb-8">
-          <div className="relative max-w-2xl">
+          <div className="relative max-w-2xl mx-auto">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
             <Input
               placeholder="게시글을 검색해보세요..."

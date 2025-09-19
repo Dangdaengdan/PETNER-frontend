@@ -15,21 +15,21 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
 // Import pet images
-import dog1 from "@/assets/dog-1.jpg";
-import cat1 from "@/assets/cat-1.jpg";
-import dog2 from "@/assets/dog-2.jpg";
-import cat2 from "@/assets/cat-2.jpg";
-import dog3 from "@/assets/dog-3.jpg";
-import cat3 from "@/assets/cat-3.jpg";
+import dog1 from "@/assets/dog1.jpg";
+import dog2 from "@/assets/dog2.jpg";
+import dog3 from "@/assets/dog3.jpg";
+import dog4 from "@/assets/dog4.jpg";
+import dog5 from "@/assets/dog5.jpg";
+import dog6 from "@/assets/dog6.jpg";
 
 const petsData = {
   "1": {
     id: "1",
-    name: "똥깨",
+    name: "Buddy",
     breed: "Golden Retriever",
     age: "2 years",
     location: "Downtown Shelter",
-    images: [dog1, dog2, dog3],
+    images: [dog1, dog1, dog1],
     gender: "Male" as const,
     size: "Large" as const,
     description: "Buddy는 매우 친근하고 활발한 골든 리트리버입니다. 아이들과 잘 어울리며, 매일 산책을 좋아합니다. 기본적인 훈련이 되어 있어 가족과 함께 생활하기에 완벽한 반려견입니다.",
@@ -43,7 +43,7 @@ const petsData = {
     breed: "Tabby Cat",
     age: "3 years",
     location: "City Animal Center",
-    images: [cat1, cat2, cat3],
+    images: [dog2,dog2,dog2],
     gender: "Female" as const,
     size: "Medium" as const,
     description: "Whiskers는 조용하고 우아한 태비 고양이입니다. 조용한 환경을 좋아하며, 무릎에 앉아 있는 것을 즐깁니다. 독립적이지만 애정이 많은 성격을 가지고 있습니다.",
@@ -57,7 +57,7 @@ const petsData = {
     breed: "Beagle",
     age: "4 years",
     location: "Westside Rescue",
-    images: [dog2, dog1, dog3],
+    images: [dog3, dog3, dog3],
     gender: "Male" as const,
     size: "Medium" as const,
     description: "Charlie는 호기심이 많고 에너지가 넘치는 비글입니다. 냄새 맡기를 좋아하며, 다른 개들과도 잘 어울립니다. 가족들과 함께 놀기를 좋아하는 활발한 성격입니다.",
@@ -71,7 +71,7 @@ const petsData = {
     breed: "Persian Cat",
     age: "1 year",
     location: "Happy Paws Shelter",
-    images: [cat2, cat1, cat3],
+    images: [dog4,dog4,dog4],
     gender: "Female" as const,
     size: "Small" as const,
     description: "Luna는 아름답고 온화한 페르시안 고양이입니다. 조용한 성격이지만 주인에게는 매우 애정적입니다. 털이 길어 정기적인 빗질이 필요하지만, 그만큼 아름다운 모습을 자랑합니다.",
@@ -85,7 +85,7 @@ const petsData = {
     breed: "Border Collie",
     age: "5 years",
     location: "Countryside Rescue",
-    images: [dog3, dog1, dog2],
+    images: [dog5, dog5, dog5],
     gender: "Male" as const,
     size: "Large" as const,
     description: "Max는 매우 똑똑하고 충성스러운 보더 콜리입니다. 훈련을 받는 것을 좋아하며, 활동적인 가족에게 완벽한 반려견입니다. 매일 충분한 운동과 정신적 자극이 필요합니다.",
@@ -99,7 +99,7 @@ const petsData = {
     breed: "Domestic Shorthair",
     age: "2 years", 
     location: "Metro Animal Shelter",
-    images: [cat3, cat1, cat2],
+    images: [dog6,dog6],
     gender: "Male" as const,
     size: "Medium" as const,
     description: "Shadow는 신비로운 매력을 가진 검은 고양이입니다. 처음에는 조금 수줍어하지만, 친해지면 매우 애정적이고 장난기 많은 성격을 보입니다. 조용한 환경에서 편안함을 느낍니다.",

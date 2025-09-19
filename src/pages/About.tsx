@@ -13,10 +13,10 @@ const About = () => {
   ];
 
   const team = [
-    { name: "김철수", role: "대표", description: "동물보호 활동 10년 경력" },
-    { name: "이영희", role: "개발팀장", description: "펫테크 전문 개발자" },
-    { name: "박민수", role: "디자이너", description: "UX/UI 디자인 전문가" },
-    { name: "정수연", role: "보호소 매니저", description: "전국 보호소 네트워크 관리" }
+    { name: "이선민", role: "팀장", description: "동물보호 활동 10년 경력" },
+    { name: "임채현", role: "개발팀장", description: "펫테크 전문 개발자" },
+    { name: "남서현", role: "디자이너", description: "UX/UI 디자인 전문가" },
+    { name: "배수하", role: "보호소 매니저", description: "전국 보호소 네트워크 관리" }
   ];
 
   const partners = [
@@ -36,8 +36,7 @@ const About = () => {
             <span className="text-primary block">새로운 가족을</span>
           </h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            데이터 기반 매칭으로 반려동물과 가족을 연결하는 
-            새로운 입양 플랫폼입니다.
+           분류된 데이터를 활용해 반려동물과 가족의 생활 환경에 가장 잘 맞는 입양을 돕는 플랫폼입니다.
           </p>
         </div>
       </section>
@@ -77,7 +76,7 @@ const About = () => {
                     <Badge variant="outline">책임감 있는 입양</Badge>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Badge variant="outline">데이터 기반 매칭</Badge>
+                    <Badge variant="outline">맞춤형 입양으로 재유기 최소화</Badge>
                   </div>
                   <div className="flex items-center gap-2">
                     <Badge variant="outline">보호소 네트워크 연결</Badge>
