@@ -66,7 +66,7 @@ const Footer = () => {
 
         <div className="border-t border-background/20 mt-8 pt-8 text-center">
           <p className="text-background/60">
-            © 2024 Petner. All rights reserved. Made with ❤️ for pets in need.
+            © Dangdangdan. All rights reserved. Made with ❤️ for pets in need.
           </p>
         </div>
       </div>

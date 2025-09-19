@@ -5,25 +5,25 @@ const steps = [
   {
     icon: Search,
     title: "Browse & Search",
-    description: "Explore our database of available pets and find the perfect match for your lifestyle.",
+    description: "입양 대기 중인 반려동물 목록을 살펴보고, 당신의 생활방식에 딱 맞는 친구를 찾아보세요.",
     color: "text-primary",
   },
   {
     icon: Heart,
     title: "Meet & Connect",
-    description: "Schedule a meet-and-greet to get to know your potential new family member.",
+    description: "만남 예약을 통해 새로운 가족 후보를 직접 만나보세요.",
     color: "text-accent",
   },
   {
     icon: Home,
     title: "Apply to Adopt",
-    description: "Complete our simple adoption application and home check process.",
+    description: "간단한 입양 신청서와 가정 환경 확인 절차를 완료하세요.",
     color: "text-primary",
   },
   {
     icon: Sparkles,
     title: "Welcome Home",
-    description: "Take your new companion home and begin your beautiful journey together.",
+    description: "새 친구와 함께 집으로 돌아가, 이제 두 분의 아름다운 여정을 시작하세요.",
     color: "text-accent",
   },
 ];
@@ -33,13 +33,12 @@ const AdoptionProcess = () => {
     <section className="py-16 bg-background">
       <div className="mx-auto px-2 sm:px-4 lg:px-6">
         <div className="text-center mb-12">
-          <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">
-            Simple
-            <span className="text-primary font-handwritten"> Adoption Process</span>
+          <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-4">
+            단순화된
+            <span className="text-3xl sm:text-4xl text-primary "> 입양 절차</span>
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            We've made adopting a pet as easy as possible. Follow these four simple steps 
-            to bring home your new best friend.
+            펫너에서 네 가지 간단한 단계를 거쳐 새로운 반려 친구를 만날 수 있습니다.
           </p>
         </div>
 

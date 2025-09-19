@@ -3,73 +3,73 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 
 // Import pet images
-import dog1 from "@/assets/dog-1.jpg";
-import cat1 from "@/assets/cat-1.jpg";
-import dog2 from "@/assets/dog-2.jpg";
-import cat2 from "@/assets/cat-2.jpg";
-import dog3 from "@/assets/dog-3.jpg";
-import cat3 from "@/assets/cat-3.jpg";
+import dog1 from "@/assets/dog1.jpg";
+import dog2 from "@/assets/dog2.jpg";
+import dog3 from "@/assets/dog3.jpg";
+import dog4 from "@/assets/dog4.jpg";
+import dog5 from "@/assets/dog5.jpg";
+import dog6 from "@/assets/dog6.jpg";
 
 const featuredPets = [
   {
     id: "1",
-    name: "Buddy",
-    breed: "Golden Retriever",
-    age: "2 years",
-    location: "Downtown Shelter",
+    name: "똥깨",
+    breed: "골든 리트리버",
+    age: "2세",
+    location: "강릉시유기견보호소",
     image: dog1,
-    gender: "Male" as const,
-    size: "Large" as const,
+    gender: "수컷" as const,
+    size: "대형견" as const,
   },
   {
-    id: "2", 
-    name: "Whiskers",
-    breed: "Tabby Cat",
-    age: "3 years",
-    location: "City Animal Center",
-    image: cat1,
-    gender: "Female" as const,
-    size: "Medium" as const,
+    id: "2",
+    name: "구름이",
+    breed: "비숑",
+    age: "3세",
+    location: "시립동물보호센터",
+    image: dog2,
+    gender: "암컷" as const,
+    size: "중형견" as const,
   },
   {
     id: "3",
-    name: "Charlie",
-    breed: "Beagle",
-    age: "4 years",
-    location: "Westside Rescue",
-    image: dog2,
-    gender: "Male" as const,
-    size: "Medium" as const,
+    name: "땅콩이",
+    breed: "말티즈",
+    age: "4세",
+    location: "서부구조센터",
+    image: dog3,
+    gender: "수컷" as const,
+    size: "소형견" as const,
   },
   {
     id: "4",
-    name: "Luna",
-    breed: "Persian Cat",
-    age: "1 year",
-    location: "Happy Paws Shelter",
-    image: cat2,
-    gender: "Female" as const,
-    size: "Small" as const,
+    name: "뽀삐",
+    breed: "치와와",
+    age: "2세",
+    location: "해피포우즈 보호소",
+    image: dog4,
+    gender: "암컷" as const,
+    size: "소형견" as const,
   },
   {
     id: "5",
-    name: "Max",
-    breed: "Border Collie",
-    age: "5 years",
-    location: "Countryside Rescue",
-    image: dog3,
-    gender: "Male" as const,
-    size: "Large" as const,
+    name: "산체",
+    breed: "장모치와와",
+    age: "5세",
+    location: "전원구조센터",
+    image: dog5,
+    gender: "수컷" as const,
+    size: "소형견" as const,
   },
   {
     id: "6",
-    name: "Shadow",
-    breed: "Domestic Shorthair",
-    age: "2 years", 
-    location: "Metro Animal Shelter",
-    image: cat3,
-    gender: "Male" as const,
-    size: "Medium" as const,
+    name: "초코",
+    breed: "토이푸들",
+    age: "2세",
+    location: "메트로 동물보호소",
+    image: dog6,
+    gender: "수컷" as const,
+    size: "중형견" as const,
   },
 ];
 
@@ -79,12 +79,11 @@ const FeaturedPets = () => {
       <div className="mx-auto px-2 sm:px-4 lg:px-6">
         <div className="text-center mb-12">
           <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">
-            Meet Our
-            <span className="text-primary font-handwritten"> Featured Friends</span>
+            입양을 기다리는 친구들
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            These adorable pets are ready to find their forever homes. 
-            Each one has a unique personality and so much love to give.
+            사랑스러운 반려 친구들이 평생의 가족을 찾고 있어요.
+            모두가 특별한 성격과 따뜻한 마음을 가지고 있으며, 지금 새로운 시작을 함께할 주인을 기다립니다.
           </p>
         </div>
 
@@ -95,11 +94,11 @@ const FeaturedPets = () => {
         </div>
 
         <div className="text-center">
-          <Button 
+          <Button
             size="lg"
             className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-warm transition-smooth"
           >
-            View All Available Pets
+            더 많은 친구들 보기
             <ArrowRight className="ml-2 h-5 w-5" />
           </Button>
         </div>

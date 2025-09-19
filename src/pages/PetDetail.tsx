@@ -25,7 +25,7 @@ import cat3 from "@/assets/cat-3.jpg";
 const petsData = {
   "1": {
     id: "1",
-    name: "Buddy",
+    name: "똥깨",
     breed: "Golden Retriever",
     age: "2 years",
     location: "Downtown Shelter",

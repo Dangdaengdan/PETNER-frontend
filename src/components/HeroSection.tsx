@@ -20,10 +20,10 @@ const HeroSection = () => {
       {/* Content */}
       <div className="relative z-10 mx-auto px-2 sm:px-4 lg:px-6 py-20">
         <div className="max-w-2xl">
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-foreground mb-6 leading-tight">
+          <h1 className="text-6xl sm:text-7xl lg:text-8xl font-bold text-foreground mb-6 leading-tight">
             PET:NER
-            <span className="text-primary font-handwritten block">
-              Find Your Forever Friend
+            <span className="text-4xl sm:text-5xl lg:text-6xl text-primary font-handwritten block">
+              <br/>Find Your Forever Friend
             </span>
           </h1>
           
@@ -59,15 +59,15 @@ const HeroSection = () => {
           <div className="mt-12 grid grid-cols-3 gap-4 sm:gap-8">
             <div className="text-center">
               <div className="text-2xl sm:text-3xl font-bold text-primary">500+</div>
-              <div className="text-sm text-muted-foreground">Pets Adopted</div>
+              <div className="text-sm text-muted-foreground">입양된 반려동물</div>
             </div>
             <div className="text-center">
               <div className="text-2xl sm:text-3xl font-bold text-primary">50+</div>
-              <div className="text-sm text-muted-foreground">Partner Shelters</div>
+              <div className="text-sm text-muted-foreground">함께하는 보호소</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl sm:text-3xl font-bold text-primary">24/7</div>
-              <div className="text-sm text-muted-foreground">Support</div>
+              <div className="text-2xl sm:text-3xl font-bold text-primary">100+</div>
+              <div className="text-sm text-muted-foreground">후원자 수</div>
             </div>
           </div>
         </div>
