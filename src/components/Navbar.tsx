@@ -28,7 +28,7 @@ const Navbar = () => {
               About
             </a>
             <a href="#" className="text-foreground hover:text-primary transition-smooth">
-              Contact
+              Register
             </a>
           </div>
 
@@ -41,13 +41,11 @@ const Navbar = () => {
                 className="pl-10 w-64 bg-background border-border"
               />
             </div>
-            <Button variant="ghost" size="icon" asChild>
+            <Button className="bg-primary hover:bg-primary/90 text-primary-foreground" asChild>
               <Link to="/login">
-                <User className="h-5 w-5" />
+                <User className="h-5 w-5 mr-2" />
+                로그인
               </Link>
-            </Button>
-            <Button className="bg-primary hover:bg-primary/90 text-primary-foreground">
-              Get Started
             </Button>
           </div>
 
@@ -81,10 +79,13 @@ const Navbar = () => {
                 About
               </a>
               <a href="#" className="text-foreground hover:text-primary transition-smooth py-2">
-                Contact
+                Register
               </a>
-              <Button className="bg-primary hover:bg-primary/90 text-primary-foreground w-full">
-                Get Started
+              <Button className="bg-primary hover:bg-primary/90 text-primary-foreground w-full" asChild>
+                <Link to="/login">
+                  <User className="h-5 w-5 mr-2" />
+                  로그인
+                </Link>
               </Button>
             </div>
           </div>
