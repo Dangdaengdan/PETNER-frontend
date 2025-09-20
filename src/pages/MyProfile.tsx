@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Heart, MapPin, Calendar, Camera, Edit, Clock, CheckCircle, FileText, PawPrint } from "lucide-react";
 import { Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
@@ -27,7 +28,7 @@ const adoptionApplications = [
     id: 1,
     petName: "똥깨",
     petImage: "/src/assets/dog1.jpg",
-    status: "심사중",
+    status: "입양 처리 중",
     applicationDate: "2024-03-01",
     shelter: "강남 동물보호소"
   },
@@ -35,7 +36,7 @@ const adoptionApplications = [
     id: 2,
     petName: "땅콩이",
     petImage: "/src/assets/dog3.jpg",
-    status: "승인됨",
+    status: "입양 완료",
     applicationDate: "2024-02-15",
     shelter: "서초 동물보호소"
   }
@@ -92,6 +93,36 @@ const favoritePets = [
   }
 ];
 
+const registrationApplications = [
+  {
+    id: 1,
+    petName: "멍멍이",
+    petImage: "/src/assets/dog1.jpg",
+    status: "입양 가능",
+    registrationDate: "2024-03-10",
+    breed: "골든 리트리버",
+    age: "2세"
+  },
+  {
+    id: 2,
+    petName: "야옹이",
+    petImage: "/src/assets/dog2.jpg",
+    status: "입양 완료",
+    registrationDate: "2024-02-20",
+    breed: "페르시안 고양이",
+    age: "1세"
+  },
+  {
+    id: 3,
+    petName: "뽀삐",
+    petImage: "/src/assets/dog3.jpg",
+    status: "반려됨",
+    registrationDate: "2024-01-15",
+    breed: "비글",
+    age: "3세"
+  }
+];
+
 const adoptionHistory = [
   {
     id: 1,
@@ -112,18 +143,31 @@ const adoptionHistory = [
 const MyProfile = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [editData, setEditData] = useState(userData);
+  const [registrationData, setRegistrationData] = useState(registrationApplications);
 
   const handleSave = () => {
     // 실제로는 API 호출
     setIsEditing(false);
   };
 
+  const handleStatusChange = (id: number, newStatus: string) => {
+    setRegistrationData(prev => 
+      prev.map(registration => 
+        registration.id === id 
+          ? { ...registration, status: newStatus }
+          : registration
+      )
+    );
+  };
+
   const getStatusBadge = (status: string) => {
     switch (status) {
-      case "심사중":
-        return <Badge variant="secondary" className="bg-yellow-100 text-yellow-800"><Clock className="w-3 h-3 mr-1" />심사중</Badge>;
-      case "승인됨":
-        return <Badge variant="secondary" className="bg-green-100 text-green-800"><CheckCircle className="w-3 h-3 mr-1" />승인됨</Badge>;
+      case "입양 가능":
+        return <Badge variant="secondary" className="bg-red-100 text-red-800"><Heart className="w-3 h-3 mr-1" />입양 가능</Badge>;
+      case "입양 처리 중":
+        return <Badge variant="secondary" className="bg-yellow-100 text-yellow-800"><Clock className="w-3 h-3 mr-1" />입양 처리 중</Badge>;
+      case "입양 완료":
+        return <Badge variant="secondary" className="bg-green-100 text-green-800"><CheckCircle className="w-3 h-3 mr-1" />입양 완료</Badge>;
       default:
         return <Badge variant="outline">{status}</Badge>;
     }
@@ -144,10 +188,10 @@ const MyProfile = () => {
           <Tabs defaultValue="profile" className="space-y-6">
             <TabsList className="grid w-full grid-cols-5">
               <TabsTrigger value="profile">프로필</TabsTrigger>
-              <TabsTrigger value="applications">입양신청</TabsTrigger>
+              <TabsTrigger value="applications">입양 신청 현황</TabsTrigger>
+              <TabsTrigger value="registrations">등록 신청 현황</TabsTrigger>
               <TabsTrigger value="posts">내 글</TabsTrigger>
               <TabsTrigger value="favorites">찜 목록</TabsTrigger>
-              <TabsTrigger value="history">입양완료</TabsTrigger>
             </TabsList>
 
             {/* 프로필 관리 */}
@@ -299,6 +343,79 @@ const MyProfile = () => {
               </Card>
             </TabsContent>
 
+            {/* 등록 신청 현황 */}
+            <TabsContent value="registrations">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <FileText className="h-5 w-5" />
+                    등록 신청 현황
+                  </CardTitle>
+                  <p className="text-sm text-muted-foreground">등록신청 상태를 직접 수정할 수 있습니다</p>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {registrationData.map((registration) => (
+                      <div key={registration.id} className="border rounded-lg p-4">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center space-x-4">
+                            <img
+                              src={registration.petImage}
+                              alt={registration.petName}
+                              className="w-16 h-16 rounded-lg object-cover"
+                            />
+                            <div>
+                              <h3 className="font-semibold text-foreground">{registration.petName}</h3>
+                              <p className="text-sm text-muted-foreground">{registration.breed} · {registration.age}</p>
+                              <p className="text-sm text-muted-foreground">등록일: {registration.registrationDate}</p>
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            {getStatusBadge(registration.status)}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  
+                  {/* 고정된 상태 변경 섹션 */}
+                  <div className="mt-6 pt-4 border-t">
+                    <h4 className="text-lg font-semibold text-foreground mb-4">등록신청 상태 변경</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      {registrationData.map((registration) => (
+                        <div key={registration.id} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                          <div className="flex items-center space-x-3">
+                            <img
+                              src={registration.petImage}
+                              alt={registration.petName}
+                              className="w-10 h-10 rounded-lg object-cover"
+                            />
+                            <div>
+                              <p className="font-medium text-sm">{registration.petName}</p>
+                              <p className="text-xs text-muted-foreground">{registration.breed}</p>
+                            </div>
+                          </div>
+                          <Select 
+                            value={registration.status} 
+                            onValueChange={(value) => handleStatusChange(registration.id, value)}
+                          >
+                            <SelectTrigger className="w-32">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="입양 가능">입양 가능</SelectItem>
+                              <SelectItem value="입양 처리 중">입양 처리 중</SelectItem>
+                              <SelectItem value="입양 완료">입양 완료</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
             {/* 내가 쓴 글 */}
             <TabsContent value="posts">
               <Card>
@@ -366,44 +483,6 @@ const MyProfile = () => {
                             <Button variant="outline" size="sm">
                               <Heart className="h-4 w-4" />
                             </Button>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-
-            {/* 입양 완료 기록 */}
-            <TabsContent value="history">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <PawPrint className="h-5 w-5" />
-                    입양 완료 기록
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {adoptionHistory.map((adoption) => (
-                      <div key={adoption.id} className="border rounded-lg p-4">
-                        <div className="flex items-center space-x-4">
-                          <img
-                            src={adoption.image}
-                            alt={adoption.petName}
-                            className="w-16 h-16 rounded-lg object-cover"
-                          />
-                          <div>
-                            <h3 className="font-semibold text-foreground">{adoption.petName}</h3>
-                            <p className="text-sm text-muted-foreground">{adoption.breed}</p>
-                            <p className="text-sm text-muted-foreground">입양일: {adoption.adoptionDate}</p>
-                          </div>
-                          <div className="ml-auto">
-                            <Badge variant="secondary" className="bg-green-100 text-green-800">
-                              <CheckCircle className="w-3 h-3 mr-1" />
-                              입양완료
-                            </Badge>
                           </div>
                         </div>
                       </div>

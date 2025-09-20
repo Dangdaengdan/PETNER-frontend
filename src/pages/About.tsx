@@ -32,8 +32,8 @@ const About = () => {
       <section className="py-20 px-4 bg-gradient-to-b from-primary/5 to-background">
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-4xl md:text-6xl font-bold mb-6">
-            유기견에게 
-            <span className="text-primary block">새로운 가족을</span>
+            Pet + Partner = PET:NER 
+            <span className="text-2xl md:text-4xl text-primary block mt-4">단순한 펫을 넘어 인생의 파트너를 만나는 곳</span>
           </h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
            분류된 데이터를 활용해 반려동물과 가족의 생활 환경에 가장 잘 맞는 입양을 돕는 플랫폼입니다.

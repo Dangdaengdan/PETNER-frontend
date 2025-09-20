@@ -20,15 +20,15 @@ const HeroSection = () => {
       {/* Content */}
       <div className="relative z-10 mx-auto px-2 sm:px-4 lg:px-6 py-20">
         <div className="max-w-2xl">
-          <h1 className="text-6xl sm:text-7xl lg:text-8xl font-bold text-foreground mb-6 leading-tight">
+          <h1 className="text-7xl sm:text-8xl lg:text-9xl font-bold text-center mb-6 leading-tight">
             PET:NER
-            <span className="text-4xl sm:text-5xl lg:text-6xl text-primary font-handwritten block">
-              <br/>Find Your Forever Friend
+            <span className="text-4xl sm:text-5xl lg:text-6xl text-primary font-handwritten block mt-4">
+              Find Your Forever Friend
             </span>
           </h1>
           
-          <p className="text-lg sm:text-xl text-muted-foreground mb-8 leading-relaxed">
-            반려동물에게는 따뜻한 집이 필요하고, 우리에게는 함께할 친구가 필요합니다. 입양을 통해 서로의 빈자리를 채워보세요.
+          <p className="text-lg sm:text-xl text-center mb-8 leading-relaxed">
+            유기견들은 따뜻한 집이 필요하고, 우리는 함께할 친구가 필요합니다. <br/>입양을 통해 서로의 빈자리를 채워보세요.
           </p>
 
           {/* Search Bar */}

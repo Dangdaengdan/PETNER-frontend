@@ -6,7 +6,7 @@ const Footer = () => {
   return (
     <footer className="bg-foreground text-background">
       <div className="mx-auto px-2 sm:px-4 lg:px-6 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-4">
+        <div className="flex justify-between items-start">
           {/* Brand */}
           <div className="space-y-4">
             <div className="flex items-center space-x-2">
@@ -17,7 +17,7 @@ const Footer = () => {
             </div>
             <p className="text-background/80">
               Connecting loving hearts with pets in need. 
-              Every adoption creates a beautiful story of hope and love.
+              <br/>Every adoption creates a beautiful story of hope and love.
             </p>
             <div className="flex space-x-4">
               <Button variant="ghost" size="icon" className="text-background/80 hover:text-primary hover:bg-background/10">
@@ -32,21 +32,9 @@ const Footer = () => {
             </div>
           </div>
 
-          {/* Quick Links */}
-          <div className="space-y-4 text-right">
-            <h3 className="text-lg font-semibold text-background">Quick Links</h3>
-            <ul className="space-y-2">
-              <li><a href="#" className="text-background/80 hover:text-primary transition-smooth">Adopt a Pet</a></li>
-              <li><a href="#" className="text-background/80 hover:text-primary transition-smooth">Volunteer</a></li>
-              <li><a href="#" className="text-background/80 hover:text-primary transition-smooth">Donate</a></li>
-              <li><a href="#" className="text-background/80 hover:text-primary transition-smooth">Success Stories</a></li>
-              <li><a href="#" className="text-background/80 hover:text-primary transition-smooth">Pet Care Tips</a></li>
-            </ul>
-          </div>
-
           {/* Contact Info */}
           <div className="space-y-4 text-right">
-            <h3 className="text-lg font-semibold text-background">Contact</h3>
+            <h3 className="text-lg font-semibold text-background text-right">Contact</h3>
             <div className="space-y-3">
               <div className="flex items-center justify-end space-x-3">
                 <span className="text-background/80">(555) 123-PETS</span>

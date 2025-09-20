@@ -79,13 +79,6 @@ const PetCard = ({ id, name, breed, age, location, image, gender, size }: PetCar
                 Meet {name}
               </Link>
             </Button>
-            <Button 
-              variant="outline" 
-              size="icon"
-              className="border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-smooth"
-            >
-              <Heart className="h-4 w-4" />
-            </Button>
           </div>
         </div>
       </CardContent>
