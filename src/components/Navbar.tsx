@@ -4,14 +4,17 @@ import { Heart, Menu, Search, User } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Link } from "react-router-dom";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import LoginModal from "./LoginModal";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   return (
     <TooltipProvider>
       <nav className="bg-background/95 backdrop-blur-sm border-b border-border sticky top-0 z-50">
-        <div className="mx-auto px-2 sm:px-4 lg:px-6">
+        <div className="px-4 sm:px-6">
           <div className="flex justify-between items-center h-16">
             {/* Logo and Navigation */}
             <div className="flex items-center space-x-8">
@@ -69,24 +72,21 @@ const Navbar = () => {
 
           {/* Search and Actions */}
           <div className="hidden md:flex items-center space-x-4">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Search pets..."
-                className="pl-10 w-64 bg-background border-border"
-              />
-            </div>
             <Button variant="outline" asChild>
               <Link to="/profile">
                 <User className="h-5 w-5 mr-2" />
                 내 정보
               </Link>
             </Button>
-            <Button className="bg-primary hover:bg-primary/90 text-primary-foreground" asChild>
-              <Link to="/login">
-                로그인
-              </Link>
-            </Button>
+            {isLoggedIn ? (
+              <Button className="bg-primary hover:bg-primary/90 text-primary-foreground" onClick={() => setIsLoggedIn(false)}>
+                로그아웃
+              </Button>
+            ) : (
+              <Button className="bg-primary hover:bg-primary/90 text-primary-foreground" onClick={() => setIsLoginModalOpen(true)}>
+                로그인/회원가입
+              </Button>
+            )}
           </div>
 
           {/* Mobile menu button */}
@@ -130,16 +130,28 @@ const Navbar = () => {
                   내 정보
                 </Link>
               </Button>
-              <Button className="bg-primary hover:bg-primary/90 text-primary-foreground w-full" asChild>
-                <Link to="/login">
-                  로그인
-                </Link>
-              </Button>
+              {isLoggedIn ? (
+                <Button className="bg-primary hover:bg-primary/90 text-primary-foreground w-full" onClick={() => setIsLoggedIn(false)}>
+                  로그아웃
+                </Button>
+              ) : (
+                <Button className="bg-primary hover:bg-primary/90 text-primary-foreground w-full" onClick={() => setIsLoginModalOpen(true)}>
+                  로그인/회원가입
+                </Button>
+              )}
             </div>
           </div>
         )}
         </div>
       </nav>
+      <LoginModal 
+        isOpen={isLoginModalOpen} 
+        onClose={() => setIsLoginModalOpen(false)} 
+        onSuccess={() => {
+          setIsLoggedIn(true);
+          setIsLoginModalOpen(false);
+        }}
+      />
     </TooltipProvider>
   );
 };

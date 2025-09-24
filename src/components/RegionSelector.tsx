@@ -6,9 +6,10 @@ interface RegionSelectorProps {
   onRegionChange?: (province: string, city: string) => void;
   initialProvince?: string;
   initialCity?: string;
+  showSelectedBox?: boolean;
 }
 
-const RegionSelector = ({ onRegionChange, initialProvince, initialCity }: RegionSelectorProps) => {
+const RegionSelector = ({ onRegionChange, initialProvince, initialCity, showSelectedBox = true }: RegionSelectorProps) => {
   const [selectedProvince, setSelectedProvince] = useState(initialProvince || "");
   const [selectedCity, setSelectedCity] = useState(initialCity || "");
 
@@ -244,7 +245,7 @@ const RegionSelector = ({ onRegionChange, initialProvince, initialCity }: Region
         </Select>
       </div>
 
-      {selectedProvince && selectedCity && (
+      {showSelectedBox && selectedProvince && selectedCity && (
         <div className="p-3 bg-blue-50 rounded-md border border-blue-200">
           <p className="text-sm text-blue-800">
             <span className="font-medium">선택된 지역:</span> {selectedProvince} {selectedCity}

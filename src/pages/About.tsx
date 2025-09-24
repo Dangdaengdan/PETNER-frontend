@@ -28,20 +28,20 @@ const About = () => {
     <div className="min-h-screen bg-background">
       <Navbar />
       
-      {/* Hero Section */}
-      <section className="py-20 px-4 bg-gradient-to-b from-primary/5 to-background">
-        <div className="max-w-4xl mx-auto text-center">
+      {/* Hero Section - More prominent and separated */}
+      <section className="py-24 px-6 bg-gradient-to-b from-primary/10 to-background">
+        <div className="max-w-5xl mx-auto text-center">
           <h1 className="text-4xl md:text-6xl font-bold mb-6">
             Pet + Partner = PET:NER 
             <span className="text-2xl md:text-4xl text-primary block mt-4">단순한 펫을 넘어 인생의 파트너를 만나는 곳</span>
           </h1>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
            분류된 데이터를 활용해 반려동물과 가족의 생활 환경에 가장 잘 맞는 입양을 돕는 플랫폼입니다.
           </p>
         </div>
       </section>
 
-      <div className="max-w-6xl mx-auto px-4 py-16 space-y-20">
+      <div className="container py-16 space-y-20">
         
         {/* 서비스 소개 */}
         <section>
@@ -76,7 +76,7 @@ const About = () => {
                     <Badge variant="outline">책임감 있는 입양</Badge>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Badge variant="outline">맞춤형 입양으로 재유기 최소화</Badge>
+                    <Badge variant="outline">맞춤형 입양으로 재유기 소화</Badge>
                   </div>
                   <div className="flex items-center gap-2">
                     <Badge variant="outline">보호소 네트워크 연결</Badge>

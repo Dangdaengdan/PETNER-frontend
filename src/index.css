@@ -104,6 +104,23 @@ All colors MUST be HSL.
     @apply bg-background text-foreground;
   }
 
+  /* Unified page title size */
+  .page-title {
+    font-size: 1.875rem; /* text-3xl */
+    line-height: 2.25rem;
+    font-weight: 700;
+  }
+
+  /* Global container utility */
+  .container {
+    max-width: 1200px;
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
   /* Custom utilities for Petner */
   .gradient-warm {
     background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)));

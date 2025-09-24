@@ -5,21 +5,21 @@ import { Input } from "@/components/ui/input";
 const Footer = () => {
   return (
     <footer className="bg-foreground text-background">
-      <div className="mx-auto px-2 sm:px-4 lg:px-6 py-12">
-        <div className="flex justify-between items-start">
-          {/* Brand */}
-          <div className="space-y-4">
+      <div className="py-4">
+        {/* Single row: 3 chunks */}
+        <div className="grid grid-cols-1 md:grid-cols-3 items-end gap-6 px-4 sm:px-6">
+          {/* 1) Brand + connecting text + socials */}
+          <div className="flex-1 min-w-[220px] space-y-2 order-1">
             <div className="flex items-center space-x-2">
               <Heart className="h-8 w-8 text-primary fill-current" />
               <span className="text-2xl font-handwritten font-bold text-primary">
                 Petner
               </span>
             </div>
-            <p className="text-background/80">
-              Connecting loving hearts with pets in need. 
-              <br/>Every adoption creates a beautiful story of hope and love.
+            <p className="text-background/80 text-sm leading-relaxed">
+              Connecting loving hearts with pets in need. Every adoption creates a beautiful story of hope and love.
             </p>
-            <div className="flex space-x-4">
+            <div className="flex space-x-3">
               <Button variant="ghost" size="icon" className="text-background/80 hover:text-primary hover:bg-background/10">
                 <Facebook className="h-5 w-5" />
               </Button>
@@ -31,32 +31,31 @@ const Footer = () => {
               </Button>
             </div>
           </div>
+          {/* 2) Copyright centered */}
+          <div className="text-center self-end order-3 md:order-2">
+            <p className="text-background/60 text-sm whitespace-nowrap">© Dangdangdan. All rights reserved.</p>
+          </div>
 
-          {/* Contact Info */}
-          <div className="space-y-4 text-right">
-            <h3 className="text-lg font-semibold text-background text-right">Contact</h3>
-            <div className="space-y-3">
-              <div className="flex items-center justify-end space-x-3">
-                <span className="text-background/80">(555) 123-PETS</span>
-                <Phone className="h-4 w-4 text-primary" />
-              </div>
-              <div className="flex items-center justify-end space-x-3">
-                <span className="text-background/80">hello@petner.com</span>
-                <Mail className="h-4 w-4 text-primary" />
-              </div>
-              <div className="flex items-center justify-end space-x-3">
-                <span className="text-background/80 text-right">123 Adoption Lane<br />Pet City, PC 12345</span>
-                <MapPin className="h-4 w-4 text-primary" />
-              </div>
+          {/* 3) Contact */}
+          <div className="min-w-[220px] md:text-right space-y-1 self-end order-2 md:order-3">
+            <h3 className="text-lg font-semibold text-background">Contact</h3>
+            <div className="flex items-center md:justify-end justify-start gap-3">
+              <span className="text-background/80">(555) 123-PETS</span>
+              <Phone className="h-4 w-4 text-primary" />
+            </div>
+            <div className="flex items-center md:justify-end justify-start gap-3">
+              <span className="text-background/80">hello@petner.com</span>
+              <Mail className="h-4 w-4 text-primary" />
+            </div>
+            <div className="flex items-center md:justify-end justify-start gap-3">
+              <span className="text-background/80 text-right">123 Adoption Lane, Pet City, PC 12345</span>
+              <MapPin className="h-4 w-4 text-primary" />
             </div>
           </div>
         </div>
 
-        <div className="border-t border-background/20 mt-8 pt-8 text-center">
-          <p className="text-background/60">
-            © Dangdangdan. All rights reserved. Made with ❤️ for pets in need.
-          </p>
-        </div>
+        {/* Bottom spacing minimal */}
+        <div className="pt-2" />
       </div>
     </footer>
   );

@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { MessageCircle, X, ArrowLeft, Send, Phone, MoreVertical } from "lucide-react";
+import { useState, useEffect } from "react";
+import { MessageCircle, X, ArrowLeft, Send, Phone, MoreVertical, Maximize2, Minimize2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -7,11 +7,11 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 const mockChats = [
-  { 
-    id: 1, 
-    name: "김수진 담당자", 
-    lastMessage: "안녕하세요! Buddy에 대해 문의해주셔서 감사합니다.", 
-    time: "14:36", 
+  {
+    id: 1,
+    name: "김수진 담당자",
+    lastMessage: "안녕하세요! Buddy에 대해 문의해주셔서 감사합니다.",
+    time: "14:36",
     unread: 2,
     messages: [
       { id: 1, text: "안녕하세요! Buddy 입양에 관심을 가져주셔서 감사합니다.", sender: "other", time: "14:30" },
@@ -21,22 +21,22 @@ const mockChats = [
       { id: 5, text: "네, 언제든지 가능해요. 평일 오후나 주말 언제든 편하신 시간에 방문해주세요!", sender: "other", time: "14:36" }
     ]
   },
-  { 
-    id: 2, 
-    name: "박지민 담당자", 
-    lastMessage: "Whiskers 입양 관련해서 궁금한 점이 있으시면...", 
-    time: "13:25", 
+  {
+    id: 2,
+    name: "박지민 담당자",
+    lastMessage: "Whiskers 입양 관련해서 궁금한 점이 있으시면 언제든 말씀해주세요!",
+    time: "13:25",
     unread: 0,
     messages: [
       { id: 1, text: "Whiskers에 대해 문의드립니다.", sender: "me", time: "13:20" },
       { id: 2, text: "Whiskers 입양 관련해서 궁금한 점이 있으시면 언제든 말씀해주세요.", sender: "other", time: "13:25" },
     ]
   },
-  { 
-    id: 3, 
-    name: "이동현 담당자", 
-    lastMessage: "Charlie는 매우 활발한 성격이라...", 
-    time: "11:20", 
+  {
+    id: 3,
+    name: "이동현 담당자",
+    lastMessage: "Charlie는 매우 활발한 성격이라 충분한 운동이 필요해요.",
+    time: "11:20",
     unread: 1,
     messages: [
       { id: 1, text: "Charlie에 대해 알고 싶어요.", sender: "me", time: "11:15" },
@@ -47,16 +47,39 @@ const mockChats = [
 
 const ChatButton = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const [selectedChat, setSelectedChat] = useState<number | null>(null);
   const [newMessage, setNewMessage] = useState("");
 
+  // 모바일 감지
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   const handleChatClick = () => {
     setIsOpen(true);
+    // 모바일에서는 바로 전체화면으로
+    if (isMobile) {
+      setIsFullscreen(true);
+    }
   };
 
   const handleClose = () => {
     setIsOpen(false);
+    setIsFullscreen(false);
     setSelectedChat(null);
+  };
+
+  const handleFullscreen = () => {
+    setIsFullscreen(!isFullscreen);
   };
 
   const handleBackToList = () => {
@@ -98,27 +121,39 @@ const ChatButton = () => {
 
       {/* 카카오톡 스타일 채팅창 */}
       {isOpen && (
-        <div className="fixed bottom-6 right-6 z-50 animate-scale-in">
-          <Card className="w-80 h-[32rem] shadow-2xl border-0 overflow-hidden bg-card">
+        <div className={`${isFullscreen ? 'fixed inset-0 z-50' : 'fixed bottom-6 right-6 z-50'} animate-scale-in`}>
+          <Card className={`${isFullscreen ? 'w-full h-full' : 'w-80 h-[32rem]'} shadow-2xl border-0 overflow-hidden bg-card`}>
             {/* 채팅 목록 화면 */}
             {!selectedChat && (
               <>
                 {/* 헤더 */}
                 <div className="bg-primary text-primary-foreground p-4 flex items-center justify-between">
                   <h2 className="text-lg font-medium">채팅</h2>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={handleClose}
-                    className="h-8 w-8 p-0 text-primary-foreground hover:bg-primary-foreground/20"
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
+                  <div className="flex gap-1">
+                    {!isMobile && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={handleFullscreen}
+                        className="h-8 w-8 p-0 text-primary-foreground hover:bg-primary-foreground/20"
+                      >
+                        {isFullscreen ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
+                      </Button>
+                    )}
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={handleClose}
+                      className="h-8 w-8 p-0 text-primary-foreground hover:bg-primary-foreground/20"
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </div>
 
                 {/* 채팅 목록 */}
                 <div className="bg-card">
-                  <ScrollArea className="h-[26rem]">
+                  <ScrollArea className={isFullscreen ? "h-[calc(100vh-80px)]" : "h-[26rem]"}>
                     {mockChats.map((chat) => (
                       <div
                         key={chat.id}
@@ -135,16 +170,16 @@ const ChatButton = () => {
                             <h4 className="text-sm font-medium text-foreground truncate">
                               {chat.name}
                             </h4>
-                            <span className="text-xs text-muted-foreground">
+                            <span className="text-xs text-muted-foreground shrink-0">
                               {chat.time}
                             </span>
                           </div>
-                          <div className="flex items-center justify-between">
-                            <p className="text-xs text-muted-foreground truncate">
+                          <div className="flex items-center">
+                            <p className="text-xs text-muted-foreground truncate w-[180px]">
                               {chat.lastMessage}
                             </p>
                             {chat.unread > 0 && (
-                              <span className="bg-accent text-accent-foreground text-xs rounded-full px-2 py-1 min-w-[1.25rem] text-center">
+                              <span className="bg-accent text-accent-foreground text-xs rounded-full px-2 py-1 ml-auto shrink-0">
                                 {chat.unread}
                               </span>
                             )}
@@ -170,22 +205,20 @@ const ChatButton = () => {
                   >
                     <ArrowLeft className="h-4 w-4" />
                   </Button>
-                  <Avatar className="h-8 w-8">
-                    <AvatarFallback className="bg-primary/10 text-primary text-sm">
-                      {currentChat.name.charAt(0)}
-                    </AvatarFallback>
-                  </Avatar>
                   <div className="flex-1">
                     <h3 className="text-sm font-medium">{currentChat.name}</h3>
                   </div>
                   <div className="flex gap-1">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-8 w-8 p-0 text-primary-foreground hover:bg-primary-foreground/20"
-                    >
-                      <Phone className="h-4 w-4" />
-                    </Button>
+                    {!isMobile && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={handleFullscreen}
+                        className="h-8 w-8 p-0 text-primary-foreground hover:bg-primary-foreground/20"
+                      >
+                        {isFullscreen ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
+                      </Button>
+                    )}
                     <Button
                       variant="ghost"
                       size="sm"
@@ -198,7 +231,7 @@ const ChatButton = () => {
                 </div>
 
                 {/* 메시지 영역 */}
-                <div className="bg-muted flex flex-col h-[26rem]">
+                <div className={`bg-muted flex flex-col ${isFullscreen ? 'h-[calc(100vh-120px)]' : 'h-[26rem]'}`}>
                   <ScrollArea className="flex-1 p-3">
                     <div className="space-y-2">
                       {currentChat.messages.map((message) => (
@@ -208,17 +241,15 @@ const ChatButton = () => {
                         >
                           <div className="max-w-[75%]">
                             <div
-                              className={`rounded-2xl px-3 py-2 text-sm ${
-                                message.sender === "me"
-                                  ? "bg-primary text-primary-foreground ml-auto"
-                                  : "bg-card text-card-foreground"
-                              }`}
+                              className={`rounded-2xl px-3 py-2 text-sm ${message.sender === "me"
+                                ? "bg-primary text-primary-foreground ml-auto"
+                                : "bg-card text-card-foreground"
+                                }`}
                             >
                               <p className="break-words">{message.text}</p>
                             </div>
-                            <div className={`flex items-center gap-1 mt-1 ${
-                              message.sender === "me" ? "justify-end" : "justify-start"
-                            }`}>
+                            <div className={`flex items-center gap-1 mt-1 ${message.sender === "me" ? "justify-end" : "justify-start"
+                              }`}>
                               <span className="text-xs text-muted-foreground">
                                 {message.time}
                               </span>

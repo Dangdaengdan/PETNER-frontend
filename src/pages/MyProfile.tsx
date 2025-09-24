@@ -180,8 +180,8 @@ const MyProfile = () => {
       <main className="container mx-auto px-4 py-8">
         <div className="max-w-6xl mx-auto">
           {/* 헤더 */}
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold text-foreground mb-2">내 정보</h1>
+          <div className="mb-8 text-center">
+            <h1 className="page-title text-foreground mb-2">내 정보</h1>
             <p className="text-muted-foreground">프로필 정보를 관리하고 나의 반려동물 활동을 확인하세요</p>
           </div>
 

@@ -12,20 +12,20 @@ interface PetCardProps {
   age: string;
   location: string;
   image: string;
-  gender: "Male" | "Female";
-  size: "Small" | "Medium" | "Large";
+  gender: string;
+  size: string;
 }
 
 const PetCard = ({ id, name, breed, age, location, image, gender, size }: PetCardProps) => {
   const [isFavorited, setIsFavorited] = useState(false);
 
   return (
-    <Card className="group overflow-hidden transition-smooth hover:shadow-warm hover:-translate-y-1 bg-card border-border">
+    <Card className="group overflow-hidden transition-smooth bg-card border-border">
       <div className="relative overflow-hidden">
         <img
           src={image}
           alt={`${name} - ${breed}`}
-          className="w-full h-64 object-cover transition-smooth group-hover:scale-105"
+          className="w-full h-64 object-cover object-center transition-smooth group-hover:scale-105"
         />
         <button
           onClick={() => setIsFavorited(!isFavorited)}

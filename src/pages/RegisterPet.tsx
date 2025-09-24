@@ -85,27 +85,18 @@ const RegisterPet = () => {
     <div className="min-h-screen bg-background">
       <Navbar />
       
-      <main className="mx-auto px-2 sm:px-4 lg:px-6 py-2 max-w-4xl">
-        {/* Back Button */}
-        <Button 
-          variant="ghost" 
-          onClick={() => navigate('/')}
-          className="mb-4 text-muted-foreground hover:text-foreground"
-        >
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          돌아가기
-        </Button>
+      <main className="container py-4">
 
         {/* Header */}
         <div className="text-center mb-6">
-          <h1 className="text-3xl font-bold text-foreground mb-2">유기견 등록하기</h1>
+          <h1 className="page-title text-foreground mb-2">유기견 등록하기</h1>
           <p className="text-muted-foreground">
             새로운 가족을 찾을 수 있도록 반려동물 정보를 등록해주세요
           </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* Left Column - Photos and Basic Info */}
             <div className="space-y-6">
               {/* Photo Upload */}
@@ -147,7 +138,7 @@ const RegisterPet = () => {
                     />
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-2 gap-6">
                     <div>
                       <Label htmlFor="gender">성별 *</Label>
                       <Select onValueChange={(value) => handleInputChange("gender", value)}>
@@ -177,7 +168,7 @@ const RegisterPet = () => {
 
                   <div>
                     <Label htmlFor="dogSize">견종*</Label>
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-2 gap-6">
                       <div>
                         <Select value={formData.dogSize} onValueChange={(value) => handleDogBreedChange("dogSize", value)}>
                           <SelectTrigger>

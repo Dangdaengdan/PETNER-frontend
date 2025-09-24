@@ -1,15 +1,16 @@
-import PetCard from "./PetCard";
+import { useMemo, useState, useEffect } from "react";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
+import PetCard from "@/components/PetCard";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { useState } from "react";
-import RegionSelector from "./RegionSelector";
-type BRFilterState = { dogSize: string; dogBreed: string; location: string };
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { Search } from "lucide-react";
+import RegionSelector from "@/components/RegionSelector";
 
-// Import pet images
+// Images
 import dog1 from "@/assets/dog1.jpg";
 import dog2 from "@/assets/dog2.jpg";
 import dog3 from "@/assets/dog3.jpg";
@@ -17,76 +18,53 @@ import dog4 from "@/assets/dog4.jpg";
 import dog5 from "@/assets/dog5.jpg";
 import dog6 from "@/assets/dog6.jpg";
 
-const featuredPets = [
-  {
-    id: "1",
-    name: "똥깨",
-    breed: "골든 리트리버",
-    age: "2세",
-    location: "강릉시유기견보호소",
-    image: dog1,
-    gender: "수컷" as const,
-    size: "대형" as const,
-  },
-  {
-    id: "2",
-    name: "구름이",
-    breed: "비숑",
-    age: "3세",
-    location: "시립동물보호센터",
-    image: dog2,
-    gender: "암컷" as const,
-    size: "중형" as const,
-  },
-  {
-    id: "3",
-    name: "땅콩이",
-    breed: "말티즈",
-    age: "4세",
-    location: "서부구조센터",
-    image: dog3,
-    gender: "수컷" as const,
-    size: "소형" as const,
-  },
-  {
-    id: "4",
-    name: "뽀삐",
-    breed: "치와와",
-    age: "2세",
-    location: "해피포우즈 보호소",
-    image: dog4,
-    gender: "암컷" as const,
-    size: "소형" as const,
-  },
-  {
-    id: "5",
-    name: "산체",
-    breed: "장모치와와",
-    age: "5세",
-    location: "전원구조센터",
-    image: dog5,
-    gender: "수컷" as const,
-    size: "소형" as const,
-  },
-  {
-    id: "6",
-    name: "초코",
-    breed: "토이푸들",
-    age: "2세",
-    location: "메트로 동물보호소",
-    image: dog6,
-    gender: "수컷" as const,
-    size: "중형" as const,
-  },
+type Pet = {
+  id: string;
+  name: string;
+  breed: string;
+  age: string;
+  location: string;
+  image: string;
+  gender: "수컷" | "암컷";
+  size: "소형" | "중형" | "대형";
+};
+
+const allPets: Pet[] = [
+  { id: "1", name: "똥깨", breed: "골든 리트리버", age: "2세", location: "강릉시유기견보호소", image: dog1, gender: "수컷", size: "대형" },
+  { id: "2", name: "구름이", breed: "비숑", age: "3세", location: "시립동물보호센터", image: dog2, gender: "암컷", size: "중형" },
+  { id: "3", name: "땅콩이", breed: "말티즈", age: "4세", location: "서부구조센터", image: dog3, gender: "수컷", size: "소형" },
+  { id: "4", name: "뽀삐", breed: "치와와", age: "2세", location: "해피포우즈 보호소", image: dog4, gender: "암컷", size: "소형" },
+  { id: "5", name: "산체", breed: "장모치와와", age: "5세", location: "전원구조센터", image: dog5, gender: "수컷", size: "소형" },
+  { id: "6", name: "초코", breed: "토이푸들", age: "2세", location: "메트로 동물보호소", image: dog6, gender: "수컷", size: "중형" },
+  // duplicate to have 3 pages worth of items
+  { id: "7", name: "해피", breed: "치와와", age: "1세", location: "행복보호소", image: dog4, gender: "암컷", size: "소형" },
+  { id: "8", name: "모카", breed: "토이푸들", age: "3세", location: "위드시터", image: dog6, gender: "수컷", size: "중형" },
+  { id: "9", name: "보리", breed: "비숑", age: "2세", location: "서초보호소", image: dog2, gender: "암컷", size: "중형" },
+  { id: "10", name: "루비", breed: "말티즈", age: "2세", location: "강남보호소", image: dog3, gender: "암컷", size: "소형" },
+  { id: "11", name: "쿠키", breed: "골든 리트리버", age: "4세", location: "종합보호센터", image: dog1, gender: "수컷", size: "대형" },
+  { id: "12", name: "라떼", breed: "장모치와와", age: "5세", location: "하남보호소", image: dog5, gender: "수컷", size: "소형" },
+  { id: "13", name: "두부", breed: "비숑", age: "1세", location: "용인보호소", image: dog2, gender: "암컷", size: "중형" },
+  { id: "14", name: "제니", breed: "치와와", age: "2세", location: "분당보호소", image: dog4, gender: "암컷", size: "소형" },
+  { id: "15", name: "밤비", breed: "말티즈", age: "3세", location: "일산보호소", image: dog3, gender: "수컷", size: "소형" },
 ];
 
-const FeaturedPets = () => {
+const ITEMS_PER_PAGE = 6;
+
+const Pets = () => {
+  const [params] = useSearchParams();
   const navigate = useNavigate();
-  const [filters, setFilters] = useState<BRFilterState>({ dogSize: "", dogBreed: "", location: ""});
-  const [searchTerm, setSearchTerm] = useState("");
+  const currentPage = Math.max(1, Number(params.get("page") || 1));
+  const [query, setQuery] = useState<string>(params.get("q") || "");
+  
+  // Filter states (same as Home)
+  const [filters, setFilters] = useState({ dogSize: "", dogBreed: "", location: "" });
   const [regionProvince, setRegionProvince] = useState("");
   const [regionCity, setRegionCity] = useState("");
+  const [age, setAge] = useState("");
+  const [ageMonths, setAgeMonths] = useState("");
+  const [gender, setGender] = useState("");
 
+  // Dog breed data (same as Home)
   const dogBreedsBySize = {
     '소형견': [
       '토이 푸들', '말티즈', '요크셔테리어', '포메라니안', '치와와', '시츄',
@@ -111,32 +89,50 @@ const FeaturedPets = () => {
     ]
   } as const;
 
-  const handleFilterChange = (key: keyof BRFilterState, value: string) => {
+  const handleFilterChange = (key: keyof typeof filters, value: string) => {
     setFilters((prev) => {
       const next = { ...prev, [key]: value };
       if (key === 'dogSize') next.dogBreed = "";
       return next;
     });
   };
-  
-  // Add age and gender filters consistent with Register UI
-  const [age, setAge] = useState("");
-  const [ageMonths, setAgeMonths] = useState("");
-  const [gender, setGender] = useState("");
-  return (
-    <section className="py-16 bg-gradient-soft">
-      <div className="mx-auto px-2 sm:px-4 lg:px-6">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">
-            입양을 기다리는 친구들
-          </h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            사랑스러운 반려 친구들이 평생의 가족을 찾고 있어요.
-            모두가 특별한 성격과 따뜻한 마음을 가지고 있으며, 지금 새로운 시작을 함께할 주인을 기다립니다.
-          </p>
-        </div>
 
-        {/* Airbnb-like pill search bar with inline toggles */}
+  // keep URL in sync when query changes
+  useEffect(() => {
+    const q = query ? `&q=${encodeURIComponent(query)}` : "";
+    navigate(`/pets?page=${currentPage}${q}`, { replace: true });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [query]);
+
+  const filtered = useMemo(() => {
+    if (!query) return allPets;
+    const q = query.trim().toLowerCase();
+    return allPets.filter(p =>
+      p.name.toLowerCase().includes(q) ||
+      p.breed.toLowerCase().includes(q) ||
+      p.location.toLowerCase().includes(q)
+    );
+  }, [query]);
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / ITEMS_PER_PAGE));
+  const safePage = Math.min(currentPage, totalPages);
+
+  const pageItems = useMemo(() => {
+    const start = (safePage - 1) * ITEMS_PER_PAGE;
+    return filtered.slice(start, start + ITEMS_PER_PAGE);
+  }, [safePage, filtered]);
+
+  const goToPage = (page: number) => {
+    const q = query ? `&q=${encodeURIComponent(query)}` : "";
+    navigate(`/pets?page=${page}${q}`);
+  };
+
+  return (
+    <div className="min-h-screen bg-background">
+      <Navbar />
+
+      <main className="container py-6">
+        {/* Airbnb-like pill search bar (same as Home) */}
         <div className="mb-8">
           <div className="w-full max-w-5xl mx-auto rounded-full bg-background border border-border shadow-warm px-2 py-2">
             <div className="flex items-center">
@@ -145,8 +141,8 @@ const FeaturedPets = () => {
                 <div className="col-span-2 flex items-center h-12 px-4">
                   <Search className="h-5 w-5 text-muted-foreground mr-3" />
                   <Input
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
                     placeholder="이름, 특징 등 검색"
                     className="h-10 bg-transparent border-0 focus-visible:ring-0 px-0"
                   />
@@ -286,34 +282,55 @@ const FeaturedPets = () => {
               </div>
               <button
                 className="ml-2 h-12 w-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center hover:bg-primary/90 transition-smooth"
-                onClick={() => navigate(searchTerm ? `/pets?q=${encodeURIComponent(searchTerm)}` : "/pets")}
+                onClick={() => {
+                  // Apply filters and search
+                  console.log("Search with filters:", { query, filters, age, ageMonths, gender });
+                }}
               >
                 <Search className="h-5 w-5" />
               </button>
             </div>
           </div>
         </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-          {featuredPets.map((pet) => (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+          {pageItems.map((pet) => (
             <PetCard key={pet.id} {...pet} />
           ))}
         </div>
 
-        <div className="text-center">
+        <div className="flex items-center justify-center gap-2">
           <Button
-            size="lg"
-            className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-warm transition-smooth"
-            onClick={() => navigate("/pets")}
+            variant="outline"
+            onClick={() => goToPage(Math.max(1, safePage - 1))}
+            disabled={safePage <= 1}
           >
-            더 많은 친구들 보기
-            <ArrowRight className="ml-2 h-5 w-5" />
+            {"<"}
+          </Button>
+          {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+            <Button
+              key={page}
+              variant={page === safePage ? "default" : "outline"}
+              onClick={() => goToPage(page)}
+              className={page === safePage ? "bg-primary text-primary-foreground" : ""}
+            >
+              {page}
+            </Button>
+          ))}
+          <Button
+            variant="outline"
+            onClick={() => goToPage(Math.min(totalPages, safePage + 1))}
+            disabled={safePage >= totalPages}
+          >
+            {">"}
           </Button>
         </div>
-      </div>
-      {/* Inline toggles replace modal; no modal component needed */}
-    </section>
+      </main>
+
+      <Footer />
+    </div>
   );
 };
 
-export default FeaturedPets;
+export default Pets;
+
+

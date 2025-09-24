@@ -1,5 +1,5 @@
 import { useParams, Link } from "react-router-dom";
-import { Heart, MessageSquare, Calendar, ChevronLeft, User } from "lucide-react";
+import { Heart, MessageSquare, Calendar, ChevronLeft, Eye } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -67,6 +67,7 @@ const commentsData = [
 const PostDetail = () => {
   const { id } = useParams();
   const post = postsData.find(p => p.id === parseInt(id || '1'));
+  const views = 200 + (post?.id || 1) * 17; // demo view count
 
   if (!post) {
     return <div>게시글을 찾을 수 없습니다.</div>;
@@ -115,6 +116,10 @@ const PostDetail = () => {
                 <div className="flex items-center gap-1">
                   <MessageSquare className="h-4 w-4" />
                   <span>{post.comments}</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <Eye className="h-4 w-4" />
+                  <span>조회 {views}</span>
                 </div>
               </div>
             </div>
