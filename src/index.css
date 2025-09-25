@@ -9,23 +9,23 @@ All colors MUST be HSL.
 @layer base {
   :root {
     /* Petner Brand Colors */
-    --background: 35 100% 97%; /* Ivory #FFF8F0 */
-    --foreground: 0 0% 20%; /* Dark gray #333333 */
+    --background: 40 42% 92%; /* #F4EFE4 */
+    --foreground: 25 35% 20%; /* #453021 */
 
     --card: 35 100% 97%;
-    --card-foreground: 0 0% 20%;
+    --card-foreground: 25 35% 20%;
 
     --popover: 35 100% 97%;
-    --popover-foreground: 0 0% 20%;
+    --popover-foreground: 25 35% 20%;
 
-    --primary: 24 100% 65%; /* Warm orange #FF914D */
+    --primary: 34 41% 36%; /* #826136 */
     --primary-foreground: 35 100% 97%;
 
     --secondary: 35 100% 86%; /* Soft peach #FFE5B4 */
-    --secondary-foreground: 0 0% 20%;
+    --secondary-foreground: 25 35% 20%;
 
     --muted: 35 100% 90%;
-    --muted-foreground: 0 0% 45%;
+    --muted-foreground: 25 20% 30%; /* toned #453021 for subdued text */
 
     --accent: 6 100% 69%; /* Coral red #FF6F61 */
     --accent-foreground: 35 100% 97%;
@@ -66,7 +66,7 @@ All colors MUST be HSL.
     --popover: 35 20% 10%;
     --popover-foreground: 35 100% 97%;
 
-    --primary: 24 100% 65%;
+    --primary: 34 41% 36%;
     --primary-foreground: 35 20% 8%;
 
     --secondary: 35 30% 15%;
@@ -104,23 +104,6 @@ All colors MUST be HSL.
     @apply bg-background text-foreground;
   }
 
-  /* Unified page title size */
-  .page-title {
-    font-size: 1.875rem; /* text-3xl */
-    line-height: 2.25rem;
-    font-weight: 700;
-  }
-
-  /* Global container utility */
-  .container {
-    max-width: 1200px;
-    width: 100%;
-    margin-left: auto;
-    margin-right: auto;
-    padding-left: 20px;
-    padding-right: 20px;
-  }
-
   /* Custom utilities for Petner */
   .gradient-warm {
     background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)));
@@ -134,7 +117,41 @@ All colors MUST be HSL.
     box-shadow: 0 10px 30px -10px hsl(var(--primary) / 0.2);
   }
 
+  /* Pet card: constant shadow (color must remain #A29770) */
+  .shadow-petcard {
+    /* Keep a warm subtle shadow; do NOT animate box-shadow */
+    box-shadow: 0px 6px 12px rgba(162, 151, 112, 0.5);
+  }
+  
+
   .transition-smooth {
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Navbar active/inactive styles using aria-current (NavLink) */
+  .navbar a.navitem {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 64px; /* h-16 */
+    width: 120px; /* fixed width instead of min-width for consistency */
+    padding-left: 16px;
+    padding-right: 16px;
+    background: #F4EFE4;
+    color: #453021;
+    border-radius: 0; /* square corners */
+    text-decoration: none;
+  }
+  .navbar a.navitem:hover { background: rgba(69,48,33,0.06); }
+  .navbar a.navitem[aria-current="page"] {
+    background: #453021 !important; /* inverted background */
+    color: #F4EFE4 !important;      /* inverted text */
+    padding-left: 32px !important;
+    padding-right: 32px !important;
+  }
+
+  /* Fade helper: transparent to page background */
+  .fade-to-background {
+    background: linear-gradient(to bottom, rgba(0,0,0,0) 0%, hsl(var(--background)) 75%);
   }
 }

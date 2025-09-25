@@ -3,11 +3,12 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import PetCard from "@/components/PetCard";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { Search } from "lucide-react";
+import { Search, MapPin, Calendar } from "lucide-react";
 import RegionSelector from "@/components/RegionSelector";
 
 // Images
@@ -292,9 +293,34 @@ const Pets = () => {
             </div>
           </div>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+        <div className="space-y-8 md:space-y-10 mb-12 overflow-visible">
           {pageItems.map((pet) => (
-            <PetCard key={pet.id} {...pet} />
+            <div key={pet.id} className="border rounded-lg p-4 flex gap-4 items-center transition-smooth shadow-petcard m-2.5 overflow-visible">
+              <img src={pet.image} alt={pet.name} className="w-28 h-28 rounded-md object-cover flex-shrink-0" />
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-lg font-semibold text-foreground truncate">{pet.name}</h3>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <Badge variant="secondary" className="bg-background/90 text-foreground">{pet.gender}</Badge>
+                    <Badge variant="secondary" className="bg-background/90 text-foreground">{pet.size}</Badge>
+                  </div>
+                </div>
+                <div className="mt-1 flex items-center gap-4 text-sm text-muted-foreground">
+                  <div className="flex items-center gap-1">
+                    <Calendar className="h-4 w-4" />
+                    <span>{pet.age}</span>
+                  </div>
+                  <div className="flex items-center gap-1 min-w-0">
+                    <MapPin className="h-4 w-4" />
+                    <span className="truncate">{pet.location}</span>
+                  </div>
+                  <span className="truncate">{pet.breed}</span>
+                </div>
+              </div>
+              <Button asChild className="shrink-0">
+                <a href={`/pet/${pet.id}`}>자세히</a>
+              </Button>
+            </div>
           ))}
         </div>
 

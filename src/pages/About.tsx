@@ -13,10 +13,10 @@ const About = () => {
   ];
 
   const team = [
-    { name: "이선민", role: "팀장", description: "동물보호 활동 10년 경력" },
-    { name: "임채현", role: "개발팀장", description: "펫테크 전문 개발자" },
-    { name: "남서현", role: "디자이너", description: "UX/UI 디자인 전문가" },
-    { name: "배수하", role: "보호소 매니저", description: "전국 보호소 네트워크 관리" }
+    { name: "이선민", role: "팀장", description: "Backend" },
+    { name: "임채현", role: "팀원", description: "Backend" },
+    { name: "남서현", role: "디자이너", description: "Backend & Frontend" },
+    { name: "배수하", role: "보호소 매니저", description: "UI/UX & Frontend" }
   ];
 
   const partners = [

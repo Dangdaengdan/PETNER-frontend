@@ -10,12 +10,7 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 items-end gap-6 px-4 sm:px-6">
           {/* 1) Brand + connecting text + socials */}
           <div className="flex-1 min-w-[220px] space-y-2 order-1">
-            <div className="flex items-center space-x-2">
-              <Heart className="h-8 w-8 text-primary fill-current" />
-              <span className="text-2xl font-handwritten font-bold text-primary">
-                Petner
-              </span>
-            </div>
+            
             <p className="text-background/80 text-sm leading-relaxed">
               Connecting loving hearts with pets in need. Every adoption creates a beautiful story of hope and love.
             </p>

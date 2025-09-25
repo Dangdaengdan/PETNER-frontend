@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Heart, Menu, Search, User } from "lucide-react";
+import { Menu, Search, User } from "lucide-react";
+import logo from "@/assets/petner-logo.png";
 import { Input } from "@/components/ui/input";
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import LoginModal from "./LoginModal";
 
@@ -13,35 +14,32 @@ const Navbar = () => {
 
   return (
     <TooltipProvider>
-      <nav className="bg-background/95 backdrop-blur-sm border-b border-border sticky top-0 z-50">
+      <nav className="navbar bg-[#F4EFE4] backdrop-blur-sm border-b border-border sticky top-0 z-50">
         <div className="px-4 sm:px-6">
           <div className="flex justify-between items-center h-16">
             {/* Logo and Navigation */}
             <div className="flex items-center space-x-8">
-              <div className="flex items-center space-x-2">
-                <Heart className="h-8 w-8 text-primary fill-current" />
-                <span className="text-2xl font-handwritten font-bold text-primary">
-                  Petner
-                </span>
-              </div>
+              <Link to="/" className="flex items-center space-x-2">
+                <img src={logo} alt="Petner" className="h-8 w-auto" />
+              </Link>
               
               {/* Desktop Navigation */}
-              <div className="hidden md:flex items-center space-x-8">
+              <div className="hidden md:flex items-center space-x-2">
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <Link to="/" className="text-foreground hover:text-primary transition-smooth">
+                    <NavLink to="/" end className="navitem">
                       Home
-                    </Link>
+                    </NavLink>
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p>home</p>
+                    <p>홈</p>
                   </TooltipContent>
                 </Tooltip>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <Link to="/register" className="text-foreground hover:text-primary transition-smooth">
+                    <NavLink to="/register" end className="navitem">
                       Register
-                    </Link>
+                    </NavLink>
                   </TooltipTrigger>
                   <TooltipContent>
                     <p>유기견 등록하기</p>
@@ -49,9 +47,9 @@ const Navbar = () => {
                 </Tooltip>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <Link to="/community" className="text-foreground hover:text-primary transition-smooth">
+                    <NavLink to="/community" end className="navitem">
                       Community
-                    </Link>
+                    </NavLink>
                   </TooltipTrigger>
                   <TooltipContent>
                     <p>게시판</p>
@@ -59,9 +57,9 @@ const Navbar = () => {
                 </Tooltip>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <Link to="/about" className="text-foreground hover:text-primary transition-smooth">
+                    <NavLink to="/about" end className="navitem">
                       About
-                    </Link>
+                    </NavLink>
                   </TooltipTrigger>
                   <TooltipContent>
                     <p>소개</p>
@@ -112,18 +110,18 @@ const Navbar = () => {
                   className="pl-10 bg-background border-border"
                 />
               </div>
-              <Link to="/" className="text-foreground hover:text-primary transition-smooth py-2">
+              <NavLink to="/" end className={({isActive}) => `py-2 px-2 rounded-md transition-smooth ${isActive ? 'bg-[#895842] text-[#F4EFE4]' : 'text-foreground hover:bg-foreground/10'}`}>
                 Home
-              </Link>
-              <Link to="/register" className="text-foreground hover:text-primary transition-smooth py-2">
+              </NavLink>
+              <NavLink to="/register" end className={({isActive}) => `py-2 px-2 rounded-md transition-smooth ${isActive ? 'bg-[#895842] text-[#F4EFE4]' : 'text-foreground hover:bg-foreground/10'}`}>
                 Register
-              </Link>
-              <Link to="/community" className="text-foreground hover:text-primary transition-smooth py-2">
+              </NavLink>
+              <NavLink to="/community" end className={({isActive}) => `py-2 px-2 rounded-md transition-smooth ${isActive ? 'bg-[#895842] text-[#F4EFE4]' : 'text-foreground hover:bg-foreground/10'}`}>
                 Community
-              </Link>
-              <Link to="/about" className="text-foreground hover:text-primary transition-smooth py-2">
+              </NavLink>
+              <NavLink to="/about" end className={({isActive}) => `py-2 px-2 rounded-md transition-smooth ${isActive ? 'bg-[#895842] text-[#F4EFE4]' : 'text-foreground hover:bg-foreground/10'}`}>
                 About
-              </Link>
+              </NavLink>
               <Button variant="outline" className="w-full" asChild>
                 <Link to="/profile">
                   <User className="h-5 w-5 mr-2" />

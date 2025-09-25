@@ -20,22 +20,22 @@ const PetCard = ({ id, name, breed, age, location, image, gender, size }: PetCar
   const [isFavorited, setIsFavorited] = useState(false);
 
   return (
-    <Card className="group overflow-hidden transition-smooth bg-card border-border">
+    <Card className="group overflow-hidden bg-card border-border rounded-3xl shadow-warm m-5">
       <div className="relative overflow-hidden">
         <img
           src={image}
           alt={`${name} - ${breed}`}
-          className="w-full h-64 object-cover object-center transition-smooth group-hover:scale-105"
+          className="w-full h-64 object-cover object-center"
         />
         <button
           onClick={() => setIsFavorited(!isFavorited)}
-          className="absolute top-3 right-3 p-2 rounded-full bg-background/80 backdrop-blur-sm transition-smooth hover:bg-background"
+          className="absolute top-3 right-3 p-2 rounded-full bg-background/80 backdrop-blur-sm"
         >
           <Heart
-            className={`h-4 w-4 transition-smooth ${
+            className={`h-4 w-4 ${
               isFavorited 
                 ? "text-accent fill-current" 
-                : "text-muted-foreground hover:text-accent"
+                : "text-muted-foreground"
             }`}
           />
         </button>
@@ -53,7 +53,7 @@ const PetCard = ({ id, name, breed, age, location, image, gender, size }: PetCar
       <CardContent className="p-4">
         <div className="space-y-3">
           <div>
-            <h3 className="text-xl font-semibold text-foreground group-hover:text-primary transition-smooth">
+            <h3 className="text-xl font-semibold text-foreground">
               {name}
             </h3>
             <p className="text-muted-foreground">{breed}</p>
@@ -73,7 +73,7 @@ const PetCard = ({ id, name, breed, age, location, image, gender, size }: PetCar
           <div className="flex gap-2 pt-2">
             <Button 
               asChild
-              className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground transition-smooth"
+              className="flex-1 bg-primary text-primary-foreground rounded-full"
             >
               <Link to={`/pet/${id}`}>
                 Meet {name}

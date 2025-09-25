@@ -112,7 +112,7 @@ const ChatButton = () => {
         <Button
           onClick={handleChatClick}
           size="lg"
-          className="fixed bottom-6 right-6 z-50 w-16 h-16 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 animate-fade-in"
+          className="fixed bottom-10 right-10 z-5 w-16 h-16 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 animate-fade-in"
         >
           <MessageCircle className="h-8 w-8" />
           <span className="sr-only">채팅하기</span>
@@ -209,16 +209,14 @@ const ChatButton = () => {
                     <h3 className="text-sm font-medium">{currentChat.name}</h3>
                   </div>
                   <div className="flex gap-1">
-                    {!isMobile && (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={handleFullscreen}
-                        className="h-8 w-8 p-0 text-primary-foreground hover:bg-primary-foreground/20"
-                      >
-                        {isFullscreen ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
-                      </Button>
-                    )}
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={handleFullscreen}
+                      className="h-8 w-8 p-0 text-primary-foreground hover:bg-primary-foreground/20"
+                    >
+                      {isFullscreen ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
+                    </Button>
                     <Button
                       variant="ghost"
                       size="sm"

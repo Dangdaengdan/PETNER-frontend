@@ -1,4 +1,4 @@
-import heroImage from "@/assets/hero-pets.jpg";
+import heroImage from "@/assets/hero.png";
 import { } from "react";
 
 const HeroSection = () => {
@@ -11,28 +11,27 @@ const HeroSection = () => {
             alt="Happy pets waiting for adoption"
             className="w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-background/90 via-background/70 to-background/50" />
         </div>
 
         {/* Content inside container (has horizontal padding) */}
         <div className="relative z-10 py-24 container">
-          <div className="max-w-2xl mx-auto text-center">
-          <h1 className="text-8xl sm:text-9xl lg:text-[10rem] font-bold text-center mb-8 leading-tight">
+          <div className="max-w-2xl">
+          <h1 className="text-9xl sm:text-10xl lg:text-11xl font-bold text-left mb-4">
             PET:NER
-            <span className="text-5xl sm:text-6xl lg:text-7xl text-primary font-handwritten block mt-8">
-              Find Your Forever Friend
+            <span className="text-3xl sm:text-4xl lg:text-5xl text-primary block mt-2">
+            Find Your Forever Friend
             </span>
           </h1>
           
-          <p className="text-lg sm:text-xl text-center mb-8 leading-relaxed">
-            유기견들은 따뜻한 집이 필요하고, 우리는 함께할 친구가 필요합니다. <br/>입양을 통해 서로의 빈자리를 채워보세요.
+          <p className="text-lg sm:text-xl text-foreground mb-8 leading-relaxed">
+          유기견들은 따뜻한 집이 필요하고, 우리는 함께할 친구가 필요합니다. <br/>pet:ner와 함께 서로의 빈자리를 채워보세요.
           </p>
 
           {/* Search UI moved below to FeaturedPets section */}
 
 
           {/* Stats */}
-          <div className="mt-12 grid grid-cols-3 gap-4 sm:gap-8 max-w-xl mx-auto place-items-center text-center">
+          <div className="mt-12 grid grid-cols-3 gap-4 sm:gap-8 max-w-xl mx-auto place-items-left text-foreground">
             <div className="text-center">
               <div className="text-2xl sm:text-3xl font-bold text-primary">500+</div>
               <div className="text-sm text-muted-foreground">입양된 반려동물</div>
@@ -48,6 +47,8 @@ const HeroSection = () => {
           </div>
           </div>
         </div>
+        {/* Soft fade at the bottom to blend with page background */}
+        <div className="absolute bottom-0 left-0 right-0 h-16 fade-to-background pointer-events-none" />
     </section>
   );
 };
