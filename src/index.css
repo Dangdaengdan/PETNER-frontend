@@ -152,6 +152,21 @@ All colors MUST be HSL.
 
   /* Fade helper: transparent to page background */
   .fade-to-background {
-    background: linear-gradient(to bottom, rgba(0,0,0,0) 0%, hsl(var(--background)) 75%);
+    background: linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 50%, hsl(var(--background)) 100%);
+  }
+
+  /* Section heading style */
+  h2.section-heading {
+    font-size: 2.25rem; /* text-4xl */
+    font-weight: 700; /* font-bold */
+    color: hsl(var(--foreground)); /* text-foreground */
+    margin-bottom: 1rem; /* mb-4 */
+    text-align: center;
+  }
+  
+  @media (min-width: 640px) {
+    h2.section-heading {
+      font-size: 3rem; /* sm:text-5xl */
+    }
   }
 }

@@ -132,9 +132,9 @@ const Pets = () => {
     <div className="min-h-screen bg-background">
       <Navbar />
 
-      <main className="container py-6">
+      <main className="mx-auto px-8 sm:px-16 md:px-24 lg:px-48 py-8">
         {/* Airbnb-like pill search bar (same as Home) */}
-        <div className="mb-8">
+        <div className="mb-10 md:mb-12">
           <div className="w-full max-w-5xl mx-auto rounded-full bg-background border border-border shadow-warm px-2 py-2">
             <div className="flex items-center">
               <div className="grid grid-cols-6 gap-0 flex-1 px-3 py-2">
@@ -293,7 +293,7 @@ const Pets = () => {
             </div>
           </div>
         </div>
-        <div className="space-y-8 md:space-y-10 mb-12 overflow-visible">
+        <div className="space-y-10 md:space-y-12 mb-16 overflow-visible">
           {pageItems.map((pet) => (
             <div key={pet.id} className="border rounded-lg p-4 flex gap-4 items-center transition-smooth shadow-petcard m-2.5 overflow-visible">
               <img src={pet.image} alt={pet.name} className="w-28 h-28 rounded-md object-cover flex-shrink-0" />
@@ -324,7 +324,7 @@ const Pets = () => {
           ))}
         </div>
 
-        <div className="flex items-center justify-center gap-2">
+        <div className="flex items-center justify-center gap-2 mt-4">
           <Button
             variant="outline"
             onClick={() => goToPage(Math.max(1, safePage - 1))}

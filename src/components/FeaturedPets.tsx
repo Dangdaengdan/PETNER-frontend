@@ -125,9 +125,9 @@ const FeaturedPets = () => {
   const [gender, setGender] = useState("");
   return (
     <section className="py-16 bg-gradient-soft">
-      <div className="mx-auto px-2 sm:px-4 lg:px-6">
+      <div className="mx-auto px-8 sm:px-16 md:px-24 lg:px-48">
         <div className="text-center mb-12">
-          <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">
+          <h2 className="section-heading">
             입양을 기다리는 친구들
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
@@ -138,7 +138,7 @@ const FeaturedPets = () => {
 
         {/* Airbnb-like pill search bar with inline toggles */}
         <div className="mb-12">
-          <div className="w-full max-w-5xl mx-auto rounded-full bg-background border border-border shadow-warm px-2 py-2">
+          <div className="w-full max-w-3xl mx-auto rounded-full bg-background border border-border shadow-warm px-2 py-2">
             <div className="flex items-center">
               <div className="grid grid-cols-6 gap-0 flex-1 px-3 py-2">
                 {/* Search (col-span-2) */}
@@ -294,7 +294,7 @@ const FeaturedPets = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mb-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 md:gap-14 mb-16">
           {featuredPets.map((pet) => (
             <div key={pet.id} className="p-0">
               <PetCard {...pet} />
@@ -305,11 +305,12 @@ const FeaturedPets = () => {
         <div className="text-center">
           <Button
             size="lg"
-            className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-warm transition-smooth rounded-3xl"
+            className="bg-primary hover:bg-[#453021] text-primary-foreground shadow-warm transition-smooth rounded-3xl text-lg px-8 py-4 h-auto group"
             onClick={() => navigate("/pets")}
           >
             더 많은 친구들 보기
-            <ArrowRight className="ml-2 h-5 w-5" />
+            <span className="ml-2 group-hover:hidden">→</span>
+            <span className="ml-2 hidden group-hover:inline">🐾🐾</span>
           </Button>
         </div>
       </div>

@@ -84,7 +84,7 @@ const PhoneNumberInput = ({
             maxLength={4}
             className={`w-20 text-center transition-colors ${
               firstPart && firstPart.length !== 4 
-                ? 'border-red-500 focus:border-red-500 focus:ring-red-500' 
+                ? 'border-[#A64F1C] focus:border-[#A64F1C] focus:ring-[#A64F1C]' 
                 : 'border-gray-300 focus:border-blue-500 focus:ring-blue-500'
             }`}
           />
@@ -99,7 +99,7 @@ const PhoneNumberInput = ({
             maxLength={4}
             className={`w-20 text-center transition-colors ${
               secondPart && secondPart.length !== 4 
-                ? 'border-red-500 focus:border-red-500 focus:ring-red-500' 
+                ? 'border-[#A64F1C] focus:border-[#A64F1C] focus:ring-[#A64F1C]' 
                 : 'border-gray-300 focus:border-blue-500 focus:ring-blue-500'
             }`}
           />
@@ -107,7 +107,7 @@ const PhoneNumberInput = ({
       </div>
       
       {firstPart && secondPart && !isValid && (
-        <p className="text-sm text-red-500">
+        <p className="text-sm text-[#A64F1C]">
           각각 4자리씩 입력해주세요
         </p>
       )}

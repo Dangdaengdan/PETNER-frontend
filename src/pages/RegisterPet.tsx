@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft, Upload, MapPin, Heart, User } from "lucide-react";
+import { ArrowLeft, Upload, MapPin, Heart, User, FileText } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -85,64 +85,56 @@ const RegisterPet = () => {
     <div className="min-h-screen bg-background">
       <Navbar />
       
-      <main className="container py-4">
-
+      <main className="mx-auto px-8 sm:px-16 md:px-24 lg:px-48 py-8">
         {/* Header */}
-        <div className="text-center mb-6">
-          <h1 className="page-title text-foreground mb-2">유기견 등록하기</h1>
-          <p className="text-muted-foreground">
-            새로운 가족을 찾을 수 있도록 반려동물 정보를 등록해주세요
-          </p>
+        <div className="mb-12 md:mb-16 text-center">
+          <h2 className="section-heading">유기견 등록하기</h2>
+          <p className="text-lg text-muted-foreground">유기견이 새로운 가족을 찾을 수 있도록 유기견 정보를 입력해주세요.</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {/* Left Column - Photos and Basic Info */}
-            <div className="space-y-6">
+        {/* Registration Form - Big Box Container */}
+        <Card className="shadow-lg rounded-3xl">
+          <CardContent className="p-8">
+            <form onSubmit={handleSubmit} className="space-y-12">
               {/* Photo Upload */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Upload className="h-5 w-5" />
-                    사진 등록
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="border-2 border-dashed border-border rounded-lg p-8 text-center hover:border-primary transition-smooth cursor-pointer">
-                    <Upload className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                    <p className="text-muted-foreground mb-2">클릭하여 사진을 업로드하세요</p>
-                    <p className="text-xs text-muted-foreground">
+              <div className="border border-border rounded-2xl p-10">
+                <h3 className="text-xl font-semibold mb-6 flex items-center gap-2">
+                  <Upload className="h-5 w-5" />
+                  사진 등록
+                </h3>
+                <div className="border-2 border-dashed border-border rounded-2xl p-10 text-center hover:border-primary transition-smooth cursor-pointer">
+                  <Upload className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                    <p className="text-base text-muted-foreground mb-2">클릭하여 사진을 업로드하세요</p>
+                    <p className="text-sm text-muted-foreground">
                       최대 5장까지 업로드 가능 (JPG, PNG)
                     </p>
-                  </div>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
 
               {/* Basic Information */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Heart className="h-5 w-5" />
-                    기본 정보
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
+              <div className="border border-border rounded-2xl p-10">
+                <h3 className="text-xl font-semibold mb-6 flex items-center gap-2">
+                  <Heart className="h-5 w-5" />
+                  기본 정보
+                </h3>
+                <div className="space-y-6">
                   <div>
-                    <Label htmlFor="name">이름 *</Label>
+                    <Label htmlFor="name" className="text-base font-medium mb-3 block">이름 *</Label>
                     <Input
                       id="name"
                       placeholder="반려동물의 이름을 입력하세요"
                       value={formData.name}
                       onChange={(e) => handleInputChange("name", e.target.value)}
                       required
+                      className="rounded-xl"
                     />
                   </div>
 
-                  <div className="grid grid-cols-2 gap-6">
+                  <div className="grid grid-cols-2 gap-8">
                     <div>
-                      <Label htmlFor="gender">성별 *</Label>
+                      <Label htmlFor="gender" className="text-base font-medium mb-3 block">성별 *</Label>
                       <Select onValueChange={(value) => handleInputChange("gender", value)}>
-                        <SelectTrigger>
+                        <SelectTrigger className="rounded-xl">
                           <SelectValue placeholder="성별 선택" />
                         </SelectTrigger>
                         <SelectContent>
@@ -152,7 +144,7 @@ const RegisterPet = () => {
                       </Select>
                     </div>
                     <div>
-                      <Label htmlFor="weight">무게 (kg) *</Label>
+                      <Label htmlFor="weight" className="text-base font-medium mb-3 block">무게 (kg) *</Label>
                       <Input
                         id="weight"
                         type="number"
@@ -162,16 +154,17 @@ const RegisterPet = () => {
                         value={formData.weight}
                         onChange={(e) => handleInputChange("weight", e.target.value)}
                         required
+                        className="rounded-xl"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <Label htmlFor="dogSize">견종*</Label>
-                    <div className="grid grid-cols-2 gap-6">
+                    <Label htmlFor="dogSize" className="text-base font-medium mb-3 block">견종*</Label>
+                    <div className="grid grid-cols-2 gap-8">
                       <div>
                         <Select value={formData.dogSize} onValueChange={(value) => handleDogBreedChange("dogSize", value)}>
-                          <SelectTrigger>
+                          <SelectTrigger className="rounded-xl">
                             <SelectValue placeholder="크기 선택" />
                           </SelectTrigger>
                           <SelectContent>
@@ -187,7 +180,7 @@ const RegisterPet = () => {
                           onValueChange={(value) => handleDogBreedChange("dogBreed", value)}
                           disabled={!formData.dogSize}
                         >
-                          <SelectTrigger>
+                          <SelectTrigger className="rounded-xl">
                             <SelectValue placeholder={formData.dogSize ? "견종 선택" : "먼저 크기를 선택하세요"} />
                           </SelectTrigger>
                           <SelectContent>
@@ -203,8 +196,8 @@ const RegisterPet = () => {
                   </div>
 
                   <div>
-                    <Label htmlFor="age">나이 * (추정되는 나이를 적어주세요)</Label>
-                    <div className="grid grid-cols-2 gap-4">
+                    <Label htmlFor="age" className="text-base font-medium mb-3 block">나이 * (추정되는 나이를 적어주세요)</Label>
+                    <div className="grid grid-cols-2 gap-6">
                       <div>
                         <div className="flex items-center gap-2">
                           <Input
@@ -222,8 +215,9 @@ const RegisterPet = () => {
                               }
                             }}
                             required
+                            className="rounded-xl"
                           />
-                          <span className="text-sm text-gray-500 whitespace-nowrap">
+                          <span className="text-base text-gray-500 whitespace-nowrap">
                             세
                           </span>
                         </div>
@@ -239,72 +233,69 @@ const RegisterPet = () => {
                             value={formData.ageMonths}
                             onChange={(e) => handleInputChange("ageMonths", e.target.value)}
                             disabled={formData.age !== "0"}
+                            className="rounded-xl"
                           />
-                          <span className="text-sm text-gray-500 whitespace-nowrap">
+                          <span className="text-base text-gray-500 whitespace-nowrap">
                             개월
                           </span>
                         </div>
                       </div>
                     </div>
                     {formData.age === "0" && formData.ageMonths && (
-                      <p className="text-sm text-blue-600 mt-1">
+                      <p className="text-base text-blue-600 mt-1">
                         ✓ {formData.ageMonths}개월로 등록됩니다
                       </p>
                     )}
                     {formData.age !== "0" && formData.age && (
-                      <p className="text-sm text-blue-600 mt-1">
+                      <p className="text-base text-blue-600 mt-1">
                         ✓ {formData.age}세로 등록됩니다
                       </p>
                     )}
                   </div>
-                </CardContent>
-              </Card>
-            </div>
+                </div>
+              </div>
 
-            {/* Right Column - Detailed Information */}
-            <div className="space-y-6">
               {/* Location Information */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <MapPin className="h-5 w-5" />
-                    위치 정보
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <RegionSelector onRegionChange={handleRegionChange} />
-                </CardContent>
-              </Card>
+              <div className="border border-border rounded-2xl p-10">
+                <h3 className="text-xl font-semibold mb-6 flex items-center gap-2">
+                  <MapPin className="h-5 w-5" />
+                  위치 정보
+                </h3>
+                <RegionSelector onRegionChange={handleRegionChange} />
+              </div>
 
               {/* Detailed Information */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>상세 정보</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
+              <div className="border border-border rounded-2xl p-10">
+                <h3 className="text-xl font-semibold mb-6 flex items-center gap-2">
+                  <FileText className="h-5 w-5" />
+                  상세 정보
+                </h3>
+                <div className="space-y-6">
                   <div>
-                    <Label htmlFor="personality">성격</Label>
+                    <Label htmlFor="personality" className="text-base font-medium mb-3 block">성격</Label>
                     <Input
                       id="personality"
                       placeholder="예: 친근함, 활발함, 조용함"
                       value={formData.personality}
                       onChange={(e) => handleInputChange("personality", e.target.value)}
+                      className="rounded-xl"
                     />
                   </div>
 
                   <div>
-                    <Label htmlFor="medicalInfo">의료 정보</Label>  {/* 건강상태*/}
+                    <Label htmlFor="medicalInfo" className="text-base font-medium mb-3 block">의료 정보</Label>  {/* 건강상태*/}
                     <Textarea
                       id="medicalInfo"
                       placeholder="예방접종, 중성화 수술, 건강 상태 등"
                       value={formData.medicalInfo}
                       onChange={(e) => handleInputChange("medicalInfo", e.target.value)}
                       rows={3}
+                      className="rounded-xl"
                     />
                   </div>
 
                   <div>
-                    <Label htmlFor="description">기타 설명 *</Label>
+                    <Label htmlFor="description" className="text-base font-medium mb-3 block">기타 설명 *</Label>
                     <Textarea
                       id="description"
                       placeholder="반려동물에 대한 자세한 설명을 작성해주세요"
@@ -312,53 +303,50 @@ const RegisterPet = () => {
                       onChange={(e) => handleInputChange("description", e.target.value)}
                       rows={4}
                       required
+                      className="rounded-xl"
                     />
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
 
               {/* Contact Information */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <User className="h-5 w-5" />
-                    연락처 정보
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div>
-                    <Label htmlFor="phoneNumber">휴대폰 번호 *</Label>
-                    <PhoneNumberInput
-                      id="phoneNumber"
-                      value={formData.phoneNumber}
-                      onChange={(value) => handleInputChange("phoneNumber", value)}
-                      placeholder="010-0000-0000"
-                      required
-                    />
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
+              <div className="border border-border rounded-2xl p-10">
+                <h3 className="text-xl font-semibold mb-6 flex items-center gap-2">
+                  <User className="h-5 w-5" />
+                  연락처 정보
+                </h3>
+                <div>
+                  <Label htmlFor="phoneNumber" className="text-base font-medium mb-3 block">휴대폰 번호 *</Label>
+                  <PhoneNumberInput
+                    id="phoneNumber"
+                    value={formData.phoneNumber}
+                    onChange={(value) => handleInputChange("phoneNumber", value)}
+                    placeholder="010-0000-0000"
+                    required
+                  />
+                </div>
+              </div>
 
-          {/* Submit Button */}
-          <div className="flex justify-center gap-4 pt-6">
-            <Button 
-              type="button" 
-              variant="outline" 
-              onClick={() => navigate('/')}
-              className="w-32"
-            >
-              취소
-            </Button>
-            <Button 
-              type="submit" 
-              className="w-32 bg-primary hover:bg-primary/90 text-primary-foreground"
-            >
-              등록하기
-            </Button>
-          </div>
-        </form>
+              {/* Submit Button */}
+              <div className="flex justify-center gap-4 pt-6">
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  onClick={() => navigate('/')}
+                  className="w-32 rounded-xl"
+                >
+                  취소
+                </Button>
+                <Button 
+                  type="submit" 
+                  className="w-32 bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl"
+                >
+                  등록하기
+                </Button>
+              </div>
+            </form>
+          </CardContent>
+        </Card>
       </main>
 
       <Footer />

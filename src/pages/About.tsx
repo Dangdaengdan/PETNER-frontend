@@ -29,8 +29,8 @@ const About = () => {
       <Navbar />
       
       {/* Hero Section - More prominent and separated */}
-      <section className="py-24 px-6 bg-gradient-to-b from-primary/10 to-background">
-        <div className="max-w-5xl mx-auto text-center">
+      <section className="py-24 bg-gradient-to-b from-primary/10 to-background">
+        <div className="mx-auto px-8 sm:px-16 md:px-24 lg:px-48 text-center">
           <h1 className="text-4xl md:text-6xl font-bold mb-6">
             Pet + Partner = PET:NER 
             <span className="text-2xl md:text-4xl text-primary block mt-4">단순한 펫을 넘어 인생의 파트너를 만나는 곳</span>
@@ -41,7 +41,7 @@ const About = () => {
         </div>
       </section>
 
-      <div className="container py-16 space-y-20">
+      <div className="mx-auto px-8 sm:px-16 md:px-24 lg:px-48 py-8 space-y-20">
         
         {/* 서비스 소개 */}
         <section>

@@ -12,13 +12,18 @@ import { Heart, MapPin, Calendar, Camera, Edit, Clock, CheckCircle, FileText, Pa
 import { Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import RegionSelector from "@/components/RegionSelector";
 
 // 임시 데이터
 const userData = {
   name: "Cardi B",
   email: "offset@email.com",
   phone: "010-1234-5678",
-  location: "서울 강남구",
+  regionProvince: "서울",
+  regionCity: "강남구",
+  gender: "female",
+  housingType: "아파트",
+  username: "petlover01",
   joinDate: "2025-01-15",
   profileImage: "/api/placeholder/150/150"
 };
@@ -163,7 +168,7 @@ const MyProfile = () => {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "입양 가능":
-        return <Badge variant="secondary" className="bg-red-100 text-red-800"><Heart className="w-3 h-3 mr-1" />입양 가능</Badge>;
+        return <Badge variant="secondary" className="bg-[#A64F1C]/10 text-[#A64F1C]"><Heart className="w-3 h-3 mr-1" />입양 가능</Badge>;
       case "입양 처리 중":
         return <Badge variant="secondary" className="bg-yellow-100 text-yellow-800"><Clock className="w-3 h-3 mr-1" />입양 처리 중</Badge>;
       case "입양 완료":
@@ -177,11 +182,11 @@ const MyProfile = () => {
     <div className="min-h-screen bg-background">
       <Navbar />
       
-      <main className="container mx-auto px-4 py-8">
-        <div className="max-w-6xl mx-auto">
+      <main className="mx-auto px-8 sm:px-16 md:px-24 lg:px-48 py-8">
+        <div>
           {/* 헤더 */}
           <div className="mb-8 text-center">
-            <h1 className="page-title text-foreground mb-2">내 정보</h1>
+            <h2 className="section-heading">내 정보</h2>
             <p className="text-muted-foreground">프로필 정보를 관리하고 나의 반려동물 활동을 확인하세요</p>
           </div>
 
@@ -220,15 +225,25 @@ const MyProfile = () => {
                         {userData.name[0]}
                       </AvatarFallback>
                     </Avatar>
-                    {isEditing && (
-                      <Button variant="outline">
-                        <Camera className="h-4 w-4 mr-2" />
-                        사진 변경
-                      </Button>
-                    )}
+                    
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <Label htmlFor="username">아이디</Label>
+                      {isEditing ? (
+                        <Input
+                          id="username"
+                          value={editData.username}
+                          onChange={(e) => setEditData({...editData, username: e.target.value})}
+                        />
+                      ) : (
+                        <p className="text-foreground">{userData.username}</p>
+                      )}
+                    </div>
+
+                    
+
                     <div className="space-y-2">
                       <Label htmlFor="name">이름</Label>
                       {isEditing ? (
@@ -270,18 +285,55 @@ const MyProfile = () => {
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="location">위치</Label>
+                      <Label>지역</Label>
                       {isEditing ? (
-                        <Input
-                          id="location"
-                          value={editData.location}
-                          onChange={(e) => setEditData({...editData, location: e.target.value})}
+                        <RegionSelector
+                          initialProvince={editData.regionProvince}
+                          initialCity={editData.regionCity}
+                          showSelectedBox={false}
+                          onRegionChange={(province, city) => setEditData({...editData, regionProvince: province, regionCity: city})}
                         />
                       ) : (
                         <p className="text-foreground flex items-center gap-1">
                           <MapPin className="h-4 w-4" />
-                          {userData.location}
+                          {userData.regionProvince} {userData.regionCity}
                         </p>
+                      )}
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>성별</Label>
+                      {isEditing ? (
+                        <Select value={editData.gender} onValueChange={(v) => setEditData({...editData, gender: v})}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="성별 선택" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="male">남성</SelectItem>
+                            <SelectItem value="female">여성</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      ) : (
+                        <p className="text-foreground">{userData.gender === 'male' ? '남성' : '여성'}</p>
+                      )}
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label>주거 형태</Label>
+                      {isEditing ? (
+                        <Select value={editData.housingType} onValueChange={(v) => setEditData({...editData, housingType: v})}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="주거 형태 선택" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="아파트">아파트</SelectItem>
+                            <SelectItem value="주택">주택</SelectItem>
+                            <SelectItem value="오피스텔">오피스텔</SelectItem>
+                            <SelectItem value="기타">기타</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      ) : (
+                        <p className="text-foreground">{userData.housingType}</p>
                       )}
                     </div>
                   </div>

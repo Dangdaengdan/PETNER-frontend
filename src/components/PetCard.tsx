@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Badge } from "@/components/ui/badge";
 import { Heart, MapPin, Calendar } from "lucide-react";
 import { useState } from "react";
@@ -20,19 +21,21 @@ const PetCard = ({ id, name, breed, age, location, image, gender, size }: PetCar
   const [isFavorited, setIsFavorited] = useState(false);
 
   return (
-    <Card className="group overflow-hidden bg-card border-border rounded-3xl shadow-warm m-5">
-      <div className="relative overflow-hidden">
-        <img
-          src={image}
-          alt={`${name} - ${breed}`}
-          className="w-full h-64 object-cover object-center"
-        />
+    <Card className="group overflow-hidden bg-card border-border rounded-3xl shadow-petcard w-full transition-transform duration-300 hover:-translate-y-2 p-8">
+      <div className="relative overflow-hidden rounded-2xl">
+        <AspectRatio ratio={16 / 9}>
+          <img
+            src={image}
+            alt={`${name} - ${breed}`}
+            className="w-full h-full object-cover object-center"
+          />
+        </AspectRatio>
         <button
           onClick={() => setIsFavorited(!isFavorited)}
-          className="absolute top-3 right-3 p-2 rounded-full bg-background/80 backdrop-blur-sm"
+          className="absolute top-3 right-3 p-3 rounded-full bg-background/80 backdrop-blur-sm"
         >
           <Heart
-            className={`h-4 w-4 ${
+            className={`h-5 w-5 ${
               isFavorited 
                 ? "text-accent fill-current" 
                 : "text-muted-foreground"
@@ -50,7 +53,7 @@ const PetCard = ({ id, name, breed, age, location, image, gender, size }: PetCar
         </div>
       </div>
 
-      <CardContent className="p-4">
+      <CardContent className="p-0 pt-8">
         <div className="space-y-3">
           <div>
             <h3 className="text-xl font-semibold text-foreground">
@@ -73,7 +76,7 @@ const PetCard = ({ id, name, breed, age, location, image, gender, size }: PetCar
           <div className="flex gap-2 pt-2">
             <Button 
               asChild
-              className="flex-1 bg-primary text-primary-foreground rounded-full"
+              className="flex-1 bg-[#A3966A] hover:bg-[#895D2B] text-white rounded-full transition-colors"
             >
               <Link to={`/pet/${id}`}>
                 Meet {name}

@@ -21,7 +21,6 @@ const LoginModal = ({ isOpen, onClose, onSuccess }: LoginModalProps) => {
 
   const [form, setForm] = useState({
     userId: "",
-    password: "",
     email: "",
     gender: "",
     housing: "",
@@ -38,7 +37,7 @@ const LoginModal = ({ isOpen, onClose, onSuccess }: LoginModalProps) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // Frontend validations (all required)
-    if (!form.userId.trim() || !form.password.trim() || !form.email.trim() ||
+    if (!form.userId.trim() || !form.email.trim() ||
         !form.gender || !form.housing || !form.phoneNumber.trim() || !form.province) {
       alert("모든 항목을 입력해주세요.");
       return;
@@ -103,10 +102,6 @@ const LoginModal = ({ isOpen, onClose, onSuccess }: LoginModalProps) => {
               <div>
                 <Label htmlFor="userId">아이디</Label>
                 <Input id="userId" value={form.userId} onChange={(e) => setForm({ ...form, userId: e.target.value })} required />
-              </div>
-              <div>
-                <Label htmlFor="password">비밀번호</Label>
-                <Input id="password" type="password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} required />
               </div>
               <div className="md:col-span-2">
                 <Label htmlFor="email">이메일</Label>

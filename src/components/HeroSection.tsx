@@ -1,9 +1,9 @@
-import heroImage from "@/assets/hero.png";
+import heroImage from "@/assets/hero.jpeg";
 import { } from "react";
 
 const HeroSection = () => {
   return (
-    <section className="relative min-h-[720px] lg:min-h-[880px] flex items-center overflow-hidden">
+    <section className="relative min-h-[780px] lg:min-h-[1000px] flex items-center overflow-hidden mb-16 lg:mb-24">
       {/* Background spans full width (no gutters) */}
       <div className="absolute inset-0 z-0">
           <img
@@ -14,35 +14,51 @@ const HeroSection = () => {
         </div>
 
         {/* Content inside container (has horizontal padding) */}
-        <div className="relative z-10 py-24 container">
+        <div className="relative z-10 pt-12 pb-24 mx-auto px-8 sm:px-16 md:px-24 lg:px-8">
           <div className="max-w-2xl">
-          <h1 className="text-9xl sm:text-10xl lg:text-11xl font-bold text-left mb-4">
+          <h1 className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-bold text-left mb-4">
             PET:NER
-            <span className="text-3xl sm:text-4xl lg:text-5xl text-primary block mt-2">
-            Find Your Forever Friend
+            <span className="text-3xl sm:text-4xl lg:text-5xl text-[#A64F1C] block mt-2">
+            Find Your Forever Friend!
             </span>
           </h1>
           
-          <p className="text-lg sm:text-xl text-foreground mb-8 leading-relaxed">
+          <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-foreground mb-8 leading-relaxed text-left">
           유기견들은 따뜻한 집이 필요하고, 우리는 함께할 친구가 필요합니다. <br/>pet:ner와 함께 서로의 빈자리를 채워보세요.
           </p>
+
+          {/* Key value props */}
+          <div className="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 max-w-2xl">
+            <div className="flex items-center gap-2 rounded-full bg-background/70 backdrop-blur-sm px-4 py-2 shadow-warm">
+              <span className="text-xl">🐾</span>
+              <span className="text-sm sm:text-base md:text-lg font-medium text-foreground">맞춤 매칭</span>
+            </div>
+            <div className="flex items-center gap-2 rounded-full bg-background/70 backdrop-blur-sm px-4 py-2 shadow-warm">
+              <span className="text-xl">🏡</span>
+              <span className="text-sm sm:text-base md:text-lg font-medium text-foreground">안전한 입양</span>
+            </div>
+            <div className="flex items-center gap-2 rounded-full bg-background/70 backdrop-blur-sm px-4 py-2 shadow-warm">
+              <span className="text-xl">💌</span>
+              <span className="text-sm sm:text-base md:text-lg font-medium text-foreground">사후 케어</span>
+            </div>
+          </div>
 
           {/* Search UI moved below to FeaturedPets section */}
 
 
           {/* Stats */}
-          <div className="mt-12 grid grid-cols-3 gap-4 sm:gap-8 max-w-xl mx-auto place-items-left text-foreground">
-            <div className="text-center">
-              <div className="text-2xl sm:text-3xl font-bold text-primary">500+</div>
-              <div className="text-sm text-muted-foreground">입양된 반려동물</div>
+          <div className="mt-12 grid grid-cols-3 gap-4 sm:gap-8 max-w-xl text-foreground">
+            <div className="text-left">
+              <div className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-[#A64F1C]">500+</div>
+              <div className="text-xs sm:text-sm md:text-base text-muted-foreground text-[#A64F1C]">입양된 반려동물</div>
             </div>
-            <div className="text-center">
-              <div className="text-2xl sm:text-3xl font-bold text-primary">50+</div>
-              <div className="text-sm text-muted-foreground">함께하는 보호소</div>
+            <div className="text-left">
+              <div className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-[#A64F1C]">50+</div>
+              <div className="text-xs sm:text-sm md:text-base text-muted-foreground text-[#A64F1C]">함께하는 보호소</div>
             </div>
-            <div className="text-center">
-              <div className="text-2xl sm:text-3xl font-bold text-primary">100+</div>
-              <div className="text-sm text-muted-foreground">후원자 수</div>
+            <div className="text-left">
+              <div className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-[#A64F1C]">100+</div>
+              <div className="text-xs sm:text-sm md:text-base text-muted-foreground text-[#A64F1C]">후원자 수</div>
             </div>
           </div>
           </div>

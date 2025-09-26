@@ -135,7 +135,7 @@ const PetDetail = () => {
     <div className="min-h-screen bg-background">
       <Navbar />
       
-      <main className="mx-auto px-2 sm:px-4 lg:px-6 py-2">
+      <main className="mx-auto px-8 sm:px-16 md:px-24 lg:px-48 py-8">
         {/* Back Button */}
         <Button 
           variant="ghost" 
@@ -146,9 +146,9 @@ const PetDetail = () => {
           돌아가기
         </Button>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 items-start">
           {/* Pet Image Carousel */}
-          <div className="lg:col-span-1">
+          <div className="lg:col-span-2 flex flex-col h-full">
             <Card className="overflow-hidden h-fit">
               <div className="relative">
                 <Carousel className="w-full">
@@ -184,27 +184,64 @@ const PetDetail = () => {
             </Card>
 
             {/* Action Buttons */}
-            <div className="mt-3">
+            <div className="mt-6">
               <Button 
                 size="lg" 
-                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
+                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground text-lg py-4"
               >
-                <MessageCircle className="h-5 w-5 mr-2" />
+                <MessageCircle className="h-6 w-6 mr-2" />
                 채팅 하기
               </Button>
             </div>
 
-            {/* Care Information Cards */}
-            <div className="space-y-3 mt-3">
+            {/* Buddy Information */}
+            <div className="mt-6 flex-1">
+              <Card className="h-full">
+                <CardContent className="p-6 h-full flex flex-col justify-center">
+                  <div className="mb-4">
+                    <h1 className="text-3xl font-bold text-foreground mb-2">{pet.name}</h1>
+                    <p className="text-xl text-muted-foreground mb-4">{pet.breed}</p>
+                    
+                    <div className="flex flex-wrap gap-2 mb-4">
+                      <Badge variant="secondary" className="bg-primary/10 text-primary text-sm px-3 py-1">
+                        {pet.gender}
+                      </Badge>
+                      <Badge variant="secondary" className="bg-accent/10 text-accent text-sm px-3 py-1">
+                        {pet.size}
+                      </Badge>
+                      <Badge variant="secondary" className="bg-secondary text-secondary-foreground text-sm px-3 py-1">
+                        {pet.age}
+                      </Badge>
+                    </div>
+
+                    <div className="flex items-center gap-4 text-muted-foreground">
+                      <div className="flex items-center gap-2">
+                        <Calendar className="h-4 w-4" />
+                        <span className="text-sm">{pet.age}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <MapPin className="h-4 w-4" />
+                        <span className="text-sm">{pet.location}</span>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+
+          {/* Care Information Cards - Horizontal Layout */}
+          <div className="lg:col-span-3 space-y-6 flex flex-col h-full">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <Card>
-                <CardContent className="p-3">
-                  <h3 className="text-base font-semibold text-foreground mb-2 flex items-center gap-2">
+                <CardContent className="p-6">
+                  <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
                     <Users className="h-4 w-4" />
                     성격적 정보
                   </h3>
-                  <div className="flex flex-wrap gap-1">
+                  <div className="flex flex-wrap gap-2">
                     {pet.personality.map((trait, index) => (
-                      <Badge key={index} variant="outline" className="text-xs">
+                      <Badge key={index} variant="outline" className="text-sm px-3 py-1">
                         {trait}
                       </Badge>
                     ))}
@@ -213,60 +250,25 @@ const PetDetail = () => {
               </Card>
 
               <Card>
-                <CardContent className="p-3">
-                  <h3 className="text-base font-semibold text-foreground mb-2">의료 정보</h3>
-                  <p className="text-xs text-muted-foreground">{pet.medicalInfo}</p>
+                <CardContent className="p-6">
+                  <h3 className="text-lg font-semibold text-foreground mb-4">의료 정보</h3>
+                  <p className="text-sm text-muted-foreground">{pet.medicalInfo}</p>
                 </CardContent>
               </Card>
 
               <Card>
-                <CardContent className="p-3">
-                  <h3 className="text-base font-semibold text-foreground mb-2">담당자 정보</h3>
-                  <p className="text-xs text-muted-foreground">{pet.caretakerInfo}</p>
+                <CardContent className="p-6">
+                  <h3 className="text-lg font-semibold text-foreground mb-4">담당자 정보</h3>
+                  <p className="text-sm text-muted-foreground">{pet.caretakerInfo}</p>
                 </CardContent>
               </Card>
             </div>
-          </div>
-
-          {/* Pet Information */}
-          <div className="lg:col-span-2 space-y-3">
-            <Card>
-              <CardContent className="p-4">
-                <div className="mb-3">
-                  <h1 className="text-2xl font-bold text-foreground mb-1">{pet.name}</h1>
-                  <p className="text-lg text-muted-foreground mb-3">{pet.breed}</p>
-                  
-                  <div className="flex flex-wrap gap-2 mb-3">
-                    <Badge variant="secondary" className="bg-primary/10 text-primary">
-                      {pet.gender}
-                    </Badge>
-                    <Badge variant="secondary" className="bg-accent/10 text-accent">
-                      {pet.size}
-                    </Badge>
-                    <Badge variant="secondary" className="bg-secondary text-secondary-foreground">
-                      {pet.age}
-                    </Badge>
-                  </div>
-
-                  <div className="flex items-center gap-4 text-muted-foreground">
-                    <div className="flex items-center gap-2">
-                      <Calendar className="h-4 w-4" />
-                      <span className="text-sm">{pet.age}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <MapPin className="h-4 w-4" />
-                      <span className="text-sm">{pet.location}</span>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
 
             {/* Description */}
-            <Card>
-              <CardContent className="p-4">
-                <h3 className="text-lg font-semibold text-foreground mb-3">기타 설명</h3>
-                <p className="text-muted-foreground leading-relaxed text-sm">
+            <Card className="flex-1">
+              <CardContent className="p-8">
+                <h3 className="text-xl font-semibold text-foreground mb-6">기타 설명</h3>
+                <p className="text-muted-foreground leading-relaxed text-base">
                   {pet.description}
                 </p>
               </CardContent>
@@ -274,30 +276,29 @@ const PetDetail = () => {
 
             {/* Additional Information for larger screens */}
             <div className="hidden lg:block">
-              <Card>
-                <CardContent className="p-4">
-                  <h3 className="text-lg font-semibold text-foreground mb-3">입양 과정</h3>
-                  <div className="space-y-2 text-muted-foreground">
-                    <div className="flex items-center gap-3">
-                      <span className="w-5 h-5 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-xs font-semibold">1</span>
-                      <span className="text-sm"></span>
+              <Card className="flex-1">
+                <CardContent className="p-8">
+                  <h3 className="text-xl font-semibold text-foreground mb-6">입양 과정</h3>
+                  <div className="space-y-4 text-muted-foreground">
+                    <div className="flex items-center gap-4">
+                      <span className="w-7 h-7 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-base font-semibold">1</span>
+                      <span className="text-base">입양 신청서 작성</span>
                     </div>
-                    <div className="flex items-center gap-3">
-                      <span className="w-5 h-5 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-xs font-semibold">2</span>
-                      <span className="text-sm">담당자와 상담 및 만남 예약</span>
+                    <div className="flex items-center gap-4">
+                      <span className="w-7 h-7 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-base font-semibold">2</span>
+                      <span className="text-base">담당자와 상담 및 만남 예약</span>
                     </div>
-                    <div className="flex items-center gap-3">
-                      <span className="w-5 h-5 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-xs font-semibold">3</span>
-                      <span className="text-sm">펫과 만남 및 호환성 확인</span>
+                    <div className="flex items-center gap-4">
+                      <span className="w-7 h-7 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-base font-semibold">3</span>
+                      <span className="text-base">펫과 만남 및 호환성 확인</span>
                     </div>
-                    <div className="flex items-center gap-3">
-                      <span className="w-5 h-5 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-xs font-semibold">4</span>
-                      <span className="text-sm">입양 완료 및 새 가족 되기</span>
+                    <div className="flex items-center gap-4">
+                      <span className="w-7 h-7 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-base font-semibold">4</span>
+                      <span className="text-base">입양 완료 및 새 가족 되기</span>
                     </div>
                   </div>
                 </CardContent>
               </Card>
-
             </div>
           </div>
         </div>

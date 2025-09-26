@@ -4,7 +4,7 @@ import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -60,6 +60,86 @@ const postsData = [
     comments: 23,
     views: 567,
   },
+  {
+    id: 6,
+    title: "강아지 훈련 방법 - 기본 명령어",
+    content: "새로 입양한 강아지와 함께 살아가기 위한 기본적인 훈련 방법과 명령어를 소개합니다.",
+    author: "훈련사박씨",
+    date: "2024-01-10",
+    likes: 35,
+    comments: 18,
+    views: 423,
+  },
+  {
+    id: 7,
+    title: "고양이 스트레스 해소법",
+    content: "고양이가 스트레스를 받을 때 나타나는 증상과 해소 방법에 대해 알아보세요.",
+    author: "고양이심리학자",
+    date: "2024-01-09",
+    likes: 28,
+    comments: 11,
+    views: 345,
+  },
+  {
+    id: 8,
+    title: "반려동물 응급처치 가이드",
+    content: "반려동물에게 응급상황이 발생했을 때 할 수 있는 기본적인 응급처치 방법을 정리했습니다.",
+    author: "응급의학과",
+    date: "2024-01-08",
+    likes: 89,
+    comments: 34,
+    views: 678,
+  },
+  {
+    id: 9,
+    title: "강아지 산책 시 주의사항",
+    content: "안전하고 즐거운 산책을 위한 필수 체크리스트와 주의해야 할 점들을 알려드립니다.",
+    author: "산책러버",
+    date: "2024-01-07",
+    likes: 45,
+    comments: 16,
+    views: 512,
+  },
+  {
+    id: 10,
+    title: "고양이 화장실 훈련 완벽 가이드",
+    content: "새로 입양한 고양이의 화장실 훈련을 위한 단계별 방법과 팁을 공유합니다.",
+    author: "고양이맘",
+    date: "2024-01-06",
+    likes: 52,
+    comments: 22,
+    views: 489,
+  },
+  {
+    id: 11,
+    title: "반려동물 식단 관리의 중요성",
+    content: "반려동물의 건강한 식단 구성과 영양 균형에 대해 수의사가 직접 설명합니다.",
+    author: "영양사최선생",
+    date: "2024-01-05",
+    likes: 73,
+    comments: 29,
+    views: 634,
+  },
+  {
+    id: 12,
+    title: "강아지 사회화 훈련 방법",
+    content: "강아지가 다른 동물이나 사람들과 잘 어울릴 수 있도록 하는 사회화 훈련의 중요성과 방법을 알아보세요.",
+    author: "사회화전문가",
+    date: "2024-01-04",
+    likes: 41,
+    comments: 19,
+    views: 456,
+  },
+  {
+    id: 13,
+    title: "고양이 놀이와 상호작용",
+    content: "고양이와 더 즐겁게 놀 수 있는 방법과 올바른 상호작용 방법을 소개합니다.",
+    author: "고양이행동학자",
+    date: "2024-01-03",
+    likes: 38,
+    comments: 14,
+    views: 398,
+  },
 ];
 
 const Community = () => {
@@ -98,7 +178,7 @@ const Community = () => {
     return filtered;
   }, [searchTerm, sortBy]);
 
-  const ITEMS_PER_PAGE = 4;
+  const ITEMS_PER_PAGE = 6;
   const currentPage = Math.max(1, Number(params.get("page") || 1));
   const totalPages = Math.max(1, Math.ceil(filteredAndSortedPosts.length / ITEMS_PER_PAGE));
   const safePage = Math.min(currentPage, totalPages);
@@ -115,22 +195,16 @@ const Community = () => {
     <div className="min-h-screen bg-background">
       <Navbar />
       
-      <main className="container py-8">
+      <main className="mx-auto px-8 sm:px-16 md:px-24 lg:px-48 py-8">
         {/* Header */}
-        <div className="mb-8 text-center">
-          <h1 className="page-title mb-2">게시판</h1>
+        <div className="mb-12 md:mb-16 text-center">
+          <h2 className="section-heading">게시판</h2>
           <p className="text-lg text-muted-foreground">유기견 입양 및 보호 정보 공유 공간</p>
-          <div className="flex justify-end mt-4">
-            <Button className="bg-primary hover:bg-primary/90 text-primary-foreground" onClick={() => navigate('/community/new')}>
-              <Plus className="h-4 w-4 mr-2" />
-              글 작성하기
-            </Button>
-          </div>
         </div>
 
         {/* Search Bar (Home style) */}
-        <div className="mb-8">
-          <div className="w-full max-w-5xl mx-auto rounded-full bg-background border border-border shadow-warm px-2 py-2">
+        <div className="mb-10 md:mb-12">
+          <div className="w-full max-w-3xl mx-auto rounded-full bg-background border border-border shadow-warm px-2 py-2">
             <div className="flex items-center">
               <div className="flex-1 flex items-center px-4 py-2">
                 <Search className="h-5 w-5 text-muted-foreground mr-3" />
@@ -154,9 +228,9 @@ const Community = () => {
           </div>
         </div>
 
-        {/* Sort Filter */}
-        <div className="mb-8">
-          <div className="flex items-center gap-4">
+        {/* Sort Filter + Create Button Row */}
+        <div className="mb-10 md:mb-12">
+          <div className="flex items-center justify-between gap-4">
             <Select value={sortBy} onValueChange={setSortBy}>
               <SelectTrigger className="w-48">
                 <SelectValue placeholder="정렬 기준을 선택하세요" />
@@ -169,73 +243,76 @@ const Community = () => {
                 ))}
               </SelectContent>
             </Select>
+
+            <Button className="bg-primary hover:bg-primary/90 text-primary-foreground" onClick={() => navigate('/community/new')}>
+              <Plus className="h-4 w-4 mr-2" />
+              글 작성하기
+            </Button>
           </div>
         </div>
 
-        {/* Posts List */}
-        <div className="space-y-6">
-          {pageItems.map((post) => (
-            <Link 
-              key={post.id} 
-              to={`/post/${post.id}`}
-              className="block"
-            >
-              <Card className="transition-smooth cursor-pointer shadow-sm hover:-translate-y-1 hover:shadow-md">
-              <CardHeader className="pb-3">
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <h3 className="text-xl font-semibold text-foreground hover:text-primary transition-colors">
-                      {post.title}
-                    </h3>
+        {/* Posts List - Big Box Container */}
+        <Card className="shadow-lg rounded-3xl">
+          <CardContent className="p-8">
+            <div className="space-y-12">
+              {pageItems.map((post) => (
+                <Link 
+                  key={post.id} 
+                  to={`/post/${post.id}`}
+                  className="block"
+                >
+                  <div className="p-10 border border-border rounded-2xl shadow-lg transition-all duration-300 cursor-pointer hover:bg-muted/50 hover:border-primary/50 hover:-translate-y-2">
+                    <div className="flex items-start justify-between mb-6">
+                      <div className="flex-1">
+                        <h3 className="text-xl font-semibold text-foreground hover:text-primary transition-colors mb-4">
+                          {post.title}
+                        </h3>
+                        <p className="text-muted-foreground text-base line-clamp-2">
+                          {post.content}
+                        </p>
+                      </div>
+                      <div className="text-sm text-muted-foreground flex items-center gap-6 ml-6">
+                        <div className="flex items-center gap-2">
+                          <Calendar className="h-4 w-4" />
+                          <span>{post.date}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <MessageSquare className="h-4 w-4" />
+                          <span>{post.comments}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Heart className="h-4 w-4" />
+                          <span>{post.likes}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Eye className="h-4 w-4" />
+                          <span>{post.views}</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between text-base text-muted-foreground">
+                      <span className="font-medium">{post.author}</span>
+                      <div className="flex items-center gap-8">
+                        <div className="flex items-center gap-2">
+                          <Heart className="h-5 w-5" />
+                          <span>{post.likes}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <MessageSquare className="h-5 w-5" />
+                          <span>{post.comments}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Eye className="h-5 w-5" />
+                          <span>조회 {post.views}</span>
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                  <div className="text-sm text-muted-foreground flex items-center gap-4">
-                    <div className="flex items-center gap-1">
-                      <Calendar className="h-4 w-4" />
-                      <span>{post.date}</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <MessageSquare className="h-4 w-4" />
-                      <span>{post.comments}</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <Heart className="h-4 w-4" />
-                      <span>{post.likes}</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <Eye className="h-4 w-4" />
-                      <span>조회 {post.views}</span>
-                    </div>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent className="pt-0">
-                <p className="text-muted-foreground mb-4 line-clamp-2">
-                  {post.content}
-                </p>
-                <div className="flex items-center justify-between text-sm text-muted-foreground">
-                  <div className="flex items-center gap-4">
-                    <span className="font-medium">{post.author}</span>
-                    <div className="flex items-center gap-1">
-                      <Calendar className="h-4 w-4" />
-                      <span>{post.date}</span>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-4">
-                    <div className="flex items-center gap-1">
-                      <Heart className="h-4 w-4" />
-                      <span>{post.likes}</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <MessageSquare className="h-4 w-4" />
-                      <span>{post.comments}</span>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-            </Link>
-          ))}
-        </div>
+                </Link>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Empty State */}
         {filteredAndSortedPosts.length === 0 && (
@@ -247,7 +324,7 @@ const Community = () => {
 
         {/* Pagination */}
         {filteredAndSortedPosts.length > 0 && (
-          <div className="flex items-center justify-center gap-2 mt-8">
+          <div className="flex items-center justify-center gap-2 mt-12 md:mt-16">
             <Button variant="outline" onClick={() => goToPage(Math.max(1, safePage - 1))} disabled={safePage <= 1}>{"<"}</Button>
             {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
               <Button

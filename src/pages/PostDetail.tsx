@@ -77,7 +77,7 @@ const PostDetail = () => {
     <div className="min-h-screen bg-background">
       <Navbar />
       
-      <main className="container mx-auto px-4 py-8 max-w-4xl">
+      <main className="mx-auto px-8 sm:px-16 md:px-24 lg:px-48 py-8">
         {/* Back Button */}
         <div className="mb-6">
           <Link to="/community" className="inline-flex items-center text-muted-foreground hover:text-primary transition-colors">

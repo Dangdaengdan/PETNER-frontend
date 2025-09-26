@@ -70,7 +70,7 @@ const Navbar = () => {
 
           {/* Search and Actions */}
           <div className="hidden md:flex items-center space-x-4">
-            <Button variant="outline" asChild>
+            <Button className="bg-[#F4EFE4] text-[#453021] hover:bg-[#A29770] border border-[#453021]" asChild>
               <Link to="/profile">
                 <User className="h-5 w-5 mr-2" />
                 내 정보
@@ -81,7 +81,7 @@ const Navbar = () => {
                 로그아웃
               </Button>
             ) : (
-              <Button className="bg-primary hover:bg-primary/90 text-primary-foreground" onClick={() => setIsLoginModalOpen(true)}>
+              <Button className="bg-[#895842] hover:bg-[#453021] text-white" onClick={() => setIsLoginModalOpen(true)}>
                 로그인/회원가입
               </Button>
             )}
@@ -122,7 +122,7 @@ const Navbar = () => {
               <NavLink to="/about" end className={({isActive}) => `py-2 px-2 rounded-md transition-smooth ${isActive ? 'bg-[#895842] text-[#F4EFE4]' : 'text-foreground hover:bg-foreground/10'}`}>
                 About
               </NavLink>
-              <Button variant="outline" className="w-full" asChild>
+              <Button className="bg-[#895842] hover:bg-[#895842]/90 text-white w-full" asChild>
                 <Link to="/profile">
                   <User className="h-5 w-5 mr-2" />
                   내 정보
@@ -133,7 +133,7 @@ const Navbar = () => {
                   로그아웃
                 </Button>
               ) : (
-                <Button className="bg-primary hover:bg-primary/90 text-primary-foreground w-full" onClick={() => setIsLoginModalOpen(true)}>
+                <Button className="bg-[#A64F1C] hover:bg-[#A64F1C]/90 text-white w-full" onClick={() => setIsLoginModalOpen(true)}>
                   로그인/회원가입
                 </Button>
               )}

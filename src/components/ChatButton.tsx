@@ -112,17 +112,17 @@ const ChatButton = () => {
         <Button
           onClick={handleChatClick}
           size="lg"
-          className="fixed bottom-10 right-10 z-5 w-16 h-16 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 animate-fade-in"
+          className="fixed bottom-8 right-8 z-50 w-20 h-20 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg hover:shadow-xl transition-transform duration-300 hover:scale-110 animate-fade-in"
         >
-          <MessageCircle className="h-8 w-8" />
+          <MessageCircle className="h-10 w-10" />
           <span className="sr-only">채팅하기</span>
         </Button>
       )}
 
       {/* 카카오톡 스타일 채팅창 */}
       {isOpen && (
-        <div className={`${isFullscreen ? 'fixed inset-0 z-50' : 'fixed bottom-6 right-6 z-50'} animate-scale-in`}>
-          <Card className={`${isFullscreen ? 'w-full h-full' : 'w-80 h-[32rem]'} shadow-2xl border-0 overflow-hidden bg-card`}>
+        <div className={`${isFullscreen ? 'fixed inset-0 z-50' : 'fixed bottom-12 right-8 z-50'} animate-scale-in`}>
+          <Card className={`${isFullscreen ? 'w-full h-full' : 'w-80 h-[32rem]'} shadow-2xl border-0 overflow-hidden bg-card flex flex-col`}>
             {/* 채팅 목록 화면 */}
             {!selectedChat && (
               <>
@@ -209,14 +209,16 @@ const ChatButton = () => {
                     <h3 className="text-sm font-medium">{currentChat.name}</h3>
                   </div>
                   <div className="flex gap-1">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={handleFullscreen}
-                      className="h-8 w-8 p-0 text-primary-foreground hover:bg-primary-foreground/20"
-                    >
-                      {isFullscreen ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
-                    </Button>
+                    {!isMobile && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={handleFullscreen}
+                        className="h-8 w-8 p-0 text-primary-foreground hover:bg-primary-foreground/20"
+                      >
+                        {isFullscreen ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
+                      </Button>
+                    )}
                     <Button
                       variant="ghost"
                       size="sm"
@@ -229,8 +231,8 @@ const ChatButton = () => {
                 </div>
 
                 {/* 메시지 영역 */}
-                <div className={`bg-muted flex flex-col ${isFullscreen ? 'h-[calc(100vh-120px)]' : 'h-[26rem]'}`}>
-                  <ScrollArea className="flex-1 p-3">
+                <div className={`bg-muted flex flex-col flex-1 min-h-0`}>
+                  <ScrollArea className="flex-1 p-3 min-h-0 overflow-y-auto">
                     <div className="space-y-2">
                       {currentChat.messages.map((message) => (
                         <div
