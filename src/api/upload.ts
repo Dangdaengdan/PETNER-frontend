@@ -35,7 +35,8 @@ export const getProtectedImageUrl = async (objectName: string): Promise<string> 
             params: { objectName },
             withCredentials: true
         });
-        return res.data.imageUrl || res.data.thumbImageUrl;
+
+        return res.data.url;
     } catch (error) {
         console.error("❌ 이미지 URL 가져오기 실패:", error);
         throw error;
