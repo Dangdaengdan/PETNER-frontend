@@ -8,6 +8,8 @@ import { Label } from "@/components/ui/label";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FileText, Image, Upload } from "lucide-react";
+import { createPost } from "@/api/post";
+import { uploadImageToGCP } from "@/api/upload";
 
 const PostCreate = () => {
   const navigate = useNavigate();
@@ -15,6 +17,7 @@ const PostCreate = () => {
   const [content, setContent] = useState("");
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] || null;
@@ -27,11 +30,42 @@ const PostCreate = () => {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Here you'd call your API to create the post.
-    console.log({ title, content, imageFile });
-    navigate("/community");
+
+    if (!title.trim() || !content.trim()) {
+      alert("제목과 내용을 모두 입력해주세요.");
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      let thumbImageUrl: string | undefined;
+
+      // 이미지가 있으면 먼저 업로드
+      if (imageFile) {
+        const objectName = await uploadImageToGCP(imageFile);
+        thumbImageUrl = objectName;
+      }
+
+      // 게시물 생성
+      const postData = {
+        title: title.trim(),
+        content: content.trim(),
+        thumbImageUrl,
+      };
+
+      await createPost(postData);
+
+      alert("게시물이 성공적으로 등록되었습니다.");
+      navigate("/community");
+    } catch (error) {
+      console.error("게시물 등록 실패:", error);
+      alert("게시물 등록에 실패했습니다. 다시 시도해주세요.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -117,19 +151,21 @@ const PostCreate = () => {
 
               {/* Submit Button */}
               <div className="flex justify-center gap-4 pt-6">
-                <Button 
-                  type="button" 
-                  variant="outline" 
+                <Button
+                  type="button"
+                  variant="outline"
                   onClick={() => navigate(-1)}
                   className="w-32 rounded-xl"
+                  disabled={isLoading}
                 >
                   취소
                 </Button>
-                <Button 
-                  type="submit" 
+                <Button
+                  type="submit"
                   className="w-32 bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl"
+                  disabled={isLoading}
                 >
-                  등록
+                  {isLoading ? "등록 중..." : "등록"}
                 </Button>
               </div>
             </form>
