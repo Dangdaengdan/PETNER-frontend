@@ -15,4 +15,14 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  build: {
+    rollupOptions: {
+      output: {
+        charset: 'utf8'
+      }
+    }
+  },
+  esbuild: {
+    charset: 'utf8'
+  },
 }));
