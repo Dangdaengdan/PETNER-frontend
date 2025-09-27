@@ -389,23 +389,25 @@ const RegisterPet = () => {
                 </h3>
                 <div className="space-y-6">
                   <div>
-                    <Label htmlFor="personality" className="text-base font-medium mb-3 block">성격</Label>
+                    <Label htmlFor="personality" className="text-base font-medium mb-3 block">성격 *</Label>
                     <Input
                       id="personality"
                       placeholder="예: 친근함, 활발함, 조용함"
                       value={formData.personality}
                       onChange={(e) => handleInputChange("personality", e.target.value)}
+                      required
                       className="rounded-xl"
                     />
                   </div>
 
                   <div>
-                    <Label htmlFor="medicalInfo" className="text-base font-medium mb-3 block">의료 정보</Label>  {/* 건강상태*/}
+                    <Label htmlFor="medicalInfo" className="text-base font-medium mb-3 block">의료 정보 *</Label>  {/* 건강상태*/}
                     <Textarea
                       id="medicalInfo"
                       placeholder="예방접종, 중성화 수술, 건강 상태 등"
                       value={formData.medicalInfo}
                       onChange={(e) => handleInputChange("medicalInfo", e.target.value)}
+                      required
                       rows={3}
                       className="rounded-xl"
                     />
