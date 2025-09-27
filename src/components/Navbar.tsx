@@ -111,7 +111,15 @@ const Navbar = () => {
       setIsProfileCompletionRequired(true);
       setIsLoginModalOpen(true);
       alert('프로필 완성이 필요합니다. 회원정보를 입력해주세요.');
+    } else {
+      // 메뉴 클릭 시 페이지 새로고침
+      setTimeout(() => window.location.reload(), 100);
     }
+  };
+
+  // 메뉴 클릭 시 페이지 새로고침 핸들러
+  const handleMenuClick = () => {
+    setTimeout(() => window.location.reload(), 100);
   };
 
   return (
@@ -121,7 +129,7 @@ const Navbar = () => {
           <div className="flex justify-between items-center h-16">
             {/* Logo and Navigation */}
             <div className="flex items-center space-x-8">
-              <Link to="/" className="flex items-center space-x-2">
+              <Link to="/" className="flex items-center space-x-2" onClick={handleMenuClick}>
                 <img src={logo} alt="Petner" className="h-8 w-auto" />
               </Link>
               
@@ -129,7 +137,7 @@ const Navbar = () => {
               <div className="hidden md:flex items-center space-x-2">
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <NavLink to="/" end className="navitem">
+                    <NavLink to="/" end className="navitem" onClick={handleMenuClick}>
                       Home
                     </NavLink>
                   </TooltipTrigger>
@@ -159,7 +167,7 @@ const Navbar = () => {
                 </Tooltip>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <NavLink to="/about" end className="navitem">
+                    <NavLink to="/about" end className="navitem" onClick={handleMenuClick}>
                       About
                     </NavLink>
                   </TooltipTrigger>
@@ -216,7 +224,7 @@ const Navbar = () => {
                   className="pl-10 bg-background border-border"
                 />
               </div>
-              <NavLink to="/" end className={({isActive}) => `py-2 px-2 rounded-md transition-smooth ${isActive ? 'bg-[#895842] text-[#F4EFE4]' : 'text-foreground hover:bg-foreground/10'}`}>
+              <NavLink to="/" end className={({isActive}) => `py-2 px-2 rounded-md transition-smooth ${isActive ? 'bg-[#895842] text-[#F4EFE4]' : 'text-foreground hover:bg-foreground/10'}`} onClick={handleMenuClick}>
                 Home
               </NavLink>
               <NavLink to="/register" end className={({isActive}) => `py-2 px-2 rounded-md transition-smooth ${isActive ? 'bg-[#895842] text-[#F4EFE4]' : 'text-foreground hover:bg-foreground/10'}`} onClick={handleServiceAccess}>
@@ -225,7 +233,7 @@ const Navbar = () => {
               <NavLink to="/community" end className={({isActive}) => `py-2 px-2 rounded-md transition-smooth ${isActive ? 'bg-[#895842] text-[#F4EFE4]' : 'text-foreground hover:bg-foreground/10'}`} onClick={handleServiceAccess}>
                 Community
               </NavLink>
-              <NavLink to="/about" end className={({isActive}) => `py-2 px-2 rounded-md transition-smooth ${isActive ? 'bg-[#895842] text-[#F4EFE4]' : 'text-foreground hover:bg-foreground/10'}`}>
+              <NavLink to="/about" end className={({isActive}) => `py-2 px-2 rounded-md transition-smooth ${isActive ? 'bg-[#895842] text-[#F4EFE4]' : 'text-foreground hover:bg-foreground/10'}`} onClick={handleMenuClick}>
                 About
               </NavLink>
               <Button className="bg-[#895842] hover:bg-[#895842]/90 text-white w-full" asChild>
