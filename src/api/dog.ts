@@ -13,6 +13,7 @@ export interface DogListResponseDto {
   imageUrl: string;
   memberNickname: string;
   shelterName: string;
+  birthDate: string;
   createdAt: string;
 }
 
@@ -167,6 +168,17 @@ export interface DogDeleteResponseDto {
   success: boolean;
 }
 
+export interface DogStatusUpdateRequestDto {
+  adoptionStatus: string;
+}
+
+export interface DogStatusUpdateResponseDto {
+  dogId: number;
+  adoptionStatus: string;
+  message: string;
+  success: boolean;
+}
+
 export const getDogs = async (page: number = 0, size: number = 10): Promise<DogListResponseDto[]> => {
   try {
     const response = await axios.get(`${DOGS_BASE_URL}?page=${page}&size=${size}`, {
@@ -252,7 +264,7 @@ export const updateDog = async (dogId: number, dogData: DogUpdateRequestDto): Pr
     const response = await axios.patch(`${DOGS_BASE_URL}/${dogId}`, dogData, {
       withCredentials: true,
       headers: {
-        'Content-Type': 'application/json; charset=utf-8',
+        'Content-Type': 'application/json',
       },
     });
 
@@ -284,6 +296,49 @@ export const deleteDog = async (dogId: number): Promise<DogDeleteResponseDto> =>
     return response.data;
   } catch (error) {
     let errorMessage = `유기견 삭제 실패`;
+    if (axios.isAxiosError(error)) {
+      errorMessage += `: ${error.response?.status}`;
+      if (error.response?.data) {
+        console.error('백엔드 에러 응답:', error.response.data);
+        errorMessage += ` - ${JSON.stringify(error.response.data)}`;
+      }
+    } else {
+      console.error('에러 응답 파싱 실패:', error);
+    }
+    throw new Error(errorMessage);
+  }
+};
+
+export const getMyDogs = async (page: number = 0, size: number = 10): Promise<DogListResponseDto[]> => {
+  try {
+    const response = await axios.get(`${DOGS_BASE_URL}/my?page=${page}&size=${size}`, {
+      withCredentials: true,
+      headers: {
+        'Content-Type': 'application/json; charset=utf-8',
+      },
+    });
+
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      throw new Error(`내가 등록한 유기견 목록 조회 실패: ${error.response?.status}`);
+    }
+    throw error;
+  }
+};
+
+export const updateDogStatus = async (dogId: number, statusData: DogStatusUpdateRequestDto): Promise<DogStatusUpdateResponseDto> => {
+  try {
+    const response = await axios.patch(`${DOGS_BASE_URL}/${dogId}/status`, statusData, {
+      withCredentials: true,
+      headers: {
+        'Content-Type': 'application/json; charset=utf-8',
+      },
+    });
+
+    return response.data;
+  } catch (error) {
+    let errorMessage = `유기견 입양상태 수정 실패`;
     if (axios.isAxiosError(error)) {
       errorMessage += `: ${error.response?.status}`;
       if (error.response?.data) {

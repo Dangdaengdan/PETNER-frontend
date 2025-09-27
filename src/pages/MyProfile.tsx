@@ -16,6 +16,8 @@ import RegionSelector from "@/components/RegionSelector";
 import PhoneNumberInput from "@/components/PhoneNumberInput";
 import { getUserProfile, UserProfile, updateProfile, checkNickname, checkEmail } from "@/api/member";
 import { searchLocationByName } from "@/api/location";
+import { getMyDogs, DogListResponseDto, updateDog, DogUpdateRequestDto, getDogById } from "@/api/dog";
+import { ProtectedImage } from "@/components/ProtectedImage";
 
 // 기본 데이터
 const defaultUserData = {
@@ -102,35 +104,6 @@ const favoritePets = [
   }
 ];
 
-const registrationApplications = [
-  {
-    id: 1,
-    petName: "멍멍이",
-    petImage: "/src/assets/dog1.jpg",
-    status: "입양 가능",
-    registrationDate: "2024-03-10",
-    breed: "골든 리트리버",
-    age: "2세"
-  },
-  {
-    id: 2,
-    petName: "야옹이",
-    petImage: "/src/assets/dog2.jpg",
-    status: "입양 완료",
-    registrationDate: "2024-02-20",
-    breed: "페르시안 고양이",
-    age: "1세"
-  },
-  {
-    id: 3,
-    petName: "뽀삐",
-    petImage: "/src/assets/dog3.jpg",
-    status: "반려됨",
-    registrationDate: "2024-01-15",
-    breed: "비글",
-    age: "3세"
-  }
-];
 
 const adoptionHistory = [
   {
@@ -154,7 +127,7 @@ const MyProfile = () => {
   const [userData, setUserData] = useState(defaultUserData);
   const [editData, setEditData] = useState(defaultUserData);
   const [originalData, setOriginalData] = useState(defaultUserData); // 원본 데이터 저장
-  const [registrationData, setRegistrationData] = useState(registrationApplications);
+  const [registrationData, setRegistrationData] = useState<DogListResponseDto[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [validation, setValidation] = useState({
@@ -164,11 +137,15 @@ const MyProfile = () => {
     emailChecked: false,
   });
 
-  // 사용자 프로필 로드
+  // 사용자 프로필 및 내 유기견 데이터 로드
   useEffect(() => {
-    const loadUserProfile = async () => {
+    const loadData = async () => {
       try {
-        const profile = await getUserProfile();
+        const [profile, myDogs] = await Promise.all([
+          getUserProfile(),
+          getMyDogs()
+        ]);
+
         const transformedData = {
           name: profile.nickname,
           email: profile.email,
@@ -185,14 +162,17 @@ const MyProfile = () => {
         setUserData(transformedData);
         setEditData(transformedData);
         setOriginalData(transformedData); // 원본 데이터 저장
+
+        // 내 유기견 데이터 설정
+        setRegistrationData(myDogs);
       } catch (error) {
-        console.error('사용자 프로필 로드 실패:', error);
+        console.error('데이터 로드 실패:', error);
       } finally {
         setIsLoading(false);
       }
     };
 
-    loadUserProfile();
+    loadData();
   }, []);
 
   // 닉네임 자동 중복 체크
@@ -373,23 +353,58 @@ const MyProfile = () => {
     );
   };
 
-  const handleStatusChange = (id: number, newStatus: string) => {
-    setRegistrationData(prev =>
-      prev.map(registration =>
-        registration.id === id
-          ? { ...registration, status: newStatus }
-          : registration
-      )
-    );
+  const handleStatusChange = async (dogId: number, newStatus: string) => {
+    try {
+      console.log(`강아지 ID ${dogId}의 입양상태를 ${newStatus}로 변경 시도`);
+
+      // 강아지 상세 정보 조회
+      const dogDetail = await getDogById(dogId);
+      console.log('조회된 강아지 상세 정보:', dogDetail);
+
+      // 전체 필드 DTO 구성
+      const fullUpdateData: DogUpdateRequestDto = {
+        name: dogDetail.name || '',
+        breedId: dogDetail.breed?.breedId || null,
+        birthDate: dogDetail.birthDate || '',
+        gender: dogDetail.gender || 'MALE',
+        dogSize: dogDetail.dogSize || '',
+        weight: dogDetail.weight || 0,
+        healthStatus: dogDetail.healthStatus || '',
+        description: dogDetail.description || '',
+        adoptionStatus: newStatus,
+        imageUrl: dogDetail.imageUrl || '',
+        shelterId: dogDetail.shelter?.shelterId || null,
+      };
+
+      console.log('🔥 전체 필드 DTO:', fullUpdateData);
+      console.log('🔥 전송할 JSON:', JSON.stringify(fullUpdateData, null, 2));
+
+      // 실제 API 호출
+      await updateDog(dogId, fullUpdateData);
+
+      // 로컬 상태 업데이트
+      setRegistrationData(prev =>
+        prev.map(dog =>
+          dog.dogId === dogId
+            ? { ...dog, adoptionStatus: newStatus }
+            : dog
+        )
+      );
+
+      alert('입양상태가 성공적으로 변경되었습니다.');
+    } catch (error) {
+      console.error('입양상태 변경 실패:', error);
+      alert('입양상태 변경에 실패했습니다. 다시 시도해주세요.');
+    }
   };
 
   const getStatusBadge = (status: string) => {
     switch (status) {
-      case "입양 가능":
+      case "입양_가능":
         return <Badge variant="secondary" className="bg-[#A64F1C]/10 text-[#A64F1C]"><Heart className="w-3 h-3 mr-1" />입양 가능</Badge>;
-      case "입양 처리 중":
+      case "입양_처리_중":
         return <Badge variant="secondary" className="bg-yellow-100 text-yellow-800"><Clock className="w-3 h-3 mr-1" />입양 처리 중</Badge>;
-      case "입양 완료":
+      case "입양_완료":
         return <Badge variant="secondary" className="bg-green-100 text-green-800"><CheckCircle className="w-3 h-3 mr-1" />입양 완료</Badge>;
       default:
         return <Badge variant="outline">{status}</Badge>;
@@ -426,7 +441,7 @@ const MyProfile = () => {
             <TabsList className="grid w-full grid-cols-5">
               <TabsTrigger value="profile">프로필</TabsTrigger>
               <TabsTrigger value="applications">입양 신청 현황</TabsTrigger>
-              <TabsTrigger value="registrations">등록 신청 현황</TabsTrigger>
+              <TabsTrigger value="registrations">내가 등록한 유기견</TabsTrigger>
               <TabsTrigger value="posts">내 글</TabsTrigger>
               <TabsTrigger value="favorites">찜 목록</TabsTrigger>
             </TabsList>
@@ -648,35 +663,36 @@ const MyProfile = () => {
               </Card>
             </TabsContent>
 
-            {/* 등록 신청 현황 */}
+            {/* 내가 등록한 유기견 */}
             <TabsContent value="registrations">
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <FileText className="h-5 w-5" />
-                    등록 신청 현황
+                    내가 등록한 유기견
                   </CardTitle>
-                  <p className="text-sm text-muted-foreground">등록신청 상태를 직접 수정할 수 있습니다</p>
+                  <p className="text-sm text-muted-foreground"> 유기견의 정보를 직접 수정할 수 있습니다</p>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    {registrationData.map((registration) => (
-                      <div key={registration.id} className="border rounded-lg p-4">
+                    {registrationData.map((dog) => (
+                      <div key={dog.dogId} className="border rounded-lg p-4">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center space-x-4">
-                            <img
-                              src={registration.petImage}
-                              alt={registration.petName}
+                            <ProtectedImage
+                              objectName={dog.imageUrl}
+                              alt={dog.name}
                               className="w-16 h-16 rounded-lg object-cover"
                             />
                             <div>
-                              <h3 className="font-semibold text-foreground">{registration.petName}</h3>
-                              <p className="text-sm text-muted-foreground">{registration.breed} · {registration.age}</p>
-                              <p className="text-sm text-muted-foreground">등록일: {registration.registrationDate}</p>
+                              <h3 className="font-semibold text-foreground">{dog.name}</h3>
+                              <p className="text-sm text-muted-foreground">{dog.breedName} · {dog.dogSize} · {dog.weight}kg</p>
+                              <p className="text-sm text-muted-foreground">등록일: {new Date(dog.createdAt).toLocaleDateString('ko-KR')}</p>
+                              <p className="text-sm text-muted-foreground">보호소: {dog.shelterName}</p>
                             </div>
                           </div>
                           <div className="text-right">
-                            {getStatusBadge(registration.status)}
+                            {getStatusBadge(dog.adoptionStatus)}
                           </div>
                         </div>
                       </div>
@@ -687,30 +703,30 @@ const MyProfile = () => {
                   <div className="mt-6 pt-4 border-t">
                     <h4 className="text-lg font-semibold text-foreground mb-4">등록신청 상태 변경</h4>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      {registrationData.map((registration) => (
-                        <div key={registration.id} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                      {registrationData.map((dog) => (
+                        <div key={dog.dogId} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
                           <div className="flex items-center space-x-3">
-                            <img
-                              src={registration.petImage}
-                              alt={registration.petName}
+                            <ProtectedImage
+                              objectName={dog.imageUrl}
+                              alt={dog.name}
                               className="w-10 h-10 rounded-lg object-cover"
                             />
                             <div>
-                              <p className="font-medium text-sm">{registration.petName}</p>
-                              <p className="text-xs text-muted-foreground">{registration.breed}</p>
+                              <p className="font-medium text-sm">{dog.name}</p>
+                              <p className="text-xs text-muted-foreground">{dog.breedName}</p>
                             </div>
                           </div>
-                          <Select 
-                            value={registration.status} 
-                            onValueChange={(value) => handleStatusChange(registration.id, value)}
+                          <Select
+                            value={dog.adoptionStatus}
+                            onValueChange={(value) => handleStatusChange(dog.dogId, value)}
                           >
                             <SelectTrigger className="w-32">
                               <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="입양 가능">입양 가능</SelectItem>
-                              <SelectItem value="입양 처리 중">입양 처리 중</SelectItem>
-                              <SelectItem value="입양 완료">입양 완료</SelectItem>
+                              <SelectItem value="입양_가능">입양 가능</SelectItem>
+                              <SelectItem value="입양_처리_중">입양 처리 중</SelectItem>
+                              <SelectItem value="입양_완료">입양 완료</SelectItem>
                             </SelectContent>
                           </Select>
                         </div>
