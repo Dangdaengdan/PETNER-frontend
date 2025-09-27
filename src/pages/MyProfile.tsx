@@ -604,15 +604,15 @@ const MyProfile = () => {
 
             {/* 입양 신청 현황 */}
             <TabsContent value="applications">
-              <Card>
+              <Card className="min-h-[70vh] flex flex-col">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <FileText className="h-5 w-5" />
                     입양 신청 현황
                   </CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
+                <CardContent className="flex-1 flex flex-col">
+                  <div className="space-y-4 flex-1">
                     {adoptionApplications.map((application) => (
                       <div key={application.id} className="border rounded-lg p-4">
                         <div className="flex items-center justify-between">
@@ -634,6 +634,15 @@ const MyProfile = () => {
                         </div>
                       </div>
                     ))}
+                  </div>
+                  
+                  {/* 빈 공간에 표시될 메시지 */}
+                  <div className="flex-1 flex items-start justify-center pt-16">
+                    <div className="text-center text-muted-foreground">
+                      <PawPrint className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                      <p className="text-lg">더 많은 유기견을 입양해주세요.</p>
+                      <p className="text-sm mt-2">새로운 가족을 기다리는 아이들이 있습니다.</p>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -714,15 +723,15 @@ const MyProfile = () => {
 
             {/* 내가 쓴 글 */}
             <TabsContent value="posts">
-              <Card>
+              <Card className="min-h-[70vh] flex flex-col">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <FileText className="h-5 w-5" />
                     내가 쓴 글
                   </CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
+                <CardContent className="flex-1 flex flex-col">
+                  <div className="space-y-4 flex-1">
                     {myPosts.map((post) => (
                       <div key={post.id} className="border rounded-lg p-4">
                         <div className="flex items-center justify-between">
@@ -736,12 +745,26 @@ const MyProfile = () => {
                               <span>댓글 {post.comments}</span>
                             </div>
                           </div>
-                          <Button variant="outline" size="sm" asChild>
-                            <Link to={`/post/${post.id}`}>보기</Link>
-                          </Button>
+                          <div className="flex gap-2">
+                            <Button variant="default" size="sm" asChild>
+                              <Link to={`/post/${post.id}/edit`}>수정</Link>
+                            </Button>
+                            <Button variant="outline" size="sm" asChild>
+                              <Link to={`/post/${post.id}`}>보기</Link>
+                            </Button>
+                          </div>
                         </div>
                       </div>
                     ))}
+                  </div>
+                  
+                  {/* 빈 공간에 표시될 메시지 */}
+                  <div className="flex-1 flex items-start justify-center pt-16">
+                    <div className="text-center text-muted-foreground">
+                      <FileText className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                      <p className="text-lg">더 많은 이야기를 공유해주세요.</p>
+                      <p className="text-sm mt-2">반려동물과의 소중한 경험을 나누어보세요.</p>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -777,7 +800,7 @@ const MyProfile = () => {
                               <Link to={`/pet/${pet.id}`}>자세히 보기</Link>
                             </Button>
                             <Button variant="outline" size="sm">
-                              <Heart className="h-4 w-4" />
+                              <Heart className="h-4 w-4 text-red-500 fill-current" />
                             </Button>
                           </div>
                         </div>

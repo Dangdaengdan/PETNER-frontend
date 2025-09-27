@@ -14,6 +14,7 @@ import NotFound from "./pages/NotFound";
 import Pets from "./pages/Pets";
 import ChatButton from "./components/ChatButton";
 import PostCreate from "./pages/PostCreate";
+import PostEdit from "./pages/PostEdit";
 import KakaoCallback from "./pages/KakaoCallback";
 import AuthGuard from "./components/AuthGuard";
 
@@ -24,7 +25,12 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <BrowserRouter>
+      <BrowserRouter
+        future={{
+          v7_startTransition: true,
+          v7_relativeSplatPath: true,
+        }}
+      >
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/auth/kakao/callback" element={<KakaoCallback />} />
