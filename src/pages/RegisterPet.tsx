@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -9,25 +9,29 @@ import { ArrowLeft, Upload, MapPin, Heart, User, FileText } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { createDog, DogCreateRequestDto } from "@/api/dog";
+import { uploadImageToGCP } from "@/api/upload";
+import { searchBreedByName } from "@/api/breed";
+import { searchShelterByName } from "@/api/shelter";
 import RegionSelector from "@/components/RegionSelector";
-import PhoneNumberInput from "@/components/PhoneNumberInput";
+import ShelterSelector from "@/components/ShelterSelector";
 
 // Dog breed data organized by size
 const dogBreedsBySize = {
-  '소형견': [
+  '소형': [
     '토이 푸들', '말티즈', '요크셔테리어', '포메라니안', '치와와', '시츄',
     '잭 러셀 테리어', '보스턴 테리어', '카발리에 킹 찰스 스파니엘',
     '이탈리안 그레이하운드', '미니어처 슈나우저', '핀셔', '미니어처 핀셔',
     '위펫', '휘펫', '혼합견', '기타'
   ],
-  '중형견': [
+  '중형': [
     '보더 콜리', '푸들', '비글', '불독', '웰시코기', '진돗개', '풍산개',
     '삽살개', '코카스파니엘', '바셋 하운드', '브리타니 스파니엘',
     '시베리안 허스키', '슈나우저', '불 테리어', '스태퍼드셔 불 테리어',
     '아메리칸 스태퍼드셔 테리어', '핏불 테리어', '바이센지', '세터',
     '포인터', '혼합견', '기타'
   ],
-  '대형견': [
+  '대형': [
     '골든 리트리버', '래브라도 리트리버', '저먼 셰퍼드', '로트와일러',
     '도베르만', '도베르만 핀셔', '사모예드', '아키타', '복서', '그레이트 데인',
     '세인트 버나드', '마스티프', '차우차우', '알래스칸 말라뮤트', '달마시안',
@@ -39,6 +43,12 @@ const dogBreedsBySize = {
 
 const RegisterPet = () => {
   const navigate = useNavigate();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [selectedShelterId, setSelectedShelterId] = useState<number | undefined>();
+  const [selectedShelterName, setSelectedShelterName] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     dogSize: "",
@@ -47,23 +57,97 @@ const RegisterPet = () => {
     ageMonths: "",
     gender: "",
     weight: "",
-    province: "",
-    city: "",
     description: "",
     personality: "",
     medicalInfo: "",
-    phoneNumber: "",
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Here you would handle the form submission
-    console.log("Pet registration data:", formData);
-    // Show success message or redirect
+  const convertAgeToBirthDate = (age: string, ageMonths: string): string => {
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    const currentMonth = now.getMonth() + 1;
+
+    if (age === "0" && ageMonths) {
+      const monthsToSubtract = parseInt(ageMonths);
+      let targetYear = currentYear;
+      let targetMonth = currentMonth - monthsToSubtract;
+
+      while (targetMonth <= 0) {
+        targetYear -= 1;
+        targetMonth += 12;
+      }
+
+      return `${targetYear}${targetMonth.toString().padStart(2, '0')}`;
+    } else if (age && age !== "0") {
+      const yearsToSubtract = parseInt(age);
+      const targetYear = currentYear - yearsToSubtract;
+      return `${targetYear}${currentMonth.toString().padStart(2, '0')}`;
+    }
+
+    return "";
   };
 
-  const handleRegionChange = (province: string, city: string) => {
-    setFormData(prev => ({ ...prev, province, city }));
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    try {
+      let imageUrl = "";
+
+      if (uploadedFile) {
+        imageUrl = await uploadImageToGCP(uploadedFile);
+      }
+
+      const breedResponse = await searchBreedByName(formData.dogBreed);
+
+      const shelterId = selectedShelterId;
+      if (selectedShelterId && selectedShelterName) {
+        console.log("🏠 선택된 보호소:", { id: selectedShelterId, name: selectedShelterName });
+      }
+
+      const birthDate = convertAgeToBirthDate(formData.age, formData.ageMonths);
+
+      const dogData: DogCreateRequestDto = {
+        name: formData.name,
+        breedId: breedResponse.breedId,
+        birthDate: birthDate,
+        gender: formData.gender === "male" ? "MALE" : "FEMALE",
+        dogSize: formData.dogSize,
+        weight: parseFloat(formData.weight),
+        healthStatus: formData.medicalInfo || "",
+        description: formData.description,
+        adoptionStatus: "입양_가능",
+        imageUrl: imageUrl,
+        shelterId: shelterId || 0,
+      };
+
+      console.log("🐕 유기견 등록 API 요청 데이터:", JSON.stringify(dogData, null, 2));
+
+      await createDog(dogData);
+      alert("유기견이 성공적으로 등록되었습니다!");
+      navigate("/");
+    } catch (error) {
+      console.error("유기견 등록 실패:", error);
+      alert("유기견 등록에 실패했습니다. 다시 시도해주세요.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setUploadedFile(file);
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setImagePreview(e.target?.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleUploadClick = () => {
+    fileInputRef.current?.click();
   };
 
   const handleDogBreedChange = (key: 'dogSize' | 'dogBreed', value: string) => {
@@ -102,12 +186,31 @@ const RegisterPet = () => {
                   <Upload className="h-5 w-5" />
                   사진 등록
                 </h3>
-                <div className="border-2 border-dashed border-border rounded-2xl p-10 text-center hover:border-primary transition-smooth cursor-pointer">
-                  <Upload className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                    <p className="text-base text-muted-foreground mb-2">클릭하여 사진을 업로드하세요</p>
-                    <p className="text-sm text-muted-foreground">
-                      최대 5장까지 업로드 가능 (JPG, PNG)
-                    </p>
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleFileUpload}
+                  accept="image/*"
+                  className="hidden"
+                />
+                <div
+                  className="border-2 border-dashed border-border rounded-2xl p-10 text-center hover:border-primary transition-smooth cursor-pointer"
+                  onClick={handleUploadClick}
+                >
+                  {imagePreview ? (
+                    <div className="space-y-4">
+                      <img src={imagePreview} alt="Preview" className="max-h-48 mx-auto rounded-lg" />
+                      <p className="text-base text-green-600">사진이 업로드되었습니다!</p>
+                    </div>
+                  ) : (
+                    <>
+                      <Upload className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                      <p className="text-base text-muted-foreground mb-2">클릭하여 사진을 업로드하세요</p>
+                      <p className="text-sm text-muted-foreground">
+                        최대 1장까지 업로드 가능 (JPG, PNG)
+                      </p>
+                    </>
+                  )}
                 </div>
               </div>
 
@@ -168,9 +271,9 @@ const RegisterPet = () => {
                             <SelectValue placeholder="크기 선택" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="소형견">소형</SelectItem>
-                            <SelectItem value="중형견">중형</SelectItem>
-                            <SelectItem value="대형견">대형</SelectItem>
+                            <SelectItem value="소형">소형</SelectItem>
+                            <SelectItem value="중형">중형</SelectItem>
+                            <SelectItem value="대형">대형</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
@@ -255,13 +358,27 @@ const RegisterPet = () => {
                 </div>
               </div>
 
-              {/* Location Information */}
+              {/* Shelter Information (Optional) */}
               <div className="border border-border rounded-2xl p-10">
                 <h3 className="text-xl font-semibold mb-6 flex items-center gap-2">
                   <MapPin className="h-5 w-5" />
-                  위치 정보
+                  보호소 정보 (선택사항)
                 </h3>
-                <RegionSelector onRegionChange={handleRegionChange} />
+                <div>
+                  <ShelterSelector
+                    initialShelterId={selectedShelterId}
+                    onShelterChange={(shelterId, shelterName) => {
+                      setSelectedShelterId(shelterId);
+                      setSelectedShelterName(shelterName);
+                    }}
+                    showSelectedBox={false}
+                    label="보호소 선택"
+                    placeholder="보호소를 선택하세요"
+                  />
+                  <p className="text-sm text-muted-foreground mt-2">
+                    보호소를 선택하면 해당 보호소와 연결됩니다.
+                  </p>
+                </div>
               </div>
 
               {/* Detailed Information */}
@@ -309,23 +426,6 @@ const RegisterPet = () => {
                 </div>
               </div>
 
-              {/* Contact Information */}
-              <div className="border border-border rounded-2xl p-10">
-                <h3 className="text-xl font-semibold mb-6 flex items-center gap-2">
-                  <User className="h-5 w-5" />
-                  연락처 정보
-                </h3>
-                <div>
-                  <Label htmlFor="phoneNumber" className="text-base font-medium mb-3 block">휴대폰 번호 *</Label>
-                  <PhoneNumberInput
-                    id="phoneNumber"
-                    value={formData.phoneNumber}
-                    onChange={(value) => handleInputChange("phoneNumber", value)}
-                    placeholder="010-0000-0000"
-                    required
-                  />
-                </div>
-              </div>
 
               {/* Submit Button */}
               <div className="flex justify-center gap-4 pt-6">
@@ -337,11 +437,12 @@ const RegisterPet = () => {
                 >
                   취소
                 </Button>
-                <Button 
-                  type="submit" 
+                <Button
+                  type="submit"
+                  disabled={isSubmitting}
                   className="w-32 bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl"
                 >
-                  등록하기
+                  {isSubmitting ? "등록 중..." : "등록하기"}
                 </Button>
               </div>
             </form>
