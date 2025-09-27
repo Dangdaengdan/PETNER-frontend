@@ -10,44 +10,8 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Search, MapPin, Calendar } from "lucide-react";
 import RegionSelector from "@/components/RegionSelector";
-
-// Images
-import dog1 from "@/assets/dog1.jpg";
-import dog2 from "@/assets/dog2.jpg";
-import dog3 from "@/assets/dog3.jpg";
-import dog4 from "@/assets/dog4.jpg";
-import dog5 from "@/assets/dog5.jpg";
-import dog6 from "@/assets/dog6.jpg";
-
-type Pet = {
-  id: string;
-  name: string;
-  breed: string;
-  age: string;
-  location: string;
-  image: string;
-  gender: "수컷" | "암컷";
-  size: "소형" | "중형" | "대형";
-};
-
-const allPets: Pet[] = [
-  { id: "1", name: "똥깨", breed: "골든 리트리버", age: "2세", location: "강릉시유기견보호소", image: dog1, gender: "수컷", size: "대형" },
-  { id: "2", name: "구름이", breed: "비숑", age: "3세", location: "시립동물보호센터", image: dog2, gender: "암컷", size: "중형" },
-  { id: "3", name: "땅콩이", breed: "말티즈", age: "4세", location: "서부구조센터", image: dog3, gender: "수컷", size: "소형" },
-  { id: "4", name: "뽀삐", breed: "치와와", age: "2세", location: "해피포우즈 보호소", image: dog4, gender: "암컷", size: "소형" },
-  { id: "5", name: "산체", breed: "장모치와와", age: "5세", location: "전원구조센터", image: dog5, gender: "수컷", size: "소형" },
-  { id: "6", name: "초코", breed: "토이푸들", age: "2세", location: "메트로 동물보호소", image: dog6, gender: "수컷", size: "중형" },
-  // duplicate to have 3 pages worth of items
-  { id: "7", name: "해피", breed: "치와와", age: "1세", location: "행복보호소", image: dog4, gender: "암컷", size: "소형" },
-  { id: "8", name: "모카", breed: "토이푸들", age: "3세", location: "위드시터", image: dog6, gender: "수컷", size: "중형" },
-  { id: "9", name: "보리", breed: "비숑", age: "2세", location: "서초보호소", image: dog2, gender: "암컷", size: "중형" },
-  { id: "10", name: "루비", breed: "말티즈", age: "2세", location: "강남보호소", image: dog3, gender: "암컷", size: "소형" },
-  { id: "11", name: "쿠키", breed: "골든 리트리버", age: "4세", location: "종합보호센터", image: dog1, gender: "수컷", size: "대형" },
-  { id: "12", name: "라떼", breed: "장모치와와", age: "5세", location: "하남보호소", image: dog5, gender: "수컷", size: "소형" },
-  { id: "13", name: "두부", breed: "비숑", age: "1세", location: "용인보호소", image: dog2, gender: "암컷", size: "중형" },
-  { id: "14", name: "제니", breed: "치와와", age: "2세", location: "분당보호소", image: dog4, gender: "암컷", size: "소형" },
-  { id: "15", name: "밤비", breed: "말티즈", age: "3세", location: "일산보호소", image: dog3, gender: "수컷", size: "소형" },
-];
+import { ProtectedImage } from "@/components/ProtectedImage";
+import { getDogs, DogListResponseDto } from "@/api/dog";
 
 const ITEMS_PER_PAGE = 6;
 
@@ -56,7 +20,12 @@ const Pets = () => {
   const navigate = useNavigate();
   const currentPage = Math.max(1, Number(params.get("page") || 1));
   const [query, setQuery] = useState<string>(params.get("q") || "");
-  
+
+  // API state
+  const [dogs, setDogs] = useState<DogListResponseDto[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [totalPages, setTotalPages] = useState(1);
+
   // Filter states (same as Home)
   const [filters, setFilters] = useState({ dogSize: "", dogBreed: "", location: "" });
   const [regionProvince, setRegionProvince] = useState("");
@@ -90,6 +59,34 @@ const Pets = () => {
     ]
   } as const;
 
+  // Load dogs data
+  useEffect(() => {
+    const loadDogs = async () => {
+      try {
+        setLoading(true);
+        // API는 0 based pagination이므로 currentPage - 1
+        const data = await getDogs(currentPage - 1, ITEMS_PER_PAGE);
+        setDogs(data);
+
+        // 서버에서 전체 페이지 수를 제공하지 않으므로, 받은 데이터로 추정
+        // 받은 데이터가 페이지 크기와 같으면 다음 페이지가 있을 수 있음
+        if (data.length === ITEMS_PER_PAGE) {
+          setTotalPages(currentPage + 1); // 최소한 다음 페이지까지는 있다고 가정
+        } else {
+          setTotalPages(currentPage); // 현재 페이지가 마지막
+        }
+      } catch (error) {
+        console.error("유기견 목록 로드 실패:", error);
+        setDogs([]);
+        setTotalPages(1);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadDogs();
+  }, [currentPage]);
+
   const handleFilterChange = (key: keyof typeof filters, value: string) => {
     setFilters((prev) => {
       const next = { ...prev, [key]: value };
@@ -105,23 +102,6 @@ const Pets = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [query]);
 
-  const filtered = useMemo(() => {
-    if (!query) return allPets;
-    const q = query.trim().toLowerCase();
-    return allPets.filter(p =>
-      p.name.toLowerCase().includes(q) ||
-      p.breed.toLowerCase().includes(q) ||
-      p.location.toLowerCase().includes(q)
-    );
-  }, [query]);
-
-  const totalPages = Math.max(1, Math.ceil(filtered.length / ITEMS_PER_PAGE));
-  const safePage = Math.min(currentPage, totalPages);
-
-  const pageItems = useMemo(() => {
-    const start = (safePage - 1) * ITEMS_PER_PAGE;
-    return filtered.slice(start, start + ITEMS_PER_PAGE);
-  }, [safePage, filtered]);
 
   const goToPage = (page: number) => {
     const q = query ? `&q=${encodeURIComponent(query)}` : "";
@@ -293,63 +273,108 @@ const Pets = () => {
             </div>
           </div>
         </div>
-        <div className="space-y-10 md:space-y-12 mb-16 overflow-visible">
-          {pageItems.map((pet) => (
-            <div key={pet.id} className="border rounded-lg p-4 flex gap-4 items-center transition-smooth shadow-petcard m-2.5 overflow-visible">
-              <img src={pet.image} alt={pet.name} className="w-28 h-28 rounded-md object-cover flex-shrink-0" />
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-lg font-semibold text-foreground truncate">{pet.name}</h3>
-                  <div className="flex items-center gap-2 shrink-0">
-                    <Badge variant="secondary" className="bg-background/90 text-foreground">{pet.gender}</Badge>
-                    <Badge variant="secondary" className="bg-background/90 text-foreground">{pet.size}</Badge>
-                  </div>
-                </div>
-                <div className="mt-1 flex items-center gap-4 text-sm text-muted-foreground">
-                  <div className="flex items-center gap-1">
-                    <Calendar className="h-4 w-4" />
-                    <span>{pet.age}</span>
-                  </div>
-                  <div className="flex items-center gap-1 min-w-0">
-                    <MapPin className="h-4 w-4" />
-                    <span className="truncate">{pet.location}</span>
-                  </div>
-                  <span className="truncate">{pet.breed}</span>
-                </div>
-              </div>
-              <Button asChild className="shrink-0">
-                <a href={`/pet/${pet.id}`}>자세히</a>
-              </Button>
-            </div>
-          ))}
-        </div>
 
-        <div className="flex items-center justify-center gap-2 mt-4">
-          <Button
-            variant="outline"
-            onClick={() => goToPage(Math.max(1, safePage - 1))}
-            disabled={safePage <= 1}
-          >
-            {"<"}
-          </Button>
-          {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+        {loading ? (
+          <div className="space-y-4 mb-16">
+            {Array.from({ length: ITEMS_PER_PAGE }).map((_, index) => (
+              <div key={index} className="border rounded-lg p-4 flex gap-4 items-center animate-pulse">
+                <div className="w-28 h-28 bg-gray-200 rounded-md flex-shrink-0"></div>
+                <div className="flex-1 min-w-0">
+                  <div className="h-5 bg-gray-200 rounded mb-2"></div>
+                  <div className="h-4 bg-gray-200 rounded w-2/3"></div>
+                </div>
+                <div className="w-16 h-8 bg-gray-200 rounded shrink-0"></div>
+              </div>
+            ))}
+          </div>
+        ) : dogs.length === 0 ? (
+          <div className="text-center py-16">
+            <p className="text-lg text-muted-foreground">등록된 유기견이 없습니다.</p>
+          </div>
+        ) : (
+          <div className="space-y-10 md:space-y-12 mb-16 overflow-visible">
+            {dogs.map((dog) => (
+              <div key={dog.dogId} className="border rounded-lg p-4 flex gap-4 items-center transition-smooth shadow-petcard m-2.5 overflow-visible">
+                <div className="w-28 h-28 flex-shrink-0">
+                  {dog.imageUrl ? (
+                    <ProtectedImage
+                      objectName={dog.imageUrl}
+                      alt={dog.name}
+                      className="w-28 h-28 rounded-md object-cover"
+                    />
+                  ) : (
+                    <div className="w-28 h-28 bg-gray-200 rounded-md flex items-center justify-center text-gray-500">
+                      이미지 없음
+                    </div>
+                  )}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-lg font-semibold text-foreground truncate">{dog.name}</h3>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <Badge variant="secondary" className="bg-background/90 text-foreground">
+                        {dog.gender === 'MALE' ? '수컷' : '암컷'}
+                      </Badge>
+                      <Badge variant="secondary" className="bg-background/90 text-foreground">{dog.dogSize}</Badge>
+                    </div>
+                  </div>
+                  <div className="mt-1 flex items-center gap-4 text-sm text-muted-foreground">
+                    <div className="flex items-center gap-1">
+                      <Calendar className="h-4 w-4" />
+                      <span>나이 정보 없음</span>
+                    </div>
+                    <div className="flex items-center gap-1 min-w-0">
+                      <MapPin className="h-4 w-4" />
+                      <span className="truncate">{dog.shelterName || "보호소 정보 없음"}</span>
+                    </div>
+                    <span className="truncate">{dog.breedName}</span>
+                  </div>
+                </div>
+                <Button asChild className="shrink-0">
+                  <a href={`/pet/${dog.dogId}`}>자세히</a>
+                </Button>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {!loading && dogs.length > 0 && (
+          <div className="flex items-center justify-center gap-2 mt-4">
             <Button
-              key={page}
-              variant={page === safePage ? "default" : "outline"}
-              onClick={() => goToPage(page)}
-              className={page === safePage ? "bg-primary text-primary-foreground" : ""}
+              variant="outline"
+              onClick={() => goToPage(Math.max(1, currentPage - 1))}
+              disabled={currentPage <= 1}
             >
-              {page}
+              {"<"}
             </Button>
-          ))}
-          <Button
-            variant="outline"
-            onClick={() => goToPage(Math.min(totalPages, safePage + 1))}
-            disabled={safePage >= totalPages}
-          >
-            {">"}
-          </Button>
-        </div>
+
+            {/* 현재 페이지 주변 페이지들만 표시 */}
+            {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+              const startPage = Math.max(1, currentPage - 2);
+              const page = startPage + i;
+              if (page > totalPages) return null;
+
+              return (
+                <Button
+                  key={page}
+                  variant={page === currentPage ? "default" : "outline"}
+                  onClick={() => goToPage(page)}
+                  className={page === currentPage ? "bg-primary text-primary-foreground" : ""}
+                >
+                  {page}
+                </Button>
+              );
+            })}
+
+            <Button
+              variant="outline"
+              onClick={() => goToPage(currentPage + 1)}
+              disabled={dogs.length < ITEMS_PER_PAGE}
+            >
+              {">"}
+            </Button>
+          </div>
+        )}
       </main>
 
       <Footer />

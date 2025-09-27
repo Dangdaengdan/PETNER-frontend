@@ -4,81 +4,108 @@ import { ArrowRight, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import RegionSelector from "./RegionSelector";
+import { ProtectedImage } from "./ProtectedImage";
+import { getDogs, DogListResponseDto } from "@/api/dog";
+import { Card, CardContent } from "@/components/ui/card";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
+import { Badge } from "@/components/ui/badge";
+import { Heart, MapPin, Calendar } from "lucide-react";
+import { Link } from "react-router-dom";
 type BRFilterState = { dogSize: string; dogBreed: string; location: string };
 import { useNavigate } from "react-router-dom";
 
-// Import pet images
-import dog1 from "@/assets/dog1.jpg";
-import dog2 from "@/assets/dog2.jpg";
-import dog3 from "@/assets/dog3.jpg";
-import dog4 from "@/assets/dog4.jpg";
-import dog5 from "@/assets/dog5.jpg";
-import dog6 from "@/assets/dog6.jpg";
+// FeaturedPetCard component with ProtectedImage
+interface FeaturedPetCardProps {
+  id: string;
+  name: string;
+  breed: string;
+  age: string;
+  location: string;
+  imageUrl: string;
+  gender: string;
+  size: string;
+}
 
-const featuredPets = [
-  {
-    id: "1",
-    name: "똥깨",
-    breed: "골든 리트리버",
-    age: "2세",
-    location: "강릉시유기견보호소",
-    image: dog1,
-    gender: "수컷" as const,
-    size: "대형" as const,
-  },
-  {
-    id: "2",
-    name: "구름이",
-    breed: "비숑",
-    age: "3세",
-    location: "시립동물보호센터",
-    image: dog2,
-    gender: "암컷" as const,
-    size: "중형" as const,
-  },
-  {
-    id: "3",
-    name: "땅콩이",
-    breed: "말티즈",
-    age: "4세",
-    location: "서부구조센터",
-    image: dog3,
-    gender: "수컷" as const,
-    size: "소형" as const,
-  },
-  {
-    id: "4",
-    name: "뽀삐",
-    breed: "치와와",
-    age: "2세",
-    location: "해피포우즈 보호소",
-    image: dog4,
-    gender: "암컷" as const,
-    size: "소형" as const,
-  },
-  {
-    id: "5",
-    name: "산체",
-    breed: "장모치와와",
-    age: "5세",
-    location: "전원구조센터",
-    image: dog5,
-    gender: "수컷" as const,
-    size: "소형" as const,
-  },
-  {
-    id: "6",
-    name: "초코",
-    breed: "토이푸들",
-    age: "2세",
-    location: "메트로 동물보호소",
-    image: dog6,
-    gender: "수컷" as const,
-    size: "중형" as const,
-  },
-];
+const FeaturedPetCard = ({ id, name, breed, age, location, imageUrl, gender, size }: FeaturedPetCardProps) => {
+  const [isFavorited, setIsFavorited] = useState(false);
+
+  return (
+    <Card className="group overflow-hidden bg-card border-border rounded-3xl shadow-petcard w-full transition-transform duration-300 hover:-translate-y-2 p-8">
+      <div className="relative overflow-hidden rounded-2xl">
+        <AspectRatio ratio={16 / 9}>
+          {imageUrl ? (
+            <ProtectedImage
+              objectName={imageUrl}
+              alt={`${name} - ${breed}`}
+              className="w-full h-full object-cover object-center"
+            />
+          ) : (
+            <div className="w-full h-full bg-gray-200 flex items-center justify-center text-gray-500">
+              이미지 없음
+            </div>
+          )}
+        </AspectRatio>
+        <button
+          onClick={() => setIsFavorited(!isFavorited)}
+          className="absolute top-3 right-3 p-3 rounded-full bg-background/80 backdrop-blur-sm"
+        >
+          <Heart
+            className={`h-5 w-5 ${
+              isFavorited
+                ? "text-accent fill-current"
+                : "text-muted-foreground"
+            }`}
+          />
+        </button>
+
+        <div className="absolute bottom-3 left-3 flex gap-2">
+          <Badge variant="secondary" className="bg-background/90 text-foreground">
+            {gender}
+          </Badge>
+          <Badge variant="secondary" className="bg-background/90 text-foreground">
+            {size}
+          </Badge>
+        </div>
+      </div>
+
+      <CardContent className="p-0 pt-8">
+        <div className="space-y-3">
+          <div>
+            <h3 className="text-xl font-semibold text-foreground">
+              {name}
+            </h3>
+            <p className="text-muted-foreground">{breed}</p>
+          </div>
+
+          <div className="flex items-center gap-4 text-sm text-muted-foreground">
+            <div className="flex items-center gap-1">
+              <Calendar className="h-4 w-4" />
+              <span>{age}</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <MapPin className="h-4 w-4" />
+              <span>{location}</span>
+            </div>
+          </div>
+
+          <div className="flex gap-2 pt-2">
+            <Button
+              asChild
+              className="flex-1 bg-[#A3966A] hover:bg-[#895D2B] text-white rounded-full transition-colors"
+            >
+              <Link to={`/pet/${id}`}>
+                Meet {name}
+              </Link>
+            </Button>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+};
+
 
 const FeaturedPets = () => {
   const navigate = useNavigate();
@@ -86,6 +113,29 @@ const FeaturedPets = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [regionProvince, setRegionProvince] = useState("");
   const [regionCity, setRegionCity] = useState("");
+
+  // API state
+  const [featuredDogs, setFeaturedDogs] = useState<DogListResponseDto[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // Load featured dogs on component mount
+  useEffect(() => {
+    const loadFeaturedDogs = async () => {
+      try {
+        setLoading(true);
+        // 최신 6마리 가져오기 (첫 번째 페이지에서 6개)
+        const data = await getDogs(0, 6);
+        setFeaturedDogs(data);
+      } catch (error) {
+        console.error("추천 유기견 로드 실패:", error);
+        setFeaturedDogs([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadFeaturedDogs();
+  }, []);
 
   const dogBreedsBySize = {
     '소형견': [
@@ -294,13 +344,41 @@ const FeaturedPets = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 md:gap-14 mb-16">
-          {featuredPets.map((pet) => (
-            <div key={pet.id} className="p-0">
-              <PetCard {...pet} />
-            </div>
-          ))}
-        </div>
+        {loading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 md:gap-14 mb-16">
+            {Array.from({ length: 6 }).map((_, index) => (
+              <div key={index} className="p-8 border rounded-3xl animate-pulse">
+                <div className="aspect-video bg-gray-200 rounded-2xl mb-6"></div>
+                <div className="space-y-3">
+                  <div className="h-6 bg-gray-200 rounded w-3/4"></div>
+                  <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+                  <div className="h-4 bg-gray-200 rounded w-2/3"></div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : featuredDogs.length === 0 ? (
+          <div className="text-center py-16">
+            <p className="text-lg text-muted-foreground">등록된 유기견이 없습니다.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 md:gap-14 mb-16">
+            {featuredDogs.map((dog) => (
+              <div key={dog.dogId} className="p-0">
+                <FeaturedPetCard
+                  id={dog.dogId.toString()}
+                  name={dog.name}
+                  breed={dog.breedName}
+                  age="나이 정보 없음"
+                  location={dog.shelterName || "보호소 정보 없음"}
+                  imageUrl={dog.imageUrl}
+                  gender={dog.gender === 'MALE' ? '수컷' : '암컷'}
+                  size={dog.dogSize}
+                />
+              </div>
+            ))}
+          </div>
+        )}
 
         <div className="text-center">
           <Button
