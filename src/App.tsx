@@ -15,6 +15,7 @@ import Pets from "./pages/Pets";
 import ChatButton from "./components/ChatButton";
 import PostCreate from "./pages/PostCreate";
 import KakaoCallback from "./pages/KakaoCallback";
+import AuthGuard from "./components/AuthGuard";
 
 const queryClient = new QueryClient();
 
@@ -26,15 +27,15 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
-          <Route path="/pet/:id" element={<PetDetail />} />
-          <Route path="/community" element={<Community />} />
-          <Route path="/community/new" element={<PostCreate />} />
-          <Route path="/post/:id" element={<PostDetail />} />
-          <Route path="/profile" element={<MyProfile />} />
-          <Route path="/register" element={<RegisterPet />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/pets" element={<Pets />} />
           <Route path="/auth/kakao/callback" element={<KakaoCallback />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/pet/:id" element={<AuthGuard><PetDetail /></AuthGuard>} />
+          <Route path="/community" element={<AuthGuard><Community /></AuthGuard>} />
+          <Route path="/community/new" element={<AuthGuard><PostCreate /></AuthGuard>} />
+          <Route path="/post/:id" element={<AuthGuard><PostDetail /></AuthGuard>} />
+          <Route path="/profile" element={<AuthGuard><MyProfile /></AuthGuard>} />
+          <Route path="/register" element={<AuthGuard><RegisterPet /></AuthGuard>} />
+          <Route path="/pets" element={<AuthGuard><Pets /></AuthGuard>} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

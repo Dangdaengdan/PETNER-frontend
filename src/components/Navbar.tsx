@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Menu, Search, User } from "lucide-react";
 import logo from "@/assets/petner-logo.png";
 import { Input } from "@/components/ui/input";
-import { Link, NavLink, useLocation } from "react-router-dom";
+import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { checkSession, kakaoLogout, getCurrentMember } from "@/api/auth";
 import { getUserProfile } from "@/api/member";
@@ -18,6 +18,7 @@ const Navbar = () => {
   const [isProfileCompletionRequired, setIsProfileCompletionRequired] = useState(false);
   const [hasShownProfileModal, setHasShownProfileModal] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
 
   // 컴포넌트 마운트 시 세션 상태 확인
   useEffect(() => {
@@ -68,8 +69,15 @@ const Navbar = () => {
     try {
       await kakaoLogout();
       setIsLoggedIn(false);
+      setProfileCompleted(false);
+      // 로그아웃 후 즉시 홈으로 리다이렉트
+      navigate('/', { replace: true });
     } catch (error) {
       console.error('로그아웃 실패:', error);
+      // 로그아웃 API 실패해도 클라이언트 상태는 초기화하고 홈으로 이동
+      setIsLoggedIn(false);
+      setProfileCompleted(false);
+      navigate('/', { replace: true });
     }
   };
 
