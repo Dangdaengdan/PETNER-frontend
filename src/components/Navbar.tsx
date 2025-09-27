@@ -5,7 +5,8 @@ import logo from "@/assets/petner-logo.png";
 import { Input } from "@/components/ui/input";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { checkSession, kakaoLogout, getCurrentMember, getUserProfile } from "@/api/auth";
+import { checkSession, kakaoLogout, getCurrentMember } from "@/api/auth";
+import { getUserProfile } from "@/api/member";
 import LoginModal from "./LoginModal";
 
 const Navbar = () => {

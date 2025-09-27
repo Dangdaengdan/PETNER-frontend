@@ -9,7 +9,8 @@ import RegionSelector from "@/components/RegionSelector";
 import PhoneNumberInput from "@/components/PhoneNumberInput";
 import { Heart } from "lucide-react";
 import kakaoLogo from "@/assets/kakao-logo.png";
-import { initiateKakaoLogin, handleKakaoCallback, getCurrentMember, completeProfile, checkNickname, checkEmail } from "@/api/auth";
+import { initiateKakaoLogin, handleKakaoCallback, getCurrentMember } from "@/api/auth";
+import { completeProfile, checkNickname, checkEmail } from "@/api/member";
 
 interface LoginModalProps {
   isOpen: boolean;

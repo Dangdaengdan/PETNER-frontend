@@ -13,7 +13,7 @@ import { Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import RegionSelector from "@/components/RegionSelector";
-import { getUserProfile, UserProfile } from "@/api/auth";
+import { getUserProfile, UserProfile } from "@/api/member";
 
 // 기본 데이터
 const defaultUserData = {
@@ -167,7 +167,7 @@ const MyProfile = () => {
           gender: profile.gender.toLowerCase(),
           housingType: profile.housingType,
           username: profile.nickname, // username을 nickname으로 사용
-          joinDate: "2025-01-15", // 가입일은 별도 API가 필요할 수 있음
+          joinDate: new Date(profile.createdAt).toLocaleDateString('ko-KR'),
           profileImage: "/api/placeholder/150/150"
         };
         setUserData(transformedData);
