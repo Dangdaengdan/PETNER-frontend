@@ -3,9 +3,9 @@ import { Button } from "@/components/ui/button";
 import { Menu, Search, User } from "lucide-react";
 import logo from "@/assets/petner-logo.png";
 import { Input } from "@/components/ui/input";
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useLocation } from "react-router-dom";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { checkSession, kakaoLogout } from "@/api/auth";
+import { checkSession, kakaoLogout, getCurrentMember, getUserProfile } from "@/api/auth";
 import LoginModal from "./LoginModal";
 
 const Navbar = () => {
@@ -13,16 +13,38 @@ const Navbar = () => {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [profileCompleted, setProfileCompleted] = useState(false);
+  const [isProfileCompletionRequired, setIsProfileCompletionRequired] = useState(false);
+  const [hasShownProfileModal, setHasShownProfileModal] = useState(false);
+  const location = useLocation();
 
   // 컴포넌트 마운트 시 세션 상태 확인
   useEffect(() => {
     const checkAuthStatus = async () => {
       try {
         const sessionResponse = await checkSession();
-        setIsLoggedIn(sessionResponse.authenticated);
+        if (sessionResponse.authenticated) {
+          setIsLoggedIn(true);
+          // 세션이 있으면 프로필 완성 상태도 확인
+          try {
+            const userProfile = await getUserProfile();
+            setProfileCompleted(userProfile.profileCompleted);
+            if (userProfile.profileCompleted) {
+              setHasShownProfileModal(false); // 프로필 완성되면 플래그 리셋
+            }
+            console.log('프로필 완성 상태:', userProfile.profileCompleted);
+          } catch (memberError) {
+            console.error('사용자 프로필 조회 실패:', memberError);
+            setProfileCompleted(false);
+          }
+        } else {
+          setIsLoggedIn(false);
+          setProfileCompleted(false);
+        }
       } catch (error) {
         console.error('세션 확인 실패:', error);
         setIsLoggedIn(false);
+        setProfileCompleted(false);
       } finally {
         setIsLoading(false);
       }
@@ -30,6 +52,15 @@ const Navbar = () => {
 
     checkAuthStatus();
   }, []);
+
+  // 프로필 미완성 사용자가 다른 페이지 접근 시 모달 열기
+  useEffect(() => {
+    if (!isLoading && isLoggedIn && !profileCompleted && location.pathname !== '/' && !hasShownProfileModal) {
+      setIsProfileCompletionRequired(true);
+      setIsLoginModalOpen(true);
+      setHasShownProfileModal(true);
+    }
+  }, [isLoggedIn, profileCompleted, location, isLoading, hasShownProfileModal]);
 
   // 로그아웃 처리
   const handleLogout = async () => {
@@ -42,9 +73,36 @@ const Navbar = () => {
   };
 
   // 로그인 성공 콜백
-  const handleLoginSuccess = () => {
+  const handleLoginSuccess = async () => {
     setIsLoggedIn(true);
     setIsLoginModalOpen(false);
+
+    // 프로필 완성 상태 다시 확인
+    try {
+      const userProfile = await getUserProfile();
+      setProfileCompleted(userProfile.profileCompleted);
+      if (userProfile.profileCompleted) {
+        setHasShownProfileModal(false); // 프로필 완성되면 플래그 리셋
+      }
+      console.log('로그인 후 프로필 완성 상태:', userProfile.profileCompleted);
+    } catch (error) {
+      console.error('로그인 후 멤버 정보 조회 실패:', error);
+    }
+  };
+
+  const handleLoginClick = () => {
+    setIsProfileCompletionRequired(false);
+    setIsLoginModalOpen(true);
+  };
+
+  // 프로필 미완성 사용자가 다른 서비스 접근 시 LoginModal 열기
+  const handleServiceAccess = (e: React.MouseEvent) => {
+    if (isLoggedIn && !profileCompleted) {
+      e.preventDefault();
+      setIsProfileCompletionRequired(true);
+      setIsLoginModalOpen(true);
+      alert('프로필 완성이 필요합니다. 회원정보를 입력해주세요.');
+    }
   };
 
   return (
@@ -72,7 +130,7 @@ const Navbar = () => {
                 </Tooltip>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <NavLink to="/register" end className="navitem">
+                    <NavLink to="/register" end className="navitem" onClick={handleServiceAccess}>
                       Register
                     </NavLink>
                   </TooltipTrigger>
@@ -82,7 +140,7 @@ const Navbar = () => {
                 </Tooltip>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <NavLink to="/community" end className="navitem">
+                    <NavLink to="/community" end className="navitem" onClick={handleServiceAccess}>
                       Community
                     </NavLink>
                   </TooltipTrigger>
@@ -120,7 +178,7 @@ const Navbar = () => {
                 로그아웃
               </Button>
             ) : (
-              <Button className="bg-[#895842] hover:bg-[#453021] text-white" onClick={() => setIsLoginModalOpen(true)}>
+              <Button className="bg-[#895842] hover:bg-[#453021] text-white" onClick={handleLoginClick}>
                 로그인/회원가입
               </Button>
             )}
@@ -152,10 +210,10 @@ const Navbar = () => {
               <NavLink to="/" end className={({isActive}) => `py-2 px-2 rounded-md transition-smooth ${isActive ? 'bg-[#895842] text-[#F4EFE4]' : 'text-foreground hover:bg-foreground/10'}`}>
                 Home
               </NavLink>
-              <NavLink to="/register" end className={({isActive}) => `py-2 px-2 rounded-md transition-smooth ${isActive ? 'bg-[#895842] text-[#F4EFE4]' : 'text-foreground hover:bg-foreground/10'}`}>
+              <NavLink to="/register" end className={({isActive}) => `py-2 px-2 rounded-md transition-smooth ${isActive ? 'bg-[#895842] text-[#F4EFE4]' : 'text-foreground hover:bg-foreground/10'}`} onClick={handleServiceAccess}>
                 Register
               </NavLink>
-              <NavLink to="/community" end className={({isActive}) => `py-2 px-2 rounded-md transition-smooth ${isActive ? 'bg-[#895842] text-[#F4EFE4]' : 'text-foreground hover:bg-foreground/10'}`}>
+              <NavLink to="/community" end className={({isActive}) => `py-2 px-2 rounded-md transition-smooth ${isActive ? 'bg-[#895842] text-[#F4EFE4]' : 'text-foreground hover:bg-foreground/10'}`} onClick={handleServiceAccess}>
                 Community
               </NavLink>
               <NavLink to="/about" end className={({isActive}) => `py-2 px-2 rounded-md transition-smooth ${isActive ? 'bg-[#895842] text-[#F4EFE4]' : 'text-foreground hover:bg-foreground/10'}`}>
@@ -176,7 +234,7 @@ const Navbar = () => {
                   로그아웃
                 </Button>
               ) : (
-                <Button className="bg-[#A64F1C] hover:bg-[#A64F1C]/90 text-white w-full" onClick={() => setIsLoginModalOpen(true)}>
+                <Button className="bg-[#A64F1C] hover:bg-[#A64F1C]/90 text-white w-full" onClick={handleLoginClick}>
                   로그인/회원가입
                 </Button>
               )}
@@ -189,6 +247,7 @@ const Navbar = () => {
         isOpen={isLoginModalOpen}
         onClose={() => setIsLoginModalOpen(false)}
         onSuccess={handleLoginSuccess}
+        isProfileCompletionRequired={isProfileCompletionRequired}
       />
     </TooltipProvider>
   );

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,18 +13,19 @@ import { Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import RegionSelector from "@/components/RegionSelector";
+import { getUserProfile, UserProfile } from "@/api/auth";
 
-// 임시 데이터
-const userData = {
-  name: "Cardi B",
-  email: "offset@email.com",
-  phone: "010-1234-5678",
-  regionProvince: "서울",
-  regionCity: "강남구",
-  gender: "female",
-  housingType: "아파트",
-  username: "petlover01",
-  joinDate: "2025-01-15",
+// 기본 데이터
+const defaultUserData = {
+  name: "",
+  email: "",
+  phone: "",
+  regionProvince: "",
+  regionCity: "",
+  gender: "",
+  housingType: "",
+  username: "",
+  joinDate: "",
   profileImage: "/api/placeholder/150/150"
 };
 
@@ -147,8 +148,39 @@ const adoptionHistory = [
 
 const MyProfile = () => {
   const [isEditing, setIsEditing] = useState(false);
-  const [editData, setEditData] = useState(userData);
+  const [userData, setUserData] = useState(defaultUserData);
+  const [editData, setEditData] = useState(defaultUserData);
   const [registrationData, setRegistrationData] = useState(registrationApplications);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // 사용자 프로필 로드
+  useEffect(() => {
+    const loadUserProfile = async () => {
+      try {
+        const profile = await getUserProfile();
+        const transformedData = {
+          name: profile.nickname,
+          email: profile.email,
+          phone: profile.contact,
+          regionProvince: profile.state,
+          regionCity: profile.district,
+          gender: profile.gender.toLowerCase(),
+          housingType: profile.housingType,
+          username: profile.nickname, // username을 nickname으로 사용
+          joinDate: "2025-01-15", // 가입일은 별도 API가 필요할 수 있음
+          profileImage: "/api/placeholder/150/150"
+        };
+        setUserData(transformedData);
+        setEditData(transformedData);
+      } catch (error) {
+        console.error('사용자 프로필 로드 실패:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadUserProfile();
+  }, []);
 
   const handleSave = () => {
     // 실제로는 API 호출
@@ -178,10 +210,24 @@ const MyProfile = () => {
     }
   };
 
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Navbar />
+        <main className="mx-auto px-8 sm:px-16 md:px-24 lg:px-48 py-8">
+          <div className="text-center">
+            <p>프로필 정보를 불러오는 중...</p>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
-      
+
       <main className="mx-auto px-8 sm:px-16 md:px-24 lg:px-48 py-8">
         <div>
           {/* 헤더 */}

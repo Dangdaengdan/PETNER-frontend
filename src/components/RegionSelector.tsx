@@ -196,14 +196,10 @@ const RegionSelector = ({ onRegionChange, initialProvince, initialCity, showSele
     onRegionChange?.(selectedProvince, city);
   };
 
-  // Initialize with first province and city
+  // Initialize with initial values if provided
   useEffect(() => {
-    if (!selectedProvince && provinces.length > 0) {
-      const firstProvince = provinces[0];
-      const firstCity = getCitiesForProvince(firstProvince)[0];
-      setSelectedProvince(firstProvince);
-      setSelectedCity(firstCity);
-      onRegionChange?.(firstProvince, firstCity);
+    if (initialProvince && initialCity) {
+      onRegionChange?.(initialProvince, initialCity);
     }
   }, []);
 
