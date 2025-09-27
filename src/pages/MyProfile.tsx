@@ -13,7 +13,9 @@ import { Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import RegionSelector from "@/components/RegionSelector";
-import { getUserProfile, UserProfile } from "@/api/member";
+import PhoneNumberInput from "@/components/PhoneNumberInput";
+import { getUserProfile, UserProfile, updateProfile, checkNickname, checkEmail } from "@/api/member";
+import { searchLocationByName } from "@/api/location";
 
 // 기본 데이터
 const defaultUserData = {
@@ -26,7 +28,8 @@ const defaultUserData = {
   housingType: "",
   username: "",
   joinDate: "",
-  profileImage: "/api/placeholder/150/150"
+  profileImage: "/api/placeholder/150/150",
+  locationId: 0
 };
 
 const adoptionApplications = [
@@ -150,8 +153,16 @@ const MyProfile = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [userData, setUserData] = useState(defaultUserData);
   const [editData, setEditData] = useState(defaultUserData);
+  const [originalData, setOriginalData] = useState(defaultUserData); // 원본 데이터 저장
   const [registrationData, setRegistrationData] = useState(registrationApplications);
   const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+  const [validation, setValidation] = useState({
+    isNicknameAvailable: true,
+    isEmailAvailable: true,
+    nicknameChecked: false,
+    emailChecked: false,
+  });
 
   // 사용자 프로필 로드
   useEffect(() => {
@@ -168,10 +179,12 @@ const MyProfile = () => {
           housingType: profile.housingType,
           username: profile.nickname, // username을 nickname으로 사용
           joinDate: new Date(profile.createdAt).toLocaleDateString('ko-KR'),
-          profileImage: "/api/placeholder/150/150"
+          profileImage: "/api/placeholder/150/150",
+          locationId: profile.locationId // locationId 추가
         };
         setUserData(transformedData);
         setEditData(transformedData);
+        setOriginalData(transformedData); // 원본 데이터 저장
       } catch (error) {
         console.error('사용자 프로필 로드 실패:', error);
       } finally {
@@ -182,15 +195,188 @@ const MyProfile = () => {
     loadUserProfile();
   }, []);
 
-  const handleSave = () => {
-    // 실제로는 API 호출
+  // 닉네임 자동 중복 체크
+  useEffect(() => {
+    if (isEditing && editData.username && editData.username !== originalData.username) {
+      const timer = setTimeout(async () => {
+        await handleNicknameCheck(editData.username);
+      }, 500); // 500ms 디바운스
+
+      return () => clearTimeout(timer);
+    } else if (editData.username === originalData.username) {
+      setValidation(prev => ({ ...prev, isNicknameAvailable: true, nicknameChecked: true }));
+    }
+  }, [editData.username, originalData.username, isEditing]);
+
+  // 이메일 자동 중복 체크
+  useEffect(() => {
+    if (isEditing && editData.email && editData.email !== originalData.email) {
+      const timer = setTimeout(async () => {
+        await handleEmailCheck(editData.email);
+      }, 500); // 500ms 디바운스
+
+      return () => clearTimeout(timer);
+    } else if (editData.email === originalData.email) {
+      setValidation(prev => ({ ...prev, isEmailAvailable: true, emailChecked: true }));
+    }
+  }, [editData.email, originalData.email, isEditing]);
+
+  // 변경 사항 감지
+  const hasChanges = () => {
+    return (
+      editData.username !== originalData.username ||
+      editData.email !== originalData.email ||
+      editData.phone !== originalData.phone ||
+      editData.regionProvince !== originalData.regionProvince ||
+      editData.regionCity !== originalData.regionCity ||
+      editData.gender !== originalData.gender ||
+      editData.housingType !== originalData.housingType
+    );
+  };
+
+  // 닉네임 중복 체크
+  const handleNicknameCheck = async (nickname: string) => {
+    if (nickname === originalData.username) {
+      setValidation(prev => ({ ...prev, isNicknameAvailable: true, nicknameChecked: true }));
+      return;
+    }
+
+    try {
+      const result = await checkNickname(nickname);
+      setValidation(prev => ({
+        ...prev,
+        isNicknameAvailable: result.available,
+        nicknameChecked: true
+      }));
+    } catch (error) {
+      console.error('닉네임 중복 확인 실패:', error);
+      setValidation(prev => ({ ...prev, isNicknameAvailable: false, nicknameChecked: false }));
+    }
+  };
+
+  // 이메일 중복 체크
+  const handleEmailCheck = async (email: string) => {
+    if (email === originalData.email) {
+      setValidation(prev => ({ ...prev, isEmailAvailable: true, emailChecked: true }));
+      return;
+    }
+
+    try {
+      const result = await checkEmail(email);
+      setValidation(prev => ({
+        ...prev,
+        isEmailAvailable: result.available,
+        emailChecked: true
+      }));
+    } catch (error) {
+      console.error('이메일 중복 확인 실패:', error);
+      setValidation(prev => ({ ...prev, isEmailAvailable: false, emailChecked: false }));
+    }
+  };
+
+  // 프로필 저장
+  const handleSave = async () => {
+    setIsSaving(true);
+    try {
+      // 지역 정보 API 호출하여 locationId 조회
+      let locationId = originalData.locationId;
+      if (editData.regionProvince && editData.regionCity) {
+        try {
+          const locationName = `${editData.regionProvince} ${editData.regionCity}`;
+          const locationData = await searchLocationByName(locationName);
+          locationId = locationData.locationId;
+        } catch (error) {
+          console.error('지역 정보 조회 실패:', error);
+          alert('지역 정보를 불러오는데 실패했습니다. 다시 시도해주세요.');
+          return;
+        }
+      }
+
+      const profileUpdateData = {
+        email: editData.email,
+        nickname: editData.username,
+        gender: editData.gender.toUpperCase() as 'MALE' | 'FEMALE',
+        housingType: editData.housingType as '아파트' | '단독_주택' | '빌라' | '기타',
+        contact: editData.phone,
+        locationId: locationId,
+      };
+
+      const updatedProfile = await updateProfile(profileUpdateData);
+
+      // 업데이트된 프로필로 상태 갱신
+      const transformedData = {
+        name: updatedProfile.nickname,
+        email: updatedProfile.email,
+        phone: updatedProfile.contact,
+        regionProvince: updatedProfile.state,
+        regionCity: updatedProfile.district,
+        gender: updatedProfile.gender.toLowerCase(),
+        housingType: updatedProfile.housingType,
+        username: updatedProfile.nickname,
+        joinDate: userData.joinDate,
+        profileImage: userData.profileImage,
+        locationId: updatedProfile.locationId
+      };
+
+      setUserData(transformedData);
+      setEditData(transformedData);
+      setOriginalData(transformedData);
+      setIsEditing(false);
+      alert('프로필이 성공적으로 수정되었습니다.');
+    } catch (error) {
+      console.error('프로필 수정 실패:', error);
+      alert('프로필 수정에 실패했습니다. 다시 시도해주세요.');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  // 편집 취소
+  const handleCancel = () => {
+    setEditData(originalData);
     setIsEditing(false);
+    setValidation({
+      isNicknameAvailable: true,
+      isEmailAvailable: true,
+      nicknameChecked: false,
+      emailChecked: false,
+    });
+  };
+
+  // 저장 버튼 활성화 조건
+  const canSave = () => {
+    if (!hasChanges()) return false;
+
+    // 닉네임이 변경된 경우에만 중복 체크 완료 여부 확인
+    if (editData.username !== originalData.username) {
+      if (!validation.nicknameChecked || !validation.isNicknameAvailable) {
+        return false;
+      }
+    }
+
+    // 이메일이 변경된 경우에만 중복 체크 완료 여부 확인
+    if (editData.email !== originalData.email) {
+      if (!validation.emailChecked || !validation.isEmailAvailable) {
+        return false;
+      }
+    }
+
+    // 모든 필수 필드가 채워져 있는지 확인
+    return (
+      editData.username.trim() !== '' &&
+      editData.email.trim() !== '' &&
+      editData.phone.trim() !== '' &&
+      editData.regionProvince !== '' &&
+      editData.regionCity !== '' &&
+      editData.gender !== '' &&
+      editData.housingType !== ''
+    );
   };
 
   const handleStatusChange = (id: number, newStatus: string) => {
-    setRegistrationData(prev => 
-      prev.map(registration => 
-        registration.id === id 
+    setRegistrationData(prev =>
+      prev.map(registration =>
+        registration.id === id
           ? { ...registration, status: newStatus }
           : registration
       )
@@ -276,74 +462,49 @@ const MyProfile = () => {
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
-                      <Label htmlFor="username">아이디</Label>
+                      <Label htmlFor="username">아이디 (닉네임)</Label>
                       {isEditing ? (
-                        <Input
-                          id="username"
-                          value={editData.username}
-                          onChange={(e) => setEditData({...editData, username: e.target.value})}
-                        />
+                        <div>
+                          <Input
+                            id="username"
+                            value={editData.username}
+                            onChange={(e) => {
+                              setEditData({...editData, username: e.target.value});
+                              setValidation(prev => ({ ...prev, nicknameChecked: false }));
+                            }}
+                          />
+                          {editData.username !== originalData.username && validation.nicknameChecked && (
+                            <p className={`text-sm mt-1 ${validation.isNicknameAvailable ? 'text-green-600' : 'text-red-600'}`}>
+                              {validation.isNicknameAvailable ? '✓ 사용 가능한 닉네임입니다.' : '✗ 이미 사용중인 닉네임입니다.'}
+                            </p>
+                          )}
+                        </div>
                       ) : (
                         <p className="text-foreground">{userData.username}</p>
-                      )}
-                    </div>
-
-                    
-
-                    <div className="space-y-2">
-                      <Label htmlFor="name">이름</Label>
-                      {isEditing ? (
-                        <Input
-                          id="name"
-                          value={editData.name}
-                          onChange={(e) => setEditData({...editData, name: e.target.value})}
-                        />
-                      ) : (
-                        <p className="text-foreground">{userData.name}</p>
                       )}
                     </div>
 
                     <div className="space-y-2">
                       <Label htmlFor="email">이메일</Label>
                       {isEditing ? (
-                        <Input
-                          id="email"
-                          type="email"
-                          value={editData.email}
-                          onChange={(e) => setEditData({...editData, email: e.target.value})}
-                        />
+                        <div>
+                          <Input
+                            id="email"
+                            type="email"
+                            value={editData.email}
+                            onChange={(e) => {
+                              setEditData({...editData, email: e.target.value});
+                              setValidation(prev => ({ ...prev, emailChecked: false }));
+                            }}
+                          />
+                          {editData.email !== originalData.email && validation.emailChecked && (
+                            <p className={`text-sm mt-1 ${validation.isEmailAvailable ? 'text-green-600' : 'text-red-600'}`}>
+                              {validation.isEmailAvailable ? '✓ 사용 가능한 이메일입니다.' : '✗ 이미 사용중인 이메일입니다.'}
+                            </p>
+                          )}
+                        </div>
                       ) : (
                         <p className="text-foreground">{userData.email}</p>
-                      )}
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="phone">전화번호</Label>
-                      {isEditing ? (
-                        <Input
-                          id="phone"
-                          value={editData.phone}
-                          onChange={(e) => setEditData({...editData, phone: e.target.value})}
-                        />
-                      ) : (
-                        <p className="text-foreground">{userData.phone}</p>
-                      )}
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label>지역</Label>
-                      {isEditing ? (
-                        <RegionSelector
-                          initialProvince={editData.regionProvince}
-                          initialCity={editData.regionCity}
-                          showSelectedBox={false}
-                          onRegionChange={(province, city) => setEditData({...editData, regionProvince: province, regionCity: city})}
-                        />
-                      ) : (
-                        <p className="text-foreground flex items-center gap-1">
-                          <MapPin className="h-4 w-4" />
-                          {userData.regionProvince} {userData.regionCity}
-                        </p>
                       )}
                     </div>
 
@@ -373,13 +534,45 @@ const MyProfile = () => {
                           </SelectTrigger>
                           <SelectContent>
                             <SelectItem value="아파트">아파트</SelectItem>
-                            <SelectItem value="주택">주택</SelectItem>
-                            <SelectItem value="오피스텔">오피스텔</SelectItem>
+                            <SelectItem value="단독_주택">단독 주택</SelectItem>
+                            <SelectItem value="빌라">빌라</SelectItem>
                             <SelectItem value="기타">기타</SelectItem>
                           </SelectContent>
                         </Select>
                       ) : (
-                        <p className="text-foreground">{userData.housingType}</p>
+                        <p className="text-foreground">
+                          {userData.housingType === '단독_주택' ? '단독 주택' : userData.housingType}
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="md:col-span-2 space-y-2">
+                      <Label>연락처</Label>
+                      {isEditing ? (
+                        <PhoneNumberInput
+                          id="contact"
+                          value={editData.phone}
+                          onChange={(value) => setEditData({...editData, phone: value})}
+                        />
+                      ) : (
+                        <p className="text-foreground">{userData.phone}</p>
+                      )}
+                    </div>
+
+                    <div className="md:col-span-2 space-y-2">
+                      <Label>지역</Label>
+                      {isEditing ? (
+                        <RegionSelector
+                          initialProvince={editData.regionProvince}
+                          initialCity={editData.regionCity}
+                          showSelectedBox={false}
+                          onRegionChange={(province, city) => setEditData({...editData, regionProvince: province, regionCity: city})}
+                        />
+                      ) : (
+                        <p className="text-foreground flex items-center gap-1">
+                          <MapPin className="h-4 w-4" />
+                          {userData.regionProvince} {userData.regionCity}
+                        </p>
                       )}
                     </div>
                   </div>
@@ -394,8 +587,13 @@ const MyProfile = () => {
 
                   {isEditing && (
                     <div className="flex space-x-2">
-                      <Button onClick={handleSave}>저장</Button>
-                      <Button variant="outline" onClick={() => setIsEditing(false)}>
+                      <Button
+                        onClick={handleSave}
+                        disabled={!canSave() || isSaving}
+                      >
+                        {isSaving ? '저장 중...' : '저장'}
+                      </Button>
+                      <Button variant="outline" onClick={handleCancel} disabled={isSaving}>
                         취소
                       </Button>
                     </div>

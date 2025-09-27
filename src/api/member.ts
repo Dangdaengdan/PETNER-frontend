@@ -66,6 +66,29 @@ export interface CheckAvailabilityResponse {
   available: boolean;
 }
 
+export interface ProfileUpdateRequest {
+  email: string;
+  nickname: string;
+  gender: 'MALE' | 'FEMALE';
+  housingType: '아파트' | '단독_주택' | '빌라' | '기타';
+  contact: string;
+  locationId: number;
+}
+
+export interface ProfileUpdateResponse {
+  memberId: number;
+  email: string;
+  nickname: string;
+  gender: 'MALE' | 'FEMALE';
+  housingType: '아파트' | '단독_주택' | '빌라' | '기타';
+  contact: string;
+  locationId: number;
+  state: string;
+  district: string;
+  locationName: string;
+  profileCompleted: boolean;
+}
+
 // 프로필 완성
 export const completeProfile = async (profileData: ProfileCompleteRequest): Promise<ProfileCompleteResponse> => {
   console.log('전송할 프로필 데이터:', JSON.stringify(profileData, null, 2));
@@ -144,5 +167,33 @@ export const checkEmail = async (email: string): Promise<CheckAvailabilityRespon
   if (!response.ok) {
     throw new Error(`이메일 확인 실패: ${response.status}`);
   }
+  return response.json();
+};
+
+// 프로필 수정
+export const updateProfile = async (profileData: ProfileUpdateRequest): Promise<ProfileUpdateResponse> => {
+  console.log('전송할 프로필 수정 데이터:', JSON.stringify(profileData, null, 2));
+
+  const response = await fetch(`${MEMBERS_BASE_URL}/profile`, {
+    method: 'PATCH',
+    credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(profileData),
+  });
+
+  if (!response.ok) {
+    let errorMessage = `프로필 수정 실패: ${response.status}`;
+    try {
+      const errorData = await response.json();
+      console.error('백엔드 에러 응답:', errorData);
+      errorMessage += ` - ${JSON.stringify(errorData)}`;
+    } catch (e) {
+      console.error('에러 응답 파싱 실패:', e);
+    }
+    throw new Error(errorMessage);
+  }
+
   return response.json();
 };
