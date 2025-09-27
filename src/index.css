@@ -8,7 +8,27 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* Petner Brand Colors */
+    /* Global Color System - 100-900 Scale */
+    
+    /* Primary Colors - Brown */
+    --color-brown-100: #F4EFE7;
+    --color-brown-400: #BFA887;
+    --color-brown-500: #A38B6B;
+    --color-brown-600: #8E775B;
+    --color-brown-800: #4E4032;
+
+    /* Secondary Colors - Green */
+    --color-green-300: #E0E5CE;
+    --color-green-400: #B6BF9C;
+    --color-green-500: #919D7A;
+    --color-green-700: #556042;
+
+    /* Neutral Colors - Gray */
+    --color-neutral-200: #E7E7E7;
+    --color-neutral-700: #5A5A5A;
+    --color-neutral-900: #333333;
+
+    /* Legacy Petner Brand Colors (for backward compatibility) */
     --background: 40 42% 92%; /* #F4EFE4 */
     --foreground: 25 35% 20%; /* #453021 */
 

@@ -178,7 +178,7 @@ const Community = () => {
     return filtered;
   }, [searchTerm, sortBy]);
 
-  const ITEMS_PER_PAGE = 6;
+  const ITEMS_PER_PAGE = 15;
   const currentPage = Math.max(1, Number(params.get("page") || 1));
   const totalPages = Math.max(1, Math.ceil(filteredAndSortedPosts.length / ITEMS_PER_PAGE));
   const safePage = Math.min(currentPage, totalPages);
@@ -251,68 +251,63 @@ const Community = () => {
           </div>
         </div>
 
-        {/* Posts List - Big Box Container */}
-        <Card className="shadow-lg rounded-3xl">
-          <CardContent className="p-8">
-            <div className="space-y-12">
-              {pageItems.map((post) => (
-                <Link 
-                  key={post.id} 
-                  to={`/post/${post.id}`}
-                  className="block"
-                >
-                  <div className="p-10 border border-border rounded-2xl shadow-lg transition-all duration-300 cursor-pointer hover:bg-muted/50 hover:border-primary/50 hover:-translate-y-2">
-                    <div className="flex items-start justify-between mb-6">
-                      <div className="flex-1">
-                        <h3 className="text-xl font-semibold text-foreground hover:text-primary transition-colors mb-4">
-                          {post.title}
-                        </h3>
-                        <p className="text-muted-foreground text-base line-clamp-2">
-                          {post.content}
-                        </p>
-                      </div>
-                      <div className="text-sm text-muted-foreground flex items-center gap-6 ml-6">
-                        <div className="flex items-center gap-2">
-                          <Calendar className="h-4 w-4" />
-                          <span>{post.date}</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <MessageSquare className="h-4 w-4" />
-                          <span>{post.comments}</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Heart className="h-4 w-4" />
-                          <span>{post.likes}</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Eye className="h-4 w-4" />
-                          <span>{post.views}</span>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex items-center justify-between text-base text-muted-foreground">
-                      <span className="font-medium">{post.author}</span>
-                      <div className="flex items-center gap-8">
-                        <div className="flex items-center gap-2">
-                          <Heart className="h-5 w-5" />
-                          <span>{post.likes}</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <MessageSquare className="h-5 w-5" />
-                          <span>{post.comments}</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <Eye className="h-5 w-5" />
-                          <span>조회 {post.views}</span>
-                        </div>
-                      </div>
-                    </div>
+        {/* Posts List - Table Format */}
+        {/* Total Count */}
+        <div className="mb-4">
+          <span className="text-[var(--color-neutral-700)]">
+            총 <span className="text-[#007bff] font-semibold">{filteredAndSortedPosts.length}</span> 건의 글이 있습니다.
+          </span>
+        </div>
+
+        {/* Top Border */}
+        <div className="border-t-2 border-[var(--color-neutral-900)] mb-0"></div>
+
+        {/* Table Header */}
+        <div className="px-6 py-4 bg-[#f8f9fa] border-b border-[var(--color-neutral-200)]">
+          <div className="grid grid-cols-12 gap-4 text-base font-medium text-[var(--color-neutral-900)]">
+            <div className="col-span-1">NO</div>
+            <div className="col-span-2">작성자</div>
+            <div className="col-span-5">제목</div>
+            <div className="col-span-2 text-right">조회수</div>
+            <div className="col-span-2 text-right">작성일</div>
+          </div>
+        </div>
+
+        <div className="border-t-2 border-[var(--color-neutral-900)] mb-0"></div>
+
+        {/* Table Body */}
+        <div className="divide-y divide-[var(--color-neutral-200)]">
+          {pageItems.map((post, index) => (
+            <Link 
+              key={post.id} 
+              to={`/post/${post.id}`}
+              className="block hover:bg-gray-50 transition-colors"
+            >
+              <div className="px-6 py-4">
+                <div className="grid grid-cols-12 gap-4 text-base items-center">
+                  <div className="col-span-1 text-[var(--color-neutral-700)]">
+                    {filteredAndSortedPosts.length - (safePage - 1) * ITEMS_PER_PAGE - index}
                   </div>
-                </Link>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+                  <div className="col-span-2 text-[var(--color-neutral-700)]">
+                    {post.author}
+                  </div>
+                  <div className="col-span-5 text-[var(--color-neutral-900)]">
+                    {post.title}
+                  </div>
+                  <div className="col-span-2 text-right text-[var(--color-neutral-700)]">
+                    {post.views}
+                  </div>
+                  <div className="col-span-2 text-right text-[var(--color-neutral-700)]">
+                    {post.date}
+                  </div>
+                </div>
+              </div>
+            </Link>
+          ))}
+        </div>
+
+        {/* Bottom Border */}
+        <div className="border-b-2 border-[var(--color-neutral-900)] mt-0"></div>
 
         {/* Empty State */}
         {filteredAndSortedPosts.length === 0 && (
