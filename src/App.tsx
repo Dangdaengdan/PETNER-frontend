@@ -14,6 +14,7 @@ import NotFound from "./pages/NotFound";
 import Pets from "./pages/Pets";
 import ChatButton from "./components/ChatButton";
 import PostCreate from "./pages/PostCreate";
+import KakaoCallback from "./pages/KakaoCallback";
 
 const queryClient = new QueryClient();
 
@@ -33,6 +34,7 @@ const App = () => (
           <Route path="/register" element={<RegisterPet />} />
           <Route path="/about" element={<About />} />
           <Route path="/pets" element={<Pets />} />
+          <Route path="/auth/kakao/callback" element={<KakaoCallback />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

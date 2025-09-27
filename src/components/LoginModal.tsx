@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -9,15 +9,93 @@ import RegionSelector from "@/components/RegionSelector";
 import PhoneNumberInput from "@/components/PhoneNumberInput";
 import { Heart } from "lucide-react";
 import kakaoLogo from "@/assets/kakao-logo.png";
+import { initiateKakaoLogin, handleKakaoCallback, getCurrentMember } from "@/api/auth";
 
 interface LoginModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSuccess?: () => void; // called when login/signup completes
+  kakaoCode?: string; // 카카오 인증 코드 전달
 }
 
-const LoginModal = ({ isOpen, onClose, onSuccess }: LoginModalProps) => {
+const LoginModal = ({ isOpen, onClose, onSuccess, kakaoCode }: LoginModalProps) => {
   const [showProfileModal, setShowProfileModal] = useState(false);
+  const [isKakaoLogin, setIsKakaoLogin] = useState(false);
+  const [kakaoUserInfo, setKakaoUserInfo] = useState<any>(null);
+
+  // 카카오 코드가 전달되면 콜백 처리
+  useEffect(() => {
+    console.log('LoginModal - kakaoCode:', kakaoCode, 'isOpen:', isOpen);
+    if (kakaoCode && isOpen) {
+      if (kakaoCode === 'success') {
+        handleKakaoSuccessProcess();
+      } else {
+        handleKakaoCallbackProcess(kakaoCode);
+      }
+    }
+  }, [kakaoCode, isOpen]);
+
+  // 카카오 콜백 처리
+  const handleKakaoCallbackProcess = async (code: string) => {
+    try {
+      console.log('카카오 콜백 처리 시작:', code);
+      const response = await handleKakaoCallback(code);
+      console.log('카카오 콜백 응답:', response);
+
+      if (response.message === '로그인 성공') {
+        // 현재 사용자 정보 조회
+        const memberInfo = await getCurrentMember();
+        console.log('사용자 정보:', memberInfo);
+
+        if (memberInfo.profileCompleted) {
+          // 이미 프로필이 완성된 경우 바로 로그인 완료
+          console.log('프로필 완성됨 - 로그인 완료');
+          if (onSuccess) onSuccess();
+          onClose();
+        } else {
+          // 프로필이 미완성인 경우 프로필 입력 모달로
+          console.log('프로필 미완성 - 회원정보 입력 화면으로');
+          setKakaoUserInfo(memberInfo);
+          setIsKakaoLogin(true);
+          setShowProfileModal(true);
+        }
+      }
+    } catch (error) {
+      console.error('카카오 로그인 처리 실패:', error);
+      alert('로그인 처리 중 오류가 발생했습니다.');
+    }
+  };
+
+  // 카카오 성공 처리 (이미 백엔드에서 세션 생성됨)
+  const handleKakaoSuccessProcess = async () => {
+    try {
+      console.log('카카오 성공 처리 시작');
+      // 현재 사용자 정보 조회 (백엔드에서 이미 세션 생성됨)
+      const memberInfo = await getCurrentMember();
+      console.log('사용자 정보:', memberInfo);
+
+      if (memberInfo.profileCompleted) {
+        // 이미 프로필이 완성된 경우 바로 로그인 완료
+        console.log('프로필 완성됨 - 로그인 완료');
+        if (onSuccess) onSuccess();
+        onClose();
+      } else {
+        // 프로필이 미완성인 경우 프로필 입력 모달로
+        console.log('프로필 미완성 - 회원정보 입력 화면으로');
+        setKakaoUserInfo(memberInfo);
+        setIsKakaoLogin(true);
+        setShowProfileModal(true);
+      }
+    } catch (error) {
+      console.error('카카오 성공 처리 실패:', error);
+      alert('로그인 처리 중 오류가 발생했습니다.');
+    }
+  };
+
+  // 카카오 로그인 시작
+  const handleKakaoLogin = () => {
+    initiateKakaoLogin();
+  };
 
   const [form, setForm] = useState({
     userId: "",
@@ -76,10 +154,10 @@ const LoginModal = ({ isOpen, onClose, onSuccess }: LoginModalProps) => {
           <Card className="border-border shadow-elegant">
             <CardContent className="space-y-4 pt-6">
               {/* Social Login */}
-              <Button 
-                variant="kakao" 
+              <Button
+                variant="kakao"
                 className="w-full h-12 text-base font-medium"
-                onClick={() => setShowProfileModal(true)}
+                onClick={handleKakaoLogin}
               >
                 <img src={kakaoLogo} alt="카카오" className="mr-2 h-5 w-5" />
                 카카오로 3초만에 시작하기

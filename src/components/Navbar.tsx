@@ -1,16 +1,51 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Menu, Search, User } from "lucide-react";
 import logo from "@/assets/petner-logo.png";
 import { Input } from "@/components/ui/input";
 import { Link, NavLink } from "react-router-dom";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { checkSession, kakaoLogout } from "@/api/auth";
 import LoginModal from "./LoginModal";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // 컴포넌트 마운트 시 세션 상태 확인
+  useEffect(() => {
+    const checkAuthStatus = async () => {
+      try {
+        const sessionResponse = await checkSession();
+        setIsLoggedIn(sessionResponse.authenticated);
+      } catch (error) {
+        console.error('세션 확인 실패:', error);
+        setIsLoggedIn(false);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    checkAuthStatus();
+  }, []);
+
+  // 로그아웃 처리
+  const handleLogout = async () => {
+    try {
+      await kakaoLogout();
+      setIsLoggedIn(false);
+    } catch (error) {
+      console.error('로그아웃 실패:', error);
+    }
+  };
+
+  // 로그인 성공 콜백
+  const handleLoginSuccess = () => {
+    setIsLoggedIn(true);
+    setIsLoginModalOpen(false);
+  };
 
   return (
     <TooltipProvider>
@@ -76,8 +111,12 @@ const Navbar = () => {
                 내 정보
               </Link>
             </Button>
-            {isLoggedIn ? (
-              <Button className="bg-primary hover:bg-primary/90 text-primary-foreground" onClick={() => setIsLoggedIn(false)}>
+            {isLoading ? (
+              <Button disabled className="bg-gray-400 text-white">
+                로딩중...
+              </Button>
+            ) : isLoggedIn ? (
+              <Button className="bg-primary hover:bg-primary/90 text-primary-foreground" onClick={handleLogout}>
                 로그아웃
               </Button>
             ) : (
@@ -128,8 +167,12 @@ const Navbar = () => {
                   내 정보
                 </Link>
               </Button>
-              {isLoggedIn ? (
-                <Button className="bg-primary hover:bg-primary/90 text-primary-foreground w-full" onClick={() => setIsLoggedIn(false)}>
+              {isLoading ? (
+                <Button disabled className="bg-gray-400 text-white w-full">
+                  로딩중...
+                </Button>
+              ) : isLoggedIn ? (
+                <Button className="bg-primary hover:bg-primary/90 text-primary-foreground w-full" onClick={handleLogout}>
                   로그아웃
                 </Button>
               ) : (
@@ -142,13 +185,10 @@ const Navbar = () => {
         )}
         </div>
       </nav>
-      <LoginModal 
-        isOpen={isLoginModalOpen} 
-        onClose={() => setIsLoginModalOpen(false)} 
-        onSuccess={() => {
-          setIsLoggedIn(true);
-          setIsLoginModalOpen(false);
-        }}
+      <LoginModal
+        isOpen={isLoginModalOpen}
+        onClose={() => setIsLoginModalOpen(false)}
+        onSuccess={handleLoginSuccess}
       />
     </TooltipProvider>
   );
