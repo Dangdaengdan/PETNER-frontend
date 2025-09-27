@@ -363,16 +363,16 @@ const MyProfile = () => {
 
       // 전체 필드 DTO 구성
       const fullUpdateData: DogUpdateRequestDto = {
-        name: dogDetail.name || '',
+        name: dogDetail.name || null,
         breedId: dogDetail.breed?.breedId || null,
-        birthDate: dogDetail.birthDate || '',
+        birthDate: dogDetail.birthDate || null,
         gender: dogDetail.gender || 'MALE',
-        dogSize: dogDetail.dogSize || '',
-        weight: dogDetail.weight || 0,
-        healthStatus: dogDetail.healthStatus || '',
-        description: dogDetail.description || '',
+        dogSize: dogDetail.dogSize || null,
+        weight: dogDetail.weight || null,
+        healthStatus: dogDetail.healthStatus || null,
+        description: dogDetail.description || null,
         adoptionStatus: newStatus,
-        imageUrl: dogDetail.imageUrl || '',
+        imageUrl: dogDetail.imageUrl || null,
         shelterId: dogDetail.shelter?.shelterId || null,
       };
 
@@ -402,8 +402,8 @@ const MyProfile = () => {
     switch (status) {
       case "입양_가능":
         return <Badge variant="secondary" className="bg-[#A64F1C]/10 text-[#A64F1C]"><Heart className="w-3 h-3 mr-1" />입양 가능</Badge>;
-      case "입양_처리_중":
-        return <Badge variant="secondary" className="bg-yellow-100 text-yellow-800"><Clock className="w-3 h-3 mr-1" />입양 처리 중</Badge>;
+      case "입양_절차_중":
+        return <Badge variant="secondary" className="bg-yellow-100 text-yellow-800"><Clock className="w-3 h-3 mr-1" />입양 절차 중</Badge>;
       case "입양_완료":
         return <Badge variant="secondary" className="bg-green-100 text-green-800"><CheckCircle className="w-3 h-3 mr-1" />입양 완료</Badge>;
       default:
@@ -725,7 +725,7 @@ const MyProfile = () => {
                             </SelectTrigger>
                             <SelectContent>
                               <SelectItem value="입양_가능">입양 가능</SelectItem>
-                              <SelectItem value="입양_처리_중">입양 처리 중</SelectItem>
+                              <SelectItem value="입양_절차_중">입양 절차 중</SelectItem>
                               <SelectItem value="입양_완료">입양 완료</SelectItem>
                             </SelectContent>
                           </Select>
