@@ -1,3 +1,5 @@
+import axios from 'axios';
+
 const MEMBERS_BASE_URL = `${import.meta.env.VITE_API_BASE_URL}/api/v1/members`;
 
 export interface MemberResponse {
@@ -93,107 +95,114 @@ export interface ProfileUpdateResponse {
 export const completeProfile = async (profileData: ProfileCompleteRequest): Promise<ProfileCompleteResponse> => {
   console.log('전송할 프로필 데이터:', JSON.stringify(profileData, null, 2));
 
-  const response = await fetch(`${MEMBERS_BASE_URL}/profile/complete`, {
-    method: 'POST',
-    credentials: 'include',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(profileData),
-  });
+  try {
+    const response = await axios.post(`${MEMBERS_BASE_URL}/profile/complete`, profileData, {
+      withCredentials: true,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
 
-  if (!response.ok) {
-    let errorMessage = `프로필 완성 실패: ${response.status}`;
-    try {
-      const errorData = await response.json();
-      console.error('백엔드 에러 응답:', errorData);
-      errorMessage += ` - ${JSON.stringify(errorData)}`;
-    } catch (e) {
-      console.error('에러 응답 파싱 실패:', e);
+    return response.data;
+  } catch (error) {
+    let errorMessage = `프로필 완성 실패`;
+    if (axios.isAxiosError(error)) {
+      errorMessage += `: ${error.response?.status}`;
+      if (error.response?.data) {
+        console.error('백엔드 에러 응답:', error.response.data);
+        errorMessage += ` - ${JSON.stringify(error.response.data)}`;
+      }
+    } else {
+      console.error('에러 응답 파싱 실패:', error);
     }
     throw new Error(errorMessage);
   }
-
-  return response.json();
 };
 
 // 사용자 프로필 조회
 export const getUserProfile = async (): Promise<UserProfile> => {
-  const response = await fetch(`${MEMBERS_BASE_URL}/profile`, {
-    method: 'GET',
-    credentials: 'include',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
+  try {
+    const response = await axios.get(`${MEMBERS_BASE_URL}/profile`, {
+      withCredentials: true,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
 
-  if (!response.ok) {
-    let errorMessage = `프로필 조회 실패: ${response.status}`;
-    try {
-      const errorData = await response.json();
-      console.error('백엔드 에러 응답:', errorData);
-      errorMessage += ` - ${JSON.stringify(errorData)}`;
-    } catch (e) {
-      console.error('에러 응답 파싱 실패:', e);
+    return response.data;
+  } catch (error) {
+    let errorMessage = `프로필 조회 실패`;
+    if (axios.isAxiosError(error)) {
+      errorMessage += `: ${error.response?.status}`;
+      if (error.response?.data) {
+        console.error('백엔드 에러 응답:', error.response.data);
+        errorMessage += ` - ${JSON.stringify(error.response.data)}`;
+      }
+    } else {
+      console.error('에러 응답 파싱 실패:', error);
     }
     throw new Error(errorMessage);
   }
-
-  return response.json();
 };
 
 // 닉네임 중복 확인
 export const checkNickname = async (nickname: string): Promise<CheckAvailabilityResponse> => {
-  const response = await fetch(`${MEMBERS_BASE_URL}/check/nickname?nickname=${encodeURIComponent(nickname)}`, {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
-  if (!response.ok) {
-    throw new Error(`닉네임 확인 실패: ${response.status}`);
+  try {
+    const response = await axios.get(`${MEMBERS_BASE_URL}/check/nickname?nickname=${encodeURIComponent(nickname)}`, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      throw new Error(`닉네임 확인 실패: ${error.response?.status}`);
+    }
+    throw error;
   }
-  return response.json();
 };
 
 // 이메일 중복 확인
 export const checkEmail = async (email: string): Promise<CheckAvailabilityResponse> => {
-  const response = await fetch(`${MEMBERS_BASE_URL}/check/email?email=${encodeURIComponent(email)}`, {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
-  if (!response.ok) {
-    throw new Error(`이메일 확인 실패: ${response.status}`);
+  try {
+    const response = await axios.get(`${MEMBERS_BASE_URL}/check/email?email=${encodeURIComponent(email)}`, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      throw new Error(`이메일 확인 실패: ${error.response?.status}`);
+    }
+    throw error;
   }
-  return response.json();
 };
 
 // 프로필 수정
 export const updateProfile = async (profileData: ProfileUpdateRequest): Promise<ProfileUpdateResponse> => {
   console.log('전송할 프로필 수정 데이터:', JSON.stringify(profileData, null, 2));
 
-  const response = await fetch(`${MEMBERS_BASE_URL}/profile`, {
-    method: 'PATCH',
-    credentials: 'include',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(profileData),
-  });
+  try {
+    const response = await axios.patch(`${MEMBERS_BASE_URL}/profile`, profileData, {
+      withCredentials: true,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
 
-  if (!response.ok) {
-    let errorMessage = `프로필 수정 실패: ${response.status}`;
-    try {
-      const errorData = await response.json();
-      console.error('백엔드 에러 응답:', errorData);
-      errorMessage += ` - ${JSON.stringify(errorData)}`;
-    } catch (e) {
-      console.error('에러 응답 파싱 실패:', e);
+    return response.data;
+  } catch (error) {
+    let errorMessage = `프로필 수정 실패`;
+    if (axios.isAxiosError(error)) {
+      errorMessage += `: ${error.response?.status}`;
+      if (error.response?.data) {
+        console.error('백엔드 에러 응답:', error.response.data);
+        errorMessage += ` - ${JSON.stringify(error.response.data)}`;
+      }
+    } else {
+      console.error('에러 응답 파싱 실패:', error);
     }
     throw new Error(errorMessage);
   }
-
-  return response.json();
 };

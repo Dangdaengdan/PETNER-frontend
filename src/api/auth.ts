@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { MemberResponse } from './member';
 
 const AUTH_BASE_URL = `${import.meta.env.VITE_API_BASE_URL}/api/v1/auth/kakao`;
@@ -36,68 +37,76 @@ export const initiateKakaoLogin = (): void => {
 
 // 카카오 콜백 처리 - 인증 코드로 토큰 받기
 export const handleKakaoCallback = async (code: string): Promise<LoginResponse> => {
-  const response = await fetch(`${AUTH_BASE_URL}/callback?code=${encodeURIComponent(code)}`, {
-    method: 'GET',
-    credentials: 'include',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
+  try {
+    const response = await axios.get(`${AUTH_BASE_URL}/callback?code=${encodeURIComponent(code)}`, {
+      withCredentials: true,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
 
-  if (!response.ok) {
-    throw new Error(`카카오 콜백 처리 실패: ${response.status}`);
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      throw new Error(`카카오 콜백 처리 실패: ${error.response?.status}`);
+    }
+    throw error;
   }
-
-  return response.json();
 };
 
 // 현재 로그인된 사용자 정보 조회
 export const getCurrentMember = async (): Promise<MemberResponse> => {
-  const response = await fetch(`${AUTH_BASE_URL}/member`, {
-    method: 'GET',
-    credentials: 'include',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
+  try {
+    const response = await axios.get(`${AUTH_BASE_URL}/member`, {
+      withCredentials: true,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
 
-  if (!response.ok) {
-    throw new Error(`사용자 정보 조회 실패: ${response.status}`);
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      throw new Error(`사용자 정보 조회 실패: ${error.response?.status}`);
+    }
+    throw error;
   }
-
-  return response.json();
 };
 
 // 세션 상태 확인
 export const checkSession = async (): Promise<SessionResponse> => {
-  const response = await fetch(`${AUTH_BASE_URL}/session`, {
-    method: 'GET',
-    credentials: 'include',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
+  try {
+    const response = await axios.get(`${AUTH_BASE_URL}/session`, {
+      withCredentials: true,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
 
-  if (!response.ok) {
-    throw new Error(`세션 확인 실패: ${response.status}`);
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      throw new Error(`세션 확인 실패: ${error.response?.status}`);
+    }
+    throw error;
   }
-
-  return response.json();
 };
 
 // 로그아웃
 export const kakaoLogout = async (): Promise<LogoutResponse> => {
-  const response = await fetch(`${AUTH_BASE_URL}/logout`, {
-    method: 'POST',
-    credentials: 'include',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
+  try {
+    const response = await axios.post(`${AUTH_BASE_URL}/logout`, {}, {
+      withCredentials: true,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
 
-  if (!response.ok) {
-    throw new Error(`로그아웃 실패: ${response.status}`);
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      throw new Error(`로그아웃 실패: ${error.response?.status}`);
+    }
+    throw error;
   }
-
-  return response.json();
 };

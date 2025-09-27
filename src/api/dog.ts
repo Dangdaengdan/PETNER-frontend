@@ -1,3 +1,5 @@
+import axios from 'axios';
+
 const DOGS_BASE_URL = `${import.meta.env.VITE_API_BASE_URL}/api/v1/dogs`;
 
 export interface DogListResponseDto {
@@ -166,134 +168,131 @@ export interface DogDeleteResponseDto {
 }
 
 export const getDogs = async (page: number = 0, size: number = 10): Promise<DogListResponseDto[]> => {
-  const response = await fetch(`${DOGS_BASE_URL}?page=${page}&size=${size}`, {
-    method: 'GET',
-    credentials: 'include',
-    headers: {
-      'Content-Type': 'application/json; charset=utf-8',
-    },
-  });
+  try {
+    const response = await axios.get(`${DOGS_BASE_URL}?page=${page}&size=${size}`, {
+      withCredentials: true,
+      headers: {
+        'Content-Type': 'application/json; charset=utf-8',
+      },
+    });
 
-  if (!response.ok) {
-    throw new Error(`유기견 목록 조회 실패: ${response.status}`);
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      throw new Error(`유기견 목록 조회 실패: ${error.response?.status}`);
+    }
+    throw error;
   }
-
-  return response.json();
 };
 
 export const createDog = async (dogData: DogCreateRequestDto): Promise<DogCreateResponseDto> => {
-  const response = await fetch(DOGS_BASE_URL, {
-    method: 'POST',
-    credentials: 'include',
-    headers: {
-      'Content-Type': 'application/json; charset=utf-8',
-    },
-    body: JSON.stringify(dogData),
-  });
+  try {
+    const response = await axios.post(DOGS_BASE_URL, dogData, {
+      withCredentials: true,
+      headers: {
+        'Content-Type': 'application/json; charset=utf-8',
+      },
+    });
 
-  if (!response.ok) {
-    let errorMessage = `유기견 등록 실패: ${response.status}`;
-    try {
-      const errorData = await response.json();
-      console.error('백엔드 에러 응답:', errorData);
-      errorMessage += ` - ${JSON.stringify(errorData)}`;
-    } catch (e) {
-      console.error('에러 응답 파싱 실패:', e);
+    return response.data;
+  } catch (error) {
+    let errorMessage = `유기견 등록 실패`;
+    if (axios.isAxiosError(error)) {
+      errorMessage += `: ${error.response?.status}`;
+      if (error.response?.data) {
+        console.error('백엔드 에러 응답:', error.response.data);
+        errorMessage += ` - ${JSON.stringify(error.response.data)}`;
+      }
+    } else {
+      console.error('에러 응답 파싱 실패:', error);
     }
     throw new Error(errorMessage);
   }
-
-  return response.json();
 };
 
 export const getDogById = async (dogId: number): Promise<DogDetailResponseDto> => {
-  const response = await fetch(`${DOGS_BASE_URL}/${dogId}`, {
-    method: 'GET',
-    credentials: 'include',
-    headers: {
-      'Content-Type': 'application/json; charset=utf-8',
-    },
-  });
+  try {
+    const response = await axios.get(`${DOGS_BASE_URL}/${dogId}`, {
+      withCredentials: true,
+      headers: {
+        'Content-Type': 'application/json; charset=utf-8',
+      },
+    });
 
-  if (!response.ok) {
-    throw new Error(`유기견 상세 조회 실패: ${response.status}`);
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      throw new Error(`유기견 상세 조회 실패: ${error.response?.status}`);
+    }
+    throw error;
   }
-
-  return response.json();
 };
 
 export const searchDogs = async (searchParams: DogSearchRequestDto): Promise<DogSearchResponseDto[]> => {
-  const params = new URLSearchParams();
+  try {
+    const response = await axios.get(`${DOGS_BASE_URL}/search`, {
+      params: searchParams,
+      withCredentials: true,
+      headers: {
+        'Content-Type': 'application/json; charset=utf-8',
+      },
+    });
 
-  if (searchParams.q) params.append('q', searchParams.q);
-  if (searchParams.dogSize) params.append('dogSize', searchParams.dogSize);
-  if (searchParams.breedName) params.append('breedName', searchParams.breedName);
-  if (searchParams.gender) params.append('gender', searchParams.gender);
-  if (searchParams.location) params.append('location', searchParams.location);
-  if (searchParams.adoptionStatus) params.append('adoptionStatus', searchParams.adoptionStatus);
-  if (searchParams.page !== undefined) params.append('page', searchParams.page.toString());
-  if (searchParams.size !== undefined) params.append('size', searchParams.size.toString());
-
-  const response = await fetch(`${DOGS_BASE_URL}/search?${params.toString()}`, {
-    method: 'GET',
-    credentials: 'include',
-    headers: {
-      'Content-Type': 'application/json; charset=utf-8',
-    },
-  });
-
-  if (!response.ok) {
-    throw new Error(`유기견 검색 실패: ${response.status}`);
+    return response.data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      throw new Error(`유기견 검색 실패: ${error.response?.status}`);
+    }
+    throw error;
   }
-
-  return response.json();
 };
 
 export const updateDog = async (dogId: number, dogData: DogUpdateRequestDto): Promise<DogUpdateResponseDto> => {
-  const response = await fetch(`${DOGS_BASE_URL}/${dogId}`, {
-    method: 'PATCH',
-    credentials: 'include',
-    headers: {
-      'Content-Type': 'application/json; charset=utf-8',
-    },
-    body: JSON.stringify(dogData),
-  });
+  try {
+    const response = await axios.patch(`${DOGS_BASE_URL}/${dogId}`, dogData, {
+      withCredentials: true,
+      headers: {
+        'Content-Type': 'application/json; charset=utf-8',
+      },
+    });
 
-  if (!response.ok) {
-    let errorMessage = `유기견 수정 실패: ${response.status}`;
-    try {
-      const errorData = await response.json();
-      console.error('백엔드 에러 응답:', errorData);
-      errorMessage += ` - ${JSON.stringify(errorData)}`;
-    } catch (e) {
-      console.error('에러 응답 파싱 실패:', e);
+    return response.data;
+  } catch (error) {
+    let errorMessage = `유기견 수정 실패`;
+    if (axios.isAxiosError(error)) {
+      errorMessage += `: ${error.response?.status}`;
+      if (error.response?.data) {
+        console.error('백엔드 에러 응답:', error.response.data);
+        errorMessage += ` - ${JSON.stringify(error.response.data)}`;
+      }
+    } else {
+      console.error('에러 응답 파싱 실패:', error);
     }
     throw new Error(errorMessage);
   }
-
-  return response.json();
 };
 
 export const deleteDog = async (dogId: number): Promise<DogDeleteResponseDto> => {
-  const response = await fetch(`${DOGS_BASE_URL}/${dogId}`, {
-    method: 'DELETE',
-    credentials: 'include',
-    headers: {
-      'Content-Type': 'application/json; charset=utf-8',
-    },
-  });
+  try {
+    const response = await axios.delete(`${DOGS_BASE_URL}/${dogId}`, {
+      withCredentials: true,
+      headers: {
+        'Content-Type': 'application/json; charset=utf-8',
+      },
+    });
 
-  if (!response.ok) {
-    let errorMessage = `유기견 삭제 실패: ${response.status}`;
-    try {
-      const errorData = await response.json();
-      console.error('백엔드 에러 응답:', errorData);
-      errorMessage += ` - ${JSON.stringify(errorData)}`;
-    } catch (e) {
-      console.error('에러 응답 파싱 실패:', e);
+    return response.data;
+  } catch (error) {
+    let errorMessage = `유기견 삭제 실패`;
+    if (axios.isAxiosError(error)) {
+      errorMessage += `: ${error.response?.status}`;
+      if (error.response?.data) {
+        console.error('백엔드 에러 응답:', error.response.data);
+        errorMessage += ` - ${JSON.stringify(error.response.data)}`;
+      }
+    } else {
+      console.error('에러 응답 파싱 실패:', error);
     }
     throw new Error(errorMessage);
   }
-
-  return response.json();
 };

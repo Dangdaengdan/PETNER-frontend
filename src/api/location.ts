@@ -1,3 +1,5 @@
+import axios from 'axios';
+
 const LOCATION_BASE_URL = `${import.meta.env.VITE_API_BASE_URL}/api/v1/locations`;
 
 export interface LocationSearchResponse {
@@ -7,24 +9,21 @@ export interface LocationSearchResponse {
 
 export const searchLocationByName = async (name: string): Promise<LocationSearchResponse> => {
   try {
-    const encodedName = encodeURIComponent(name);
-    const response = await fetch(`${LOCATION_BASE_URL}/search?name=${encodedName}`, {
-      method: 'GET',
+    const response = await axios.get(`${LOCATION_BASE_URL}/search`, {
+      params: { name },
+      withCredentials: true,
       headers: {
         'Content-Type': 'application/json; charset=utf-8',
         'Accept': 'application/json; charset=utf-8',
       },
-      credentials: 'include',
     });
 
-    if (!response.ok) {
-      throw new Error(`Failed to search location: ${response.status}`);
-    }
-
-    const data = await response.json();
-    return data;
+    return response.data;
   } catch (error) {
     console.error('Error searching location:', error);
+    if (axios.isAxiosError(error)) {
+      throw new Error(`Failed to search location: ${error.response?.status}`);
+    }
     throw error;
   }
 };
