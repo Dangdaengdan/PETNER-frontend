@@ -14,6 +14,7 @@ import NotFound from "./pages/NotFound";
 import Pets from "./pages/Pets";
 import ChatButton from "./components/ChatButton";
 import PostCreate from "./pages/PostCreate";
+import PostEdit from "./pages/PostEdit";
 import KakaoCallback from "./pages/KakaoCallback";
 
 const queryClient = new QueryClient();
@@ -23,13 +24,19 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <BrowserRouter>
+      <BrowserRouter
+        future={{
+          v7_startTransition: true,
+          v7_relativeSplatPath: true,
+        }}
+      >
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/pet/:id" element={<PetDetail />} />
           <Route path="/community" element={<Community />} />
           <Route path="/community/new" element={<PostCreate />} />
           <Route path="/post/:id" element={<PostDetail />} />
+          <Route path="/post/:id/edit" element={<PostEdit />} />
           <Route path="/profile" element={<MyProfile />} />
           <Route path="/register" element={<RegisterPet />} />
           <Route path="/about" element={<About />} />
