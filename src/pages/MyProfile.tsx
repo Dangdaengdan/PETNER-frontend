@@ -732,7 +732,6 @@ const MyProfile = () => {
                             </div>
                             <Button
                               variant="outline"
-                              size="sm"
                               onClick={() => handleDeleteClick(dog.dogId, dog.name)}
                               className="gap-2 text-red-600 border-red-200 hover:bg-red-600 hover:text-white hover:border-red-600"
                             >
