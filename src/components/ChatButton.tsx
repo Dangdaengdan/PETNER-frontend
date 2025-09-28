@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, useImperativeHandle, forwardRef } from "react";
 import { MessageCircle, X, ArrowLeft, Send, Phone, MoreVertical, Maximize2, Minimize2, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -19,8 +19,14 @@ import {
   type ChatMessage,
   type ChatRoomCreateRequest
 } from "@/api/chat";
+import { ProtectedImage } from "@/components/ProtectedImage";
 
-const ChatButton = () => {
+export interface ChatButtonRef {
+  openChatRoom: (chatRoomId: number) => void;
+  openChat: () => void;
+}
+
+const ChatButton = forwardRef<ChatButtonRef>((props, ref) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
@@ -33,6 +39,7 @@ const ChatButton = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [unreadCounts, setUnreadCounts] = useState<Record<number, number>>({});
   const [dogOwnerInfo, setDogOwnerInfo] = useState<Record<number, number>>({});
+  const [dogImageInfo, setDogImageInfo] = useState<Record<number, string>>({});
   
   // 사용자별 채팅방 마지막 읽은 시간 관리
   const getLastReadTime = (chatRoomId: number): string | null => {
@@ -45,10 +52,20 @@ const ChatButton = () => {
     localStorage.setItem(`user_${currentMemberId}_chatRoom_${chatRoomId}_lastRead`, time);
   };
   
-  // 마지막 로그아웃 시간 관리
+  // 마지막 로그아웃 시간 관리 (활성 시간도 고려)
   const getLastLogoutTime = (): string | null => {
     if (!currentMemberId) return null;
-    return localStorage.getItem(`user_${currentMemberId}_lastLogout`);
+    
+    const lastLogout = localStorage.getItem(`user_${currentMemberId}_lastLogout`);
+    const lastActive = localStorage.getItem(`user_${currentMemberId}_lastActive`);
+    
+    // 둘 다 있으면 더 최신 시간 반환
+    if (lastLogout && lastActive) {
+      return new Date(lastLogout) > new Date(lastActive) ? lastLogout : lastActive;
+    }
+    
+    // 하나만 있으면 그것을 반환
+    return lastLogout || lastActive;
   };
   
   const setLastLogoutTime = (time: string) => {
@@ -173,6 +190,23 @@ const ChatButton = () => {
     });
   };
 
+  // 유기견 이미지 정보 로드
+  const loadDogImageInfo = async (dogId: number) => {
+    if (dogImageInfo[dogId]) return; // 이미 로드된 경우 스킵
+
+    try {
+      const dogDetail = await getDogById(dogId);
+      if (dogDetail.imageUrl) {
+        setDogImageInfo(prev => ({
+          ...prev,
+          [dogId]: dogDetail.imageUrl
+        }));
+      }
+    } catch (error) {
+      console.error('유기견 이미지 정보 로드 실패:', error);
+    }
+  };
+
   // 채팅방 목록 로드 함수
   const loadChatRooms = async (profileCompleted?: boolean) => {
     try {
@@ -185,6 +219,15 @@ const ChatButton = () => {
       }
       
       setChatRooms(sortChatRooms(rooms || []));
+
+      // 유기견이 있는 채팅방들의 이미지 정보 로드
+      if (rooms) {
+        rooms.forEach(room => {
+          if (room.dogInfo?.dogId) {
+            loadDogImageInfo(room.dogInfo.dogId);
+          }
+        });
+      }
     } catch (error) {
       console.error('채팅방 로드 실패:', error);
     } finally {
@@ -228,24 +271,72 @@ const ChatButton = () => {
     }
   }, [isOpen, disconnect]);
 
-  // 페이지 떠날 때 로그아웃 시간 저장
+  // 주기적으로 활성 시간 저장 (브라우저 강제 종료 대비)
   useEffect(() => {
+    if (!currentMemberId) return;
+
+    // 5초마다 현재 시간을 "마지막 활성 시간"으로 저장
+    const updateLastActiveTime = () => {
+      localStorage.setItem(`user_${currentMemberId}_lastActive`, new Date().toISOString());
+    };
+
+    // 초기 저장
+    updateLastActiveTime();
+
+    // 5초마다 업데이트
+    const interval = setInterval(updateLastActiveTime, 5000);
+
+    // 페이지 떠날 때 로그아웃 시간 저장
     const handleBeforeUnload = () => {
-      if (currentMemberId) {
-        setLastLogoutTime(new Date().toISOString());
-      }
+      setLastLogoutTime(new Date().toISOString());
     };
 
     window.addEventListener('beforeunload', handleBeforeUnload);
     
     return () => {
+      clearInterval(interval);
       window.removeEventListener('beforeunload', handleBeforeUnload);
       // 컴포넌트 언마운트 시에도 저장
-      if (currentMemberId) {
-        setLastLogoutTime(new Date().toISOString());
-      }
+      setLastLogoutTime(new Date().toISOString());
     };
   }, [currentMemberId]);
+
+  // 외부에서 발생한 채팅방 열기 이벤트 수신
+  useEffect(() => {
+    const handleOpenChatRoom = (event: CustomEvent) => {
+      const { chatRoomId } = event.detail;
+      if (chatRoomId) {
+        setIsOpen(true);
+        // 약간의 딜레이 후 채팅방 로드 (채팅방 목록이 업데이트될 시간을 줌)
+        setTimeout(async () => {
+          try {
+            await loadChatRooms();
+            // 최신 채팅방 목록에서 찾기
+            const rooms = await getChatRooms();
+            const targetRoom = rooms?.find(room => room.chatRoomId === chatRoomId);
+            if (targetRoom) {
+              setSelectedChat(targetRoom.chatRoomId);
+              await loadChatMessages(targetRoom.chatRoomId);
+              
+              // 마지막 읽은 시간을 현재 시간으로 업데이트
+              setLastReadTime(targetRoom.chatRoomId, new Date().toISOString());
+              
+              // WebSocket 구독
+              subscribeToChatRoom(targetRoom.chatRoomId);
+            }
+          } catch (error) {
+            console.error('채팅방 열기 실패:', error);
+          }
+        }, 500);
+      }
+    };
+
+    window.addEventListener('openChatRoom', handleOpenChatRoom as EventListener);
+    
+    return () => {
+      window.removeEventListener('openChatRoom', handleOpenChatRoom as EventListener);
+    };
+  }, []); // 의존성 배열 비우기
 
   // 채팅방 메시지 로드
   const loadChatMessages = useCallback(async (chatRoomId: number) => {
@@ -378,6 +469,11 @@ const ChatButton = () => {
   };
 
   const handleBackToList = () => {
+    // 현재 채팅방의 읽음 시간을 업데이트 (내가 보낸 메시지도 읽음으로 처리)
+    if (selectedChat) {
+      setLastReadTime(selectedChat, new Date().toISOString());
+    }
+    
     setSelectedChat(null);
     setCurrentMessages([]);
   };
@@ -453,6 +549,20 @@ const ChatButton = () => {
     }
   };
 
+  // 외부에서 호출 가능한 메서드들 노출
+  useImperativeHandle(ref, () => ({
+    openChat: () => {
+      setIsOpen(true);
+    },
+    openChatRoom: async (chatRoomId: number) => {
+      setIsOpen(true);
+      // window 이벤트 사용
+      window.dispatchEvent(new CustomEvent('openChatRoom', {
+        detail: { chatRoomId }
+      }));
+    }
+  }), []);
+
   // 총 읽지 않은 메시지 수 계산
   const totalUnreadCount = chatRooms.filter(room => hasUnreadMessage(room)).length;
 
@@ -466,12 +576,7 @@ const ChatButton = () => {
         >
           <MessageCircle className="h-6 w-6" />
           {totalUnreadCount > 0 && (
-            <Badge 
-              variant="destructive" 
-              className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs"
-            >
-              {totalUnreadCount > 99 ? '99+' : totalUnreadCount}
-            </Badge>
+            <div className="absolute -top-1 -right-1 h-3 w-3 bg-red-500 rounded-full" />
           )}
         </Button>
       </div>
@@ -616,9 +721,17 @@ const ChatButton = () => {
                     >
                       <div className="relative">
                         <Avatar className="h-12 w-12">
-                          <AvatarFallback>
-                            {room.dogInfo?.name ? '🐕' : (room.otherMemberInfo?.nickname?.charAt(0) || 'U')}
-                          </AvatarFallback>
+                          {room.dogInfo?.dogId && dogImageInfo[room.dogInfo.dogId] ? (
+                            <ProtectedImage
+                              objectName={dogImageInfo[room.dogInfo.dogId]}
+                              alt={`${room.dogInfo.name} 프로필`}
+                              className="w-full h-full object-cover rounded-full"
+                            />
+                          ) : (
+                            <AvatarFallback>
+                              {room.dogInfo?.name ? '🐕' : (room.otherMemberInfo?.nickname?.charAt(0) || 'U')}
+                            </AvatarFallback>
+                          )}
                         </Avatar>
                       </div>
                       <div className="flex-1 min-w-0">
@@ -729,6 +842,6 @@ const ChatButton = () => {
   );
 
   return chatContainer;
-};
+});
 
 export default ChatButton;

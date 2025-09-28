@@ -10,6 +10,7 @@ export interface ChatRoom {
   dogInfo?: {
     dogId: number;
     name: string;
+    imageUrl?: string;
   };
   lastMessageContent?: string;
   lastMessageSentAt?: string;
