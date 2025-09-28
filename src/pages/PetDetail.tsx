@@ -20,12 +20,14 @@ import { ProtectedImage } from "@/components/ProtectedImage";
 import { createChatRoom } from "@/api/chat";
 import { getCurrentMember } from "@/api/auth";
 import { useFavorite } from "@/hooks/useFavorite";
+import { useToast } from "@/hooks/use-toast";
 
 
 const PetDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const { toast } = useToast();
   const [dog, setDog] = useState<DogDetailResponseDto | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -83,13 +85,19 @@ const PetDetail = () => {
   // 채팅방 생성 또는 이동
   const handleStartChat = async () => {
     if (!dog || !currentMemberId) {
-      alert('로그인이 필요합니다.');
+      toast({
+        title: "로그인 필요",
+        description: "채팅을 시작하려면 로그인이 필요합니다.",
+      });
       return;
     }
 
     // 본인이 등록한 유기견인지 확인
     if (dog.member.memberId === currentMemberId) {
-      alert('본인이 등록한 유기견에는 채팅을 할 수 없습니다.');
+      toast({
+        title: "채팅 불가",
+        description: "본인이 등록한 유기견에는 채팅을 할 수 없습니다.",
+      });
       return;
     }
 
@@ -117,7 +125,10 @@ const PetDetail = () => {
 
     } catch (error) {
       console.error('채팅방 생성 실패:', error);
-      alert('채팅방 생성에 실패했습니다. 다시 시도해주세요.');
+      toast({
+        title: "채팅방 생성 실패",
+        description: "채팅방 생성에 실패했습니다. 다시 시도해주세요.",
+      });
     } finally {
       setChatLoading(false);
     }

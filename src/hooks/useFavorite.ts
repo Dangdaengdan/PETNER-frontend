@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
 import { addFavorite, removeFavorite, isFavorite } from '@/api/favorite';
+import { useToast } from '@/hooks/use-toast';
 
 export const useFavorite = (dogId: number, initialIsFavorite?: boolean) => {
   const [isFavorited, setIsFavorited] = useState(initialIsFavorite ?? false);
   const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
 
   // initialIsFavorite가 변경될 때마다 상태 업데이트
   useEffect(() => {
@@ -42,16 +44,25 @@ export const useFavorite = (dogId: number, initialIsFavorite?: boolean) => {
         // 관심 목록에서 제거
         await removeFavorite(dogId);
         setIsFavorited(false);
-        alert('관심 목록에서 제거되었습니다.');
+        toast({
+          title: "관심 목록에서 제거되었습니다",
+          description: "찜목록에서 성공적으로 제거되었습니다.",
+        });
       } else {
         // 관심 목록에 추가
         await addFavorite(dogId);
         setIsFavorited(true);
-        alert('관심 목록에 추가되었습니다.');
+        toast({
+          title: "관심 목록에 추가되었습니다",
+          description: "찜목록에 성공적으로 추가되었습니다.",
+        });
       }
     } catch (error) {
       console.error('관심 목록 변경 실패:', error);
-      alert('관심 목록 변경에 실패했습니다. 다시 시도해주세요.');
+      toast({
+        title: "변경 실패",
+        description: "관심 목록 변경에 실패했습니다. 다시 시도해주세요.",
+      });
     } finally {
       setIsLoading(false);
     }

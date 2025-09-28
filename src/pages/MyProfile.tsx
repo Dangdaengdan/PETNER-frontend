@@ -21,6 +21,7 @@ import { getMyPosts, PostSummaryResponse } from "@/api/post";
 import { getMyDogApplies, getReceivedDogApplies, processDogApply, deleteDogApply, MyDogApplyResponse, ReceivedDogApplyResponse } from "@/api/dogapply";
 import { getMyFavorites, FavoriteResponse, removeFavorite } from "@/api/favorite";
 import { ProtectedImage } from "@/components/ProtectedImage";
+import { useToast } from "@/hooks/use-toast";
 
 // 기본 데이터
 const defaultUserData = {
@@ -80,6 +81,7 @@ const MyProfile = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const currentTab = searchParams.get('tab') || 'profile';
+  const { toast } = useToast();
   const [isEditing, setIsEditing] = useState(false);
   const [userData, setUserData] = useState(defaultUserData);
   const [editData, setEditData] = useState(defaultUserData);
@@ -153,9 +155,16 @@ const MyProfile = () => {
       await removeFavorite(dogId);
       // 성공적으로 제거되면 state에서도 제거
       setFavoritePets(prev => prev.filter(fav => fav.dogInfo.dogId !== dogId));
+      toast({
+        title: "찜목록에서 제거되었습니다",
+        description: "관심 반려동물에서 성공적으로 제거되었습니다.",
+      });
     } catch (error) {
       console.error('찜목록 제거 실패:', error);
-      alert('찜목록 제거에 실패했습니다. 다시 시도해주세요.');
+      toast({
+        title: "제거 실패",
+        description: "찜목록 제거에 실패했습니다. 다시 시도해주세요.",
+      });
     }
   };
 
