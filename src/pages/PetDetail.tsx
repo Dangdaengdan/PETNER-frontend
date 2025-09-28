@@ -2,7 +2,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { 
+import {
   Carousel,
   CarouselContent,
   CarouselItem,
@@ -10,120 +10,67 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { ArrowLeft, Heart, MessageCircle, MapPin, Calendar, Users } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { getDogById, DogDetailResponseDto } from "@/api/dog";
+import { calculateAge } from "@/utils/ageCalculator";
+import { ProtectedImage } from "@/components/ProtectedImage";
 
-// Import pet images
-import dog1 from "@/assets/dog1.jpg";
-import dog2 from "@/assets/dog2.jpg";
-import dog3 from "@/assets/dog3.jpg";
-import dog4 from "@/assets/dog4.jpg";
-import dog5 from "@/assets/dog5.jpg";
-import dog6 from "@/assets/dog6.jpg";
-
-const petsData = {
-  "1": {
-    id: "1",
-    name: "Buddy",
-    breed: "Golden Retriever",
-    age: "2세",
-    location: "Downtown Shelter",
-    images: [dog1, dog1, dog1],
-    gender: "수컷" as const,
-    size: "대형" as const,
-    description: "Buddy는 매우 친근하고 활발한 골든 리트리버입니다. 아이들과 잘 어울리며, 매일 산책을 좋아합니다. 기본적인 훈련이 되어 있어 가족과 함께 생활하기에 완벽한 반려견입니다.",
-    personality: ["친근함", "활발함", "충성심", "사교적"],
-    medicalInfo: "모든 예방접종 완료, 중성화 수술 완료",
-    caretakerInfo: "Downtown Shelter - 김수진 담당자"
-  },
-  "2": {
-    id: "2", 
-    name: "Whiskers",
-    breed: "Tabby Cat",
-    age: "3 세",
-    location: "City Animal Center",
-    images: [dog2,dog2,dog2],
-    gender: "암컷" as const,
-    size: "중형" as const,
-    description: "Whiskers는 조용하고 우아한 태비 고양이입니다. 조용한 환경을 좋아하며, 무릎에 앉아 있는 것을 즐깁니다. 독립적이지만 애정이 많은 성격을 가지고 있습니다.",
-    personality: ["조용함", "우아함", "독립적", "애정적"],
-    medicalInfo: "모든 예방접종 완료, 중성화 수술 완료",
-    caretakerInfo: "City Animal Center - 박지민 담당자"
-  },
-  "3": {
-    id: "3",
-    name: "Charlie",
-    breed: "Beagle",
-    age: "4 세",
-    location: "Westside Rescue",
-    images: [dog3, dog3, dog3],
-    gender: "수컷" as const,
-    size: "중형" as const,
-    description: "Charlie는 호기심이 많고 에너지가 넘치는 비글입니다. 냄새 맡기를 좋아하며, 다른 개들과도 잘 어울립니다. 가족들과 함께 놀기를 좋아하는 활발한 성격입니다.",
-    personality: ["호기심", "활발함", "사교적", "장난기"],
-    medicalInfo: "모든 예방접종 완료, 중성화 수술 완료",
-    caretakerInfo: "Westside Rescue - 이동현 담당자"
-  },
-  "4": {
-    id: "4",
-    name: "Luna",
-    breed: "Persian Cat",
-    age: "1 year",
-    location: "Happy Paws Shelter",
-    images: [dog4,dog4,dog4],
-    gender: "암컷" as const,
-    size: "소형" as const,
-    description: "Luna는 아름답고 온화한 페르시안 고양이입니다. 조용한 성격이지만 주인에게는 매우 애정적입니다. 털이 길어 정기적인 빗질이 필요하지만, 그만큼 아름다운 모습을 자랑합니다.",
-    personality: ["온화함", "아름다움", "조용함", "애정적"],
-    medicalInfo: "모든 예방접종 완료, 중성화 수술 예정",
-    caretakerInfo: "Happy Paws Shelter - 최영희 담당자"
-  },
-  "5": {
-    id: "5",
-    name: "Max",
-    breed: "Border Collie",
-    age: "5 세",
-    location: "Countryside Rescue",
-    images: [dog5, dog5, dog5],
-    gender: "수컷" as const,
-    size: "대형" as const,
-    description: "Max는 매우 똑똑하고 충성스러운 보더 콜리입니다. 훈련을 받는 것을 좋아하며, 활동적인 가족에게 완벽한 반려견입니다. 매일 충분한 운동과 정신적 자극이 필요합니다.",
-    personality: ["똑똑함", "충성심", "활발함", "훈련성"],
-    medicalInfo: "모든 예방접종 완료, 중성화 수술 완료",
-    caretakerInfo: "Countryside Rescue - 조민수 담당자"
-  },
-  "6": {
-    id: "6",
-    name: "Shadow",
-    breed: "Domestic Shorthair",
-    age: "2 세", 
-    location: "Metro Animal Shelter",
-    images: [dog6,dog6],
-    gender: "수컷" as const,
-    size: "중형" as const,
-    description: "Shadow는 신비로운 매력을 가진 검은 고양이입니다. 처음에는 조금 수줍어하지만, 친해지면 매우 애정적이고 장난기 많은 성격을 보입니다. 조용한 환경에서 편안함을 느낍니다.",
-    personality: ["신비로움", "수줍음", "애정적", "장난기"],
-    medicalInfo: "모든 예방접종 완료, 중성화 수술 완료",
-    caretakerInfo: "Metro Animal Shelter - 김태영 담당자"
-  }
-};
 
 const PetDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [isFavorited, setIsFavorited] = useState(false);
-  
-  const pet = id ? petsData[id as keyof typeof petsData] : null;
+  const [dog, setDog] = useState<DogDetailResponseDto | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  if (!pet) {
+  useEffect(() => {
+    const loadDogDetail = async () => {
+      if (!id) return;
+
+      try {
+        setLoading(true);
+        setError(null);
+        const dogData = await getDogById(Number(id));
+        setDog(dogData);
+      } catch (error) {
+        console.error("유기견 상세 정보 로드 실패:", error);
+        setError(error instanceof Error ? error.message : "알 수 없는 오류가 발생했습니다.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadDogDetail();
+  }, [id]);
+
+  if (loading) {
     return (
       <div className="min-h-screen bg-background">
         <Navbar />
         <div className="flex items-center justify-center min-h-[60vh]">
           <div className="text-center">
-            <h1 className="text-2xl font-bold text-foreground mb-4">Pet not found</h1>
-            <Button onClick={() => navigate('/')}>Go back home</Button>
+            <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary mx-auto"></div>
+            <p className="mt-4 text-lg text-muted-foreground">로딩 중...</p>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (error || !dog) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Navbar />
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <div className="text-center">
+            <h1 className="text-2xl font-bold text-foreground mb-4">
+              {error || "강아지를 찾을 수 없습니다"}
+            </h1>
+            <Button onClick={() => navigate('/')}>홈으로 돌아가기</Button>
           </div>
         </div>
         <Footer />
@@ -153,17 +100,21 @@ const PetDetail = () => {
               <div className="relative">
                 <Carousel className="w-full">
                   <CarouselContent>
-                    {pet.images.map((image, index) => (
-                      <CarouselItem key={index}>
-                        <div className="relative">
-                          <img
-                            src={image}
-                            alt={`${pet.name} - ${pet.breed} ${index + 1}`}
+                    <CarouselItem>
+                      <div className="relative">
+                        {dog.imageUrl ? (
+                          <ProtectedImage
+                            objectName={dog.imageUrl}
+                            alt={`${dog.name} - ${dog.breed.name}`}
                             className="w-full h-64 lg:h-80 object-cover"
                           />
-                        </div>
-                      </CarouselItem>
-                    ))}
+                        ) : (
+                          <div className="w-full h-64 lg:h-80 bg-gray-200 flex items-center justify-center text-gray-500">
+                            이미지 없음
+                          </div>
+                        )}
+                      </div>
+                    </CarouselItem>
                   </CarouselContent>
                   <CarouselPrevious className="absolute left-2 top-1/2 -translate-y-1/2" />
                   <CarouselNext className="absolute right-2 top-1/2 -translate-y-1/2" />
@@ -199,29 +150,29 @@ const PetDetail = () => {
               <Card className="h-full">
                 <CardContent className="p-6 h-full flex flex-col justify-center">
                   <div className="mb-4">
-                    <h1 className="text-3xl font-bold text-foreground mb-2">{pet.name}</h1>
-                    <p className="text-xl text-muted-foreground mb-4">{pet.breed}</p>
-                    
+                    <h1 className="text-3xl font-bold text-foreground mb-2">{dog.name}</h1>
+                    <p className="text-xl text-muted-foreground mb-4">{dog.breed.name}</p>
+
                     <div className="flex flex-wrap gap-2 mb-4">
                       <Badge variant="secondary" className="bg-primary/10 text-primary text-sm px-3 py-1">
-                        {pet.gender}
+                        {dog.gender === 'MALE' ? '수컷' : '암컷'}
                       </Badge>
                       <Badge variant="secondary" className="bg-accent/10 text-accent text-sm px-3 py-1">
-                        {pet.size}
+                        {dog.dogSize}
                       </Badge>
                       <Badge variant="secondary" className="bg-secondary text-secondary-foreground text-sm px-3 py-1">
-                        {pet.age}
+                        {calculateAge(dog.birthDate)}
                       </Badge>
                     </div>
 
                     <div className="flex items-center gap-4 text-muted-foreground">
                       <div className="flex items-center gap-2">
                         <Calendar className="h-4 w-4" />
-                        <span className="text-sm">{pet.age}</span>
+                        <span className="text-sm">{calculateAge(dog.birthDate)}</span>
                       </div>
                       <div className="flex items-center gap-2">
                         <MapPin className="h-4 w-4" />
-                        <span className="text-sm">{pet.location}</span>
+                        <span className="text-sm">{dog.shelter?.name || "보호소 정보 없음"}</span>
                       </div>
                     </div>
                   </div>
@@ -232,34 +183,18 @@ const PetDetail = () => {
 
           {/* Care Information Cards - Horizontal Layout */}
           <div className="lg:col-span-3 space-y-6 flex flex-col h-full">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <Card>
-                <CardContent className="p-6">
-                  <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
-                    <Users className="h-4 w-4" />
-                    성격적 정보
-                  </h3>
-                  <div className="flex flex-wrap gap-2">
-                    {pet.personality.map((trait, index) => (
-                      <Badge key={index} variant="outline" className="text-sm px-3 py-1">
-                        {trait}
-                      </Badge>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <Card>
                 <CardContent className="p-6">
                   <h3 className="text-lg font-semibold text-foreground mb-4">의료 정보</h3>
-                  <p className="text-sm text-muted-foreground">{pet.medicalInfo}</p>
+                  <p className="text-sm text-muted-foreground">{dog.healthStatus}</p>
                 </CardContent>
               </Card>
 
               <Card>
                 <CardContent className="p-6">
                   <h3 className="text-lg font-semibold text-foreground mb-4">담당자 정보</h3>
-                  <p className="text-sm text-muted-foreground">{pet.caretakerInfo}</p>
+                  <p className="text-sm text-muted-foreground">{dog.member.nickname}</p>
                 </CardContent>
               </Card>
             </div>
@@ -269,7 +204,7 @@ const PetDetail = () => {
               <CardContent className="p-8">
                 <h3 className="text-xl font-semibold text-foreground mb-6">기타 설명</h3>
                 <p className="text-muted-foreground leading-relaxed text-base">
-                  {pet.description}
+                  {dog.description}
                 </p>
               </CardContent>
             </Card>
