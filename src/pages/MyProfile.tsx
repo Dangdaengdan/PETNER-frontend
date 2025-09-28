@@ -8,7 +8,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Heart, MapPin, Calendar, Camera, Edit, Clock, CheckCircle, FileText, PawPrint } from "lucide-react";
+import { Heart, MapPin, Calendar, Camera, Edit, Clock, CheckCircle, FileText, PawPrint, Trash2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -16,7 +16,7 @@ import RegionSelector from "@/components/RegionSelector";
 import PhoneNumberInput from "@/components/PhoneNumberInput";
 import { getUserProfile, UserProfile, updateProfile, checkNickname, checkEmail } from "@/api/member";
 import { searchLocationByName } from "@/api/location";
-import { getMyDogs, DogListResponseDto, updateDog, DogUpdateRequestDto, getDogById } from "@/api/dog";
+import { getMyDogs, DogListResponseDto, updateDog, DogUpdateRequestDto, getDogById, deleteDog } from "@/api/dog";
 import { ProtectedImage } from "@/components/ProtectedImage";
 
 // 기본 데이터
@@ -135,6 +135,9 @@ const MyProfile = () => {
     isEmailAvailable: true,
     nicknameChecked: false,
     emailChecked: false,
+  });
+  const [deleteConfirm, setDeleteConfirm] = useState<{ isOpen: boolean; dogId?: number; dogName?: string }>({
+    isOpen: false
   });
 
   // 사용자 프로필 및 내 유기견 데이터 로드
@@ -396,6 +399,38 @@ const MyProfile = () => {
       console.error('입양상태 변경 실패:', error);
       alert('입양상태 변경에 실패했습니다. 다시 시도해주세요.');
     }
+  };
+
+  const handleDeleteClick = (dogId: number, dogName: string) => {
+    setDeleteConfirm({
+      isOpen: true,
+      dogId,
+      dogName
+    });
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!deleteConfirm.dogId) return;
+
+    try {
+      await deleteDog(deleteConfirm.dogId);
+
+      // 로컬 상태에서 삭제된 강아지 제거
+      setRegistrationData(prev =>
+        prev.filter(dog => dog.dogId !== deleteConfirm.dogId)
+      );
+
+      alert(`${deleteConfirm.dogName}이(가) 성공적으로 삭제되었습니다.`);
+    } catch (error) {
+      console.error('유기견 삭제 실패:', error);
+      alert('유기견 삭제에 실패했습니다. 다시 시도해주세요.');
+    } finally {
+      setDeleteConfirm({ isOpen: false });
+    }
+  };
+
+  const handleDeleteCancel = () => {
+    setDeleteConfirm({ isOpen: false });
   };
 
   const getStatusBadge = (status: string) => {
@@ -691,8 +726,19 @@ const MyProfile = () => {
                               <p className="text-sm text-muted-foreground">보호소: {dog.shelterName}</p>
                             </div>
                           </div>
-                          <div className="text-right">
-                            {getStatusBadge(dog.adoptionStatus)}
+                          <div className="flex items-center gap-3">
+                            <div className="text-right">
+                              {getStatusBadge(dog.adoptionStatus)}
+                            </div>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleDeleteClick(dog.dogId, dog.name)}
+                              className="gap-2 text-red-600 border-red-200 hover:bg-red-600 hover:text-white hover:border-red-600"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                              삭제
+                            </Button>
                           </div>
                         </div>
                       </div>
@@ -831,6 +877,38 @@ const MyProfile = () => {
       </main>
 
       <Footer />
+
+      {/* 삭제 확인 모달 */}
+      {deleteConfirm.isOpen && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-background rounded-lg p-6 max-w-md w-full mx-4">
+            <h3 className="text-lg font-semibold text-foreground mb-4">
+              유기견 삭제 확인
+            </h3>
+            <p className="text-muted-foreground mb-6">
+              <strong>{deleteConfirm.dogName}</strong>을(를) 정말 삭제하시겠습니까?
+              <br />
+              삭제된 정보는 복구할 수 없습니다.
+            </p>
+            <div className="flex gap-3 justify-end">
+              <Button
+                variant="outline"
+                onClick={handleDeleteCancel}
+              >
+                취소
+              </Button>
+              <Button
+                variant="outline"
+                onClick={handleDeleteConfirm}
+                className="gap-2 text-red-600 border-red-200 hover:bg-red-600 hover:text-white hover:border-red-600"
+              >
+                <Trash2 className="h-4 w-4" />
+                삭제
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
