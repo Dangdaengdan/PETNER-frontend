@@ -1,4 +1,4 @@
-import { useParams, useNavigate, useSearchParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -17,6 +17,8 @@ import { getDogById, DogDetailResponseDto } from "@/api/dog";
 import { isFavorite } from "@/api/favorite";
 import { calculateAge } from "@/utils/ageCalculator";
 import { ProtectedImage } from "@/components/ProtectedImage";
+import { createChatRoom } from "@/api/chat";
+import { getCurrentMember } from "@/api/auth";
 import { useFavorite } from "@/hooks/useFavorite";
 
 
@@ -34,6 +36,8 @@ const PetDetail = () => {
     dog?.dogId || 0,
     initialIsFavorite
   );
+  const [currentMemberId, setCurrentMemberId] = useState<number | null>(null);
+  const [chatLoading, setChatLoading] = useState(false);
 
   useEffect(() => {
     const loadDogDetail = async () => {
@@ -61,6 +65,63 @@ const PetDetail = () => {
 
     loadDogDetail();
   }, [id]);
+
+  // 현재 로그인한 사용자 정보 가져오기
+  useEffect(() => {
+    const loadCurrentMember = async () => {
+      try {
+        const member = await getCurrentMember();
+        setCurrentMemberId(member.memberId);
+      } catch (error) {
+        console.error("사용자 정보 로드 실패:", error);
+      }
+    };
+
+    loadCurrentMember();
+  }, []);
+
+  // 채팅방 생성 또는 이동
+  const handleStartChat = async () => {
+    if (!dog || !currentMemberId) {
+      alert('로그인이 필요합니다.');
+      return;
+    }
+
+    // 본인이 등록한 유기견인지 확인
+    if (dog.member.memberId === currentMemberId) {
+      alert('본인이 등록한 유기견에는 채팅을 할 수 없습니다.');
+      return;
+    }
+
+    // 채팅 시작 확인
+    if (!window.confirm(`${dog.member.nickname}님과 ${dog.name}에 대해 채팅을 시작하시겠습니까?`)) {
+      return;
+    }
+
+    try {
+      setChatLoading(true);
+
+      // 채팅방 생성 (이미 있으면 기존 채팅방 반환)
+      const chatRoomResponse = await createChatRoom({
+        otherMemberId: dog.member.memberId,
+        dogId: dog.dogId
+      });
+
+      console.log('채팅방 생성/조회 성공:', chatRoomResponse);
+
+      // 채팅방으로 바로 이동
+      // window 이벤트를 통해 ChatButton에 신호 전송
+      window.dispatchEvent(new CustomEvent('openChatRoom', {
+        detail: { chatRoomId: chatRoomResponse.chatRoomId }
+      }));
+
+    } catch (error) {
+      console.error('채팅방 생성 실패:', error);
+      alert('채팅방 생성에 실패했습니다. 다시 시도해주세요.');
+    } finally {
+      setChatLoading(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -165,9 +226,12 @@ const PetDetail = () => {
               <Button 
                 size="lg" 
                 className="w-full bg-primary hover:bg-primary/90 text-primary-foreground text-lg py-4"
+                onClick={handleStartChat}
+                disabled={chatLoading || !currentMemberId || (dog && dog.member.memberId === currentMemberId)}
               >
                 <MessageCircle className="h-6 w-6 mr-2" />
-                채팅 하기
+                {chatLoading ? '채팅방 생성 중...' :
+                 (dog && dog.member.memberId === currentMemberId) ? '본인 등록 유기견' : '채팅 하기'}
               </Button>
             </div>
 
