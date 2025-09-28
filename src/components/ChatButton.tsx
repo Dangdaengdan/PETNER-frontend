@@ -45,10 +45,20 @@ const ChatButton = () => {
     localStorage.setItem(`user_${currentMemberId}_chatRoom_${chatRoomId}_lastRead`, time);
   };
   
-  // 마지막 로그아웃 시간 관리
+  // 마지막 로그아웃 시간 관리 (활성 시간도 고려)
   const getLastLogoutTime = (): string | null => {
     if (!currentMemberId) return null;
-    return localStorage.getItem(`user_${currentMemberId}_lastLogout`);
+    
+    const lastLogout = localStorage.getItem(`user_${currentMemberId}_lastLogout`);
+    const lastActive = localStorage.getItem(`user_${currentMemberId}_lastActive`);
+    
+    // 둘 다 있으면 더 최신 시간 반환
+    if (lastLogout && lastActive) {
+      return new Date(lastLogout) > new Date(lastActive) ? lastLogout : lastActive;
+    }
+    
+    // 하나만 있으면 그것을 반환
+    return lastLogout || lastActive;
   };
   
   const setLastLogoutTime = (time: string) => {
@@ -228,22 +238,33 @@ const ChatButton = () => {
     }
   }, [isOpen, disconnect]);
 
-  // 페이지 떠날 때 로그아웃 시간 저장
+  // 주기적으로 활성 시간 저장 (브라우저 강제 종료 대비)
   useEffect(() => {
+    if (!currentMemberId) return;
+
+    // 5초마다 현재 시간을 "마지막 활성 시간"으로 저장
+    const updateLastActiveTime = () => {
+      localStorage.setItem(`user_${currentMemberId}_lastActive`, new Date().toISOString());
+    };
+
+    // 초기 저장
+    updateLastActiveTime();
+
+    // 5초마다 업데이트
+    const interval = setInterval(updateLastActiveTime, 5000);
+
+    // 페이지 떠날 때 로그아웃 시간 저장
     const handleBeforeUnload = () => {
-      if (currentMemberId) {
-        setLastLogoutTime(new Date().toISOString());
-      }
+      setLastLogoutTime(new Date().toISOString());
     };
 
     window.addEventListener('beforeunload', handleBeforeUnload);
     
     return () => {
+      clearInterval(interval);
       window.removeEventListener('beforeunload', handleBeforeUnload);
       // 컴포넌트 언마운트 시에도 저장
-      if (currentMemberId) {
-        setLastLogoutTime(new Date().toISOString());
-      }
+      setLastLogoutTime(new Date().toISOString());
     };
   }, [currentMemberId]);
 
@@ -466,12 +487,7 @@ const ChatButton = () => {
         >
           <MessageCircle className="h-6 w-6" />
           {totalUnreadCount > 0 && (
-            <Badge 
-              variant="destructive" 
-              className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs"
-            >
-              {totalUnreadCount > 99 ? '99+' : totalUnreadCount}
-            </Badge>
+            <div className="absolute -top-1 -right-1 h-3 w-3 bg-red-500 rounded-full" />
           )}
         </Button>
       </div>
