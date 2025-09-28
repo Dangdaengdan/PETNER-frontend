@@ -12,6 +12,7 @@ import { Search, MapPin, Calendar } from "lucide-react";
 import RegionSelector from "@/components/RegionSelector";
 import { ProtectedImage } from "@/components/ProtectedImage";
 import { getDogs, DogListResponseDto } from "@/api/dog";
+import { calculateAge } from "@/utils/ageCalculator";
 
 const ITEMS_PER_PAGE = 6;
 
@@ -321,7 +322,7 @@ const Pets = () => {
                   <div className="mt-1 flex items-center gap-4 text-sm text-muted-foreground">
                     <div className="flex items-center gap-1">
                       <Calendar className="h-4 w-4" />
-                      <span>나이 정보 없음</span>
+                      <span>{calculateAge(dog.birthDate)}</span>
                     </div>
                     <div className="flex items-center gap-1 min-w-0">
                       <MapPin className="h-4 w-4" />

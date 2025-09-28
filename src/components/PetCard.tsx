@@ -10,15 +10,46 @@ interface PetCardProps {
   id: string;
   name: string;
   breed: string;
-  age: string;
+  birthDate: string;
   location: string;
   image: string;
   gender: string;
   size: string;
 }
 
-const PetCard = ({ id, name, breed, age, location, image, gender, size }: PetCardProps) => {
+const PetCard = ({ id, name, breed, birthDate, location, image, gender, size }: PetCardProps) => {
   const [isFavorited, setIsFavorited] = useState(false);
+
+  const calculateAge = (birthDate: string) => {
+    if (!birthDate || birthDate.length < 6) {
+      return "나이 정보 없음";
+    }
+
+    try {
+      const year = parseInt(birthDate.slice(0, 4));
+      const month = parseInt(birthDate.slice(4, 6)) - 1; // JS Date는 0-based month
+      const birth = new Date(year, month);
+      const now = new Date();
+
+      let ageInMonths = (now.getFullYear() - birth.getFullYear()) * 12 + (now.getMonth() - birth.getMonth());
+
+      // 음수 나이인 경우 (미래 날짜) 처리
+      if (ageInMonths < 0) {
+        return "나이 정보 없음";
+      }
+
+      if (ageInMonths < 12) {
+        return ageInMonths === 0 ? "1개월 미만" : `${ageInMonths}개월`;
+      } else {
+        const ageInYears = Math.floor(ageInMonths / 12);
+        return `${ageInYears}살`;
+      }
+    } catch (error) {
+      return "나이 정보 없음";
+    }
+  };
+
+  const displayAge = calculateAge(birthDate);
 
   return (
     <Card className="group overflow-hidden bg-card border-border rounded-3xl shadow-petcard w-full transition-transform duration-300 hover:-translate-y-2 p-8">
@@ -65,7 +96,7 @@ const PetCard = ({ id, name, breed, age, location, image, gender, size }: PetCar
           <div className="flex items-center gap-4 text-sm text-muted-foreground">
             <div className="flex items-center gap-1">
               <Calendar className="h-4 w-4" />
-              <span>{age}</span>
+              <span>{displayAge}</span>
             </div>
             <div className="flex items-center gap-1">
               <MapPin className="h-4 w-4" />

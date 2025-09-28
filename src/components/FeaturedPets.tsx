@@ -8,6 +8,7 @@ import { useState, useEffect } from "react";
 import RegionSelector from "./RegionSelector";
 import { ProtectedImage } from "./ProtectedImage";
 import { getDogs, DogListResponseDto } from "@/api/dog";
+import { calculateAge } from "@/utils/ageCalculator";
 import { Card, CardContent } from "@/components/ui/card";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Badge } from "@/components/ui/badge";
@@ -21,14 +22,14 @@ interface FeaturedPetCardProps {
   id: string;
   name: string;
   breed: string;
-  age: string;
+  birthDate: string;
   location: string;
   imageUrl: string;
   gender: string;
   size: string;
 }
 
-const FeaturedPetCard = ({ id, name, breed, age, location, imageUrl, gender, size }: FeaturedPetCardProps) => {
+const FeaturedPetCard = ({ id, name, breed, birthDate, location, imageUrl, gender, size }: FeaturedPetCardProps) => {
   const [isFavorited, setIsFavorited] = useState(false);
 
   return (
@@ -82,7 +83,7 @@ const FeaturedPetCard = ({ id, name, breed, age, location, imageUrl, gender, siz
           <div className="flex items-center gap-4 text-sm text-muted-foreground">
             <div className="flex items-center gap-1">
               <Calendar className="h-4 w-4" />
-              <span>{age}</span>
+              <span>{calculateAge(birthDate)}</span>
             </div>
             <div className="flex items-center gap-1">
               <MapPin className="h-4 w-4" />
@@ -369,7 +370,7 @@ const FeaturedPets = () => {
                   id={dog.dogId.toString()}
                   name={dog.name}
                   breed={dog.breedName}
-                  age="나이 정보 없음"
+                  birthDate={dog.birthDate}
                   location={dog.shelterName || "보호소 정보 없음"}
                   imageUrl={dog.imageUrl}
                   gender={dog.gender === 'MALE' ? '수컷' : '암컷'}
