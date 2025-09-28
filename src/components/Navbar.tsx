@@ -104,20 +104,32 @@ const Navbar = () => {
     setIsLoginModalOpen(true);
   };
 
-  // 프로필 미완성 사용자가 다른 서비스 접근 시 LoginModal 열기
+  // 서비스 접근 핸들러 (Register, Community용)
   const handleServiceAccess = (e: React.MouseEvent) => {
-    if (isLoggedIn && !profileCompleted) {
+    if (!isLoggedIn) {
+      // 로그아웃 상태에서는 Alert 표시
       e.preventDefault();
-      setIsProfileCompletionRequired(true);
-      setIsLoginModalOpen(true);
-      alert('프로필 완성이 필요합니다. 회원정보를 입력해주세요.');
-    } else {
-      // 메뉴 클릭 시 페이지 새로고침
-      setTimeout(() => window.location.reload(), 100);
+      alert('로그인 후 이용해주세요.');
+    } else if (isLoggedIn && !profileCompleted) {
+      // 로그인했지만 프로필 미완성인 경우
+      e.preventDefault();
+      alert('프로필 정보를 모두 입력하고 이용해주세요.');
     }
+    // 로그인하고 프로필도 완성된 경우는 정상 동작 (페이지 이동)
   };
 
-  // 메뉴 클릭 시 페이지 새로고침 핸들러
+  // 내 정보 버튼 클릭 핸들러
+  const handleProfileClick = (e: React.MouseEvent) => {
+    if (!isLoggedIn) {
+      // 로그아웃 상태에서는 로그인 모달 열기
+      e.preventDefault();
+      setIsProfileCompletionRequired(false);
+      setIsLoginModalOpen(true);
+    }
+    // 로그인된 경우는 정상 동작 (프로필 페이지로 이동)
+  };
+
+  // 메뉴 클릭 시 페이지 새로고침 핸들러 (Home, About용)
   const handleMenuClick = () => {
     setTimeout(() => window.location.reload(), 100);
   };
@@ -181,7 +193,7 @@ const Navbar = () => {
           {/* Search and Actions */}
           <div className="hidden md:flex items-center space-x-4">
             <Button className="bg-[#F4EFE4] text-[#453021] hover:bg-[#A29770] border border-[#453021]" asChild>
-              <Link to="/profile">
+              <Link to="/profile" onClick={handleProfileClick}>
                 <User className="h-5 w-5 mr-2" />
                 내 정보
               </Link>
@@ -237,7 +249,7 @@ const Navbar = () => {
                 About
               </NavLink>
               <Button className="bg-[#895842] hover:bg-[#895842]/90 text-white w-full" asChild>
-                <Link to="/profile">
+                <Link to="/profile" onClick={handleProfileClick}>
                   <User className="h-5 w-5 mr-2" />
                   내 정보
                 </Link>
