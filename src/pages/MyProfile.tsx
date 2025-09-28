@@ -501,11 +501,11 @@ const MyProfile = () => {
             }
           }}>
             <TabsList className="grid w-full grid-cols-5">
-              <TabsTrigger value="profile">프로필</TabsTrigger>
-              <TabsTrigger value="applications">입양 신청 현황</TabsTrigger>
-              <TabsTrigger value="registrations">내가 등록한 유기견</TabsTrigger>
-              <TabsTrigger value="posts">내 글</TabsTrigger>
-              <TabsTrigger value="favorites">찜 목록</TabsTrigger>
+              <TabsTrigger value="profile" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">프로필</TabsTrigger>
+              <TabsTrigger value="applications" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">입양 신청 현황</TabsTrigger>
+              <TabsTrigger value="registrations" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">내가 등록한 유기견</TabsTrigger>
+              <TabsTrigger value="posts" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">내 글</TabsTrigger>
+              <TabsTrigger value="favorites" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">찜 목록</TabsTrigger>
             </TabsList>
 
             {/* 프로필 관리 */}
