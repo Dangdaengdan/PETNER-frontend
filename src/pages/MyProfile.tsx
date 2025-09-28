@@ -55,29 +55,6 @@ const adoptionApplications = [
   }
 ];
 
-const myPosts = [
-  {
-    id: 1,
-    title: "강아지 산책 꿀팁 공유해요!",
-    date: "2024-03-05",
-    views: 125,
-    comments: 8
-  },
-  {
-    id: 2,
-    title: "배변훈련 후기",
-    date: "2024-02-28",
-    views: 89,
-    comments: 12
-  },
-  {
-    id: 3,
-    title: "반려동물 건강관리 질문",
-    date: "2024-02-20",
-    views: 67,
-    comments: 5
-  }
-];
 
 const favoritePets = [
   {
@@ -125,11 +102,17 @@ const adoptionHistory = [
 ];
 
 const MyProfile = () => {
+  const navigate = useNavigate();
   const [isEditing, setIsEditing] = useState(false);
   const [userData, setUserData] = useState(defaultUserData);
   const [editData, setEditData] = useState(defaultUserData);
   const [originalData, setOriginalData] = useState(defaultUserData); // 원본 데이터 저장
   const [registrationData, setRegistrationData] = useState<DogListResponseDto[]>([]);
+  const [myPosts, setMyPosts] = useState<PostSummaryResponse[]>([]);
+  const [postsLoading, setPostsLoading] = useState(false);
+  const [postsPage, setPostsPage] = useState(0);
+  const [hasMorePosts, setHasMorePosts] = useState(false);
+  const [isLoadingMorePosts, setIsLoadingMorePosts] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [validation, setValidation] = useState({
@@ -176,6 +159,78 @@ const MyProfile = () => {
 
     loadData();
   }, []);
+
+  // 내 게시물 로드 함수
+  const loadMyPosts = async (page: number = 0, isLoadMore: boolean = false) => {
+    if (isLoadMore) {
+      setIsLoadingMorePosts(true);
+    } else {
+      setPostsLoading(true);
+    }
+
+    try {
+      const postsData = await getMyPosts(page, 10, 'createdAt,desc');
+
+      if (isLoadMore) {
+        // 무한스크롤: 기존 게시물에 추가
+        setMyPosts(prev => [...prev, ...postsData.content]);
+      } else {
+        // 초기 로드: 게시물 전체 교체
+        setMyPosts(postsData.content);
+      }
+
+      setPostsPage(page);
+      setHasMorePosts(!postsData.last);
+    } catch (error) {
+      console.error('내 게시물 로드 실패:', error);
+      if (!isLoadMore) {
+        setMyPosts([]);
+      }
+    } finally {
+      if (isLoadMore) {
+        setIsLoadingMorePosts(false);
+      } else {
+        setPostsLoading(false);
+      }
+    }
+  };
+
+  // 더 많은 게시물 로드
+  const loadMorePosts = async () => {
+    if (!hasMorePosts || isLoadingMorePosts) return;
+
+    const nextPage = postsPage + 1;
+    await loadMyPosts(nextPage, true);
+  };
+
+  // 무한스크롤을 위한 Intersection Observer
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const target = entries[0];
+        if (target.isIntersecting && hasMorePosts && !isLoadingMorePosts && !postsLoading) {
+          loadMorePosts();
+        }
+      },
+      { threshold: 0.1, rootMargin: '50px' }
+    );
+
+    const timeoutId = setTimeout(() => {
+      const sentinel = document.getElementById('posts-sentinel');
+      if (sentinel) {
+        observer.observe(sentinel);
+      }
+    }, 100);
+
+    return () => {
+      clearTimeout(timeoutId);
+      const sentinel = document.getElementById('posts-sentinel');
+      if (sentinel) {
+        observer.unobserve(sentinel);
+      }
+      observer.disconnect();
+    };
+  }, [hasMorePosts, isLoadingMorePosts, postsLoading, myPosts.length]);
 
   // 닉네임 자동 중복 체크
   useEffect(() => {
@@ -439,7 +494,12 @@ const MyProfile = () => {
             <p className="text-muted-foreground">프로필 정보를 관리하고 나의 반려동물 활동을 확인하세요</p>
           </div>
 
-          <Tabs defaultValue="profile" className="space-y-6">
+          <Tabs defaultValue="profile" className="space-y-6" onValueChange={(value) => {
+            // posts 탭이 클릭될 때 내 게시물 로드
+            if (value === 'posts' && !postsLoading) {
+              loadMyPosts();
+            }
+          }}>
             <TabsList className="grid w-full grid-cols-5">
               <TabsTrigger value="profile">프로필</TabsTrigger>
               <TabsTrigger value="applications">입양 신청 현황</TabsTrigger>
@@ -749,41 +809,75 @@ const MyProfile = () => {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="flex-1 flex flex-col">
-                  <div className="space-y-4 flex-1">
-                    {myPosts.map((post) => (
-                      <div key={post.id} className="border rounded-lg p-4">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <Link to={`/post/${post.id}`} className="font-semibold text-foreground hover:text-primary">
-                              {post.title}
-                            </Link>
-                            <div className="flex items-center space-x-4 mt-2 text-sm text-muted-foreground">
-                              <span>{post.date}</span>
-                              <span>조회 {post.views}</span>
-                              <span>댓글 {post.comments}</span>
+                  {postsLoading ? (
+                    <div className="flex justify-center py-8">
+                      <div className="text-muted-foreground">내 게시물 로딩 중...</div>
+                    </div>
+                  ) : (
+                    <div className="space-y-4 flex-1">
+                      {myPosts.length > 0 ? (
+                        myPosts.map((post) => (
+                          <div key={post.postId} className="border rounded-lg p-4">
+                            <div className="flex items-center justify-between">
+                              <div className="flex-1 min-w-0 mr-4">
+                                <Link to={`/post/${post.postId}`} className="font-semibold text-foreground hover:text-primary block">
+                                  <span className="truncate block" title={post.title}>
+                                    {post.title}
+                                  </span>
+                                </Link>
+                                <div className="flex items-center space-x-4 mt-2 text-sm text-muted-foreground">
+                                  <span>{new Date(post.createdAt).toLocaleDateString('ko-KR')}</span>
+                                  <span>조회 {post.viewCount}</span>
+                                </div>
+                              </div>
+                              <div className="flex gap-2 flex-shrink-0">
+                                <Button
+                                  variant="default"
+                                  size="sm"
+                                  onClick={() => {
+                                    // React Router의 navigate 사용하여 쿼리 파라미터와 함께 이동
+                                    navigate(`/post/${post.postId}?edit=true`);
+                                  }}
+                                >
+                                  수정
+                                </Button>
+                                <Button variant="outline" size="sm" asChild>
+                                  <Link to={`/post/${post.postId}`}>보기</Link>
+                                </Button>
+                              </div>
                             </div>
                           </div>
-                          <div className="flex gap-2">
-                            <Button variant="default" size="sm" asChild>
-                              <Link to={`/post/${post.id}/edit`}>수정</Link>
-                            </Button>
-                            <Button variant="outline" size="sm" asChild>
-                              <Link to={`/post/${post.id}`}>보기</Link>
-                            </Button>
-                          </div>
+                        ))
+                      ) : (
+                        <div className="text-center py-8 text-muted-foreground">
+                          작성한 게시글이 없습니다.
                         </div>
-                      </div>
-                    ))}
-                  </div>
-                  
-                  {/* 빈 공간에 표시될 메시지 */}
-                  <div className="flex-1 flex items-start justify-center pt-16">
-                    <div className="text-center text-muted-foreground">
-                      <FileText className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                      <p className="text-lg">더 많은 이야기를 공유해주세요.</p>
-                      <p className="text-sm mt-2">반려동물과의 소중한 경험을 나누어보세요.</p>
+                      )}
+
+                      {/* 무한스크롤을 위한 센티넬 요소 */}
+                      {myPosts.length > 0 && hasMorePosts && (
+                        <div id="posts-sentinel" className="h-4"></div>
+                      )}
+
+                      {/* 더 많은 게시물 로딩 중 표시 */}
+                      {isLoadingMorePosts && (
+                        <div className="text-center py-4">
+                          <div className="text-muted-foreground text-sm">더 많은 게시물 로딩 중...</div>
+                        </div>
+                      )}
                     </div>
-                  </div>
+                  )}
+
+                  {/* 게시물이 없을 때만 표시되는 빈 공간 메시지 */}
+                  {!postsLoading && myPosts.length === 0 && (
+                    <div className="flex-1 flex items-start justify-center pt-16">
+                      <div className="text-center text-muted-foreground">
+                        <FileText className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                        <p className="text-lg">더 많은 이야기를 공유해주세요.</p>
+                        <p className="text-sm mt-2">반려동물과의 소중한 경험을 나누어보세요.</p>
+                      </div>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </TabsContent>
