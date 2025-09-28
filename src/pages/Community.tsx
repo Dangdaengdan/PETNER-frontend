@@ -291,11 +291,13 @@ const Community = () => {
                     <div className="col-span-1 text-[var(--color-neutral-700)]">
                       {totalElements - (safePage - 1) * ITEMS_PER_PAGE - index}
                     </div>
-                    <div className="col-span-2 text-[var(--color-neutral-700)]">
+                    <div className="col-span-2 text-[var(--color-neutral-700)] truncate">
                       {post.authorNickname}
                     </div>
-                    <div className="col-span-5 text-[var(--color-neutral-900)]">
-                      {post.title}
+                    <div className="col-span-5 text-[var(--color-neutral-900)] truncate">
+                      <span className="hover:text-primary transition-colors" title={post.title}>
+                        {post.title}
+                      </span>
                     </div>
                     <div className="col-span-2 text-right text-[var(--color-neutral-700)]">
                       {post.viewCount}
