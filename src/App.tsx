@@ -38,7 +38,6 @@ const App = () => (
           <Route path="/pet/:id" element={<AuthGuard><PetDetail /></AuthGuard>} />
           <Route path="/community" element={<AuthGuard><Community /></AuthGuard>} />
           <Route path="/community/new" element={<AuthGuard><PostCreate /></AuthGuard>} />
-          <Route path="/community/edit/:id" element={<AuthGuard><PostEdit /></AuthGuard>} />
           <Route path="/post/:id" element={<AuthGuard><PostDetail /></AuthGuard>} />
           <Route path="/profile" element={<AuthGuard><MyProfile /></AuthGuard>} />
           <Route path="/register" element={<AuthGuard><RegisterPet /></AuthGuard>} />
