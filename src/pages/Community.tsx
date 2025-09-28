@@ -208,7 +208,7 @@ const Community = () => {
                 <Input
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  placeholder="게시글을 검색해보세요..."
+                  placeholder="게시글을 검색해보세요... (2글자 이상 입력해주세요.)"
                   className="h-10 bg-transparent border-0 focus-visible:ring-0 px-0"
                 />
               </div>
@@ -330,18 +330,32 @@ const Community = () => {
         {/* Pagination */}
         {!loading && posts.length > 0 && totalPages > 1 && (
           <div className="flex items-center justify-center gap-2 mt-12 md:mt-16">
-            <Button variant="outline" onClick={() => goToPage(Math.max(1, safePage - 1))} disabled={safePage <= 1}>{"<"}</Button>
+            <Button
+              variant="outline"
+              onClick={() => goToPage(Math.max(1, safePage - 1))}
+              disabled={safePage <= 1}
+              className="hover:bg-primary/10 hover:text-primary"
+            >
+              {"<"}
+            </Button>
             {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
               <Button
                 key={page}
                 variant={page === safePage ? "default" : "outline"}
                 onClick={() => goToPage(page)}
-                className={page === safePage ? "bg-primary text-primary-foreground" : ""}
+                className={page === safePage ? "bg-primary text-primary-foreground" : "hover:bg-primary/10 hover:text-primary"}
               >
                 {page}
               </Button>
             ))}
-            <Button variant="outline" onClick={() => goToPage(Math.min(totalPages, safePage + 1))} disabled={safePage >= totalPages}>{">"}</Button>
+            <Button
+              variant="outline"
+              onClick={() => goToPage(Math.min(totalPages, safePage + 1))}
+              disabled={safePage >= totalPages}
+              className="hover:bg-primary/10 hover:text-primary"
+            >
+              {">"}
+            </Button>
           </div>
         )}
       </main>
