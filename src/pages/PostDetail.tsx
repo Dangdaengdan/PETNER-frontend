@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { Heart, MessageSquare, Calendar, ArrowLeft, Eye, User, Edit, Reply, Trash2 } from "lucide-react";
+import { Heart, MessageSquare, Calendar, ArrowLeft, Eye, User, Edit, Reply, Trash2, MessageCircle } from "lucide-react";
 import { useState, useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -113,6 +113,24 @@ const PostDetail = () => {
       console.error("게시물 삭제 실패:", error);
       alert("게시물 삭제에 실패했습니다. 다시 시도해주세요.");
     }
+  };
+
+  // 게시자와 대화하기
+  const handleStartChat = () => {
+    if (!post || !currentUser) {
+      alert("로그인이 필요합니다.");
+      return;
+    }
+
+    if (isAuthor()) {
+      alert("본인과는 대화할 수 없습니다.");
+      return;
+    }
+
+    // TODO: 채팅방 생성 API 호출
+    // 현재는 임시로 alert만 표시
+    alert(`${post.authorNickname}님과의 채팅방을 생성합니다.`);
+    // navigate('/chat/room-id'); // 실제 채팅방 페이지로 이동
   };
 
   // 페이지 로드 시 스크롤을 맨 위로 이동
@@ -295,6 +313,19 @@ const PostDetail = () => {
               <User className="h-4 w-4" />
               <span>작성자: {post.authorNickname}</span>
             </div>
+
+            {/* 대화하기 버튼 (본인 게시물이 아닐 때만 표시) */}
+            {!isAuthor() && currentUser && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleStartChat}
+                className="gap-2 border-primary/60 text-primary hover:bg-primary/90 hover:text-primary-foreground hover:border-primary/90"
+              >
+                <MessageCircle className="h-4 w-4" />
+                대화하기
+              </Button>
+            )}
           </div>
 
           <h1 className="text-5xl font-bold text-[var(--color-neutral-900)] mb-12">{post.title}</h1>
@@ -317,7 +348,7 @@ const PostDetail = () => {
               <Button
                 variant="outline"
                 onClick={handleEditPost}
-                className="gap-2 hover:bg-primary/90 hover:text-primary-foreground hover:border-primary/90"
+                className="gap-2 border-primary/60 text-primary hover:bg-primary/90 hover:text-primary-foreground hover:border-primary/90"
               >
                 <Edit className="h-4 w-4" />
                 수정하기
@@ -325,7 +356,7 @@ const PostDetail = () => {
               <Button
                 variant="outline"
                 onClick={handleDeletePost}
-                className="gap-2 text-red-600 border-red-200 hover:bg-red-600 hover:text-white hover:border-red-600"
+                className="gap-2 text-red-600 border-red-400 hover:bg-red-600 hover:text-white hover:border-red-600"
               >
                 <Trash2 className="h-4 w-4" />
                 삭제하기
@@ -359,11 +390,11 @@ const PostDetail = () => {
 
           {/* 액션 버튼들 */}
           <div className="flex items-center justify-center gap-6">
-            <Button variant="outline" className="gap-2 py-3 px-6">
+            <Button variant="outline" className="gap-2 py-3 px-6 border-gray-400 text-gray-700 hover:bg-primary/10 hover:text-primary hover:border-primary/40">
               <Heart className="h-4 w-4" />
               좋아요
             </Button>
-            <Button variant="outline" className="gap-2 py-3 px-6">
+            <Button variant="outline" className="gap-2 py-3 px-6 border-gray-400 text-gray-700 hover:bg-primary/10 hover:text-primary hover:border-primary/40">
               <MessageSquare className="h-4 w-4" />
               댓글 {comments.reduce((total, comment) => total + 1 + comment.replies.length, 0)}
             </Button>
