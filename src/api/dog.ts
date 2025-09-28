@@ -242,6 +242,9 @@ export const getDogById = async (dogId: number): Promise<DogDetailResponseDto> =
 
 export const searchDogs = async (searchParams: DogSearchRequestDto): Promise<DogSearchResponseDto[]> => {
   try {
+    console.log('🌐 API 호출 URL:', `${DOGS_BASE_URL}/search`);
+    console.log('🌐 API 호출 파라미터:', searchParams);
+
     const response = await axios.get(`${DOGS_BASE_URL}/search`, {
       params: searchParams,
       withCredentials: true,
@@ -250,10 +253,18 @@ export const searchDogs = async (searchParams: DogSearchRequestDto): Promise<Dog
       },
     });
 
+    console.log('🌐 API 응답 상태:', response.status);
+    console.log('🌐 API 응답 데이터:', response.data);
+    console.log('🌐 실제 요청 URL:', response.config.url);
+
     return response.data;
   } catch (error) {
+    console.error('🌐 API 에러:', error);
     if (axios.isAxiosError(error)) {
-      throw new Error(`유기견 검색 실패: ${error.response?.status}`);
+      console.error('🌐 API 에러 응답:', error.response?.data);
+      console.error('🌐 API 에러 상태:', error.response?.status);
+      console.error('🌐 API 에러 헤더:', error.response?.headers);
+      throw new Error(`유기견 검색 실패: ${error.response?.status} - ${JSON.stringify(error.response?.data)}`);
     }
     throw error;
   }

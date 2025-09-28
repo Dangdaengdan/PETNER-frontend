@@ -11,7 +11,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { Search, MapPin, Calendar } from "lucide-react";
 import RegionSelector from "@/components/RegionSelector";
 import { ProtectedImage } from "@/components/ProtectedImage";
-import { getDogs, DogListResponseDto } from "@/api/dog";
+import { getDogs, DogListResponseDto, searchDogs, DogSearchRequestDto } from "@/api/dog";
 import { calculateAge } from "@/utils/ageCalculator";
 
 const ITEMS_PER_PAGE = 6;
@@ -26,6 +26,7 @@ const Pets = () => {
   const [dogs, setDogs] = useState<DogListResponseDto[]>([]);
   const [loading, setLoading] = useState(true);
   const [totalPages, setTotalPages] = useState(1);
+  const [isSearchMode, setIsSearchMode] = useState(false);
 
   // Filter states (same as Home)
   const [filters, setFilters] = useState({ dogSize: "", dogBreed: "", location: "" });
@@ -37,20 +38,20 @@ const Pets = () => {
 
   // Dog breed data (same as Home)
   const dogBreedsBySize = {
-    '소형견': [
+    '소형': [
       '토이 푸들', '말티즈', '요크셔테리어', '포메라니안', '치와와', '시츄',
       '잭 러셀 테리어', '보스턴 테리어', '카발리에 킹 찰스 스파니엘',
       '이탈리안 그레이하운드', '미니어처 슈나우저', '핀셔', '미니어처 핀셔',
       '위펫', '휘펫', '혼합견', '기타'
     ],
-    '중형견': [
+    '중형': [
       '보더 콜리', '푸들', '비글', '불독', '웰시코기', '진돗개', '풍산개',
       '삽살개', '코카스파니엘', '바셋 하운드', '브리타니 스파니엘',
       '시베리안 허스키', '슈나우저', '불 테리어', '스태퍼드셔 불 테리어',
       '아메리칸 스태퍼드셔 테리어', '핏불 테리어', '바이센지', '세터',
       '포인터', '혼합견', '기타'
     ],
-    '대형견': [
+    '대형': [
       '골든 리트리버', '래브라도 리트리버', '저먼 셰퍼드', '로트와일러',
       '도베르만', '도베르만 핀셔', '사모예드', '아키타', '복서', '그레이트 데인',
       '세인트 버나드', '마스티프', '차우차우', '알래스칸 말라뮤트', '달마시안',
@@ -109,6 +110,115 @@ const Pets = () => {
     navigate(`/pets?page=${page}${q}`);
   };
 
+  const handleSearch = async () => {
+    try {
+      setLoading(true);
+      setIsSearchMode(true);
+
+      // 모든 검색 조건이 비어있으면 경고
+      const hasSearchCriteria = query.trim() || filters.dogSize || filters.dogBreed || gender || filters.location;
+      if (!hasSearchCriteria) {
+        alert('검색 조건을 하나 이상 입력해주세요.');
+        setLoading(false);
+        setIsSearchMode(false);
+        return;
+      }
+
+      // 검색 파라미터 구성
+      const searchParams: DogSearchRequestDto = {
+        page: 0,
+        size: ITEMS_PER_PAGE
+      };
+
+      // 이름 검색
+      if (query.trim()) {
+        searchParams.q = query.trim();
+        console.log('이름 검색:', query.trim());
+      }
+
+      // 견종 검색 (dogSize 또는 breedName)
+      if (filters.dogSize) {
+        searchParams.dogSize = filters.dogSize;
+        console.log('견종 크기:', filters.dogSize);
+      }
+      if (filters.dogBreed) {
+        searchParams.breedName = filters.dogBreed;
+        console.log('견종명:', filters.dogBreed);
+      }
+
+      // 성별 검색
+      if (gender) {
+        searchParams.gender = gender === "male" ? "MALE" : "FEMALE";
+        console.log('성별:', searchParams.gender);
+      }
+
+      // 지역 검색
+      if (filters.location) {
+        searchParams.location = filters.location;
+        console.log('지역:', filters.location);
+      }
+
+      console.log('🔍 최종 검색 파라미터:', searchParams);
+      console.log('🔍 현재 필터 상태:', { query, filters, gender, age, ageMonths });
+
+      const searchResults = await searchDogs(searchParams);
+      console.log('🔍 검색 결과:', searchResults);
+
+      // DogListResponseDto 형태로 변환
+      const convertedResults: DogListResponseDto[] = searchResults.map(result => ({
+        dogId: result.dogId,
+        name: result.name,
+        breedName: result.breedName,
+        gender: result.gender,
+        dogSize: result.dogSize,
+        weight: result.weight,
+        adoptionStatus: result.adoptionStatus,
+        imageUrl: result.imageUrl,
+        memberNickname: "", // 검색 결과에 없음
+        shelterName: result.shelterName,
+        birthDate: result.birthDate,
+        createdAt: result.createdAt
+      }));
+
+      setDogs(convertedResults);
+      setTotalPages(1); // 검색 모드에서는 페이지네이션 비활성화
+    } catch (error) {
+      console.error("검색 실패:", error);
+      setDogs([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const clearSearch = async () => {
+    setIsSearchMode(false);
+    setQuery("");
+    setFilters({ dogSize: "", dogBreed: "", location: "" });
+    setGender("");
+    setAge("");
+    setAgeMonths("");
+    setRegionProvince("");
+    setRegionCity("");
+
+    // 기본 목록 다시 로드
+    try {
+      setLoading(true);
+      const data = await getDogs(currentPage - 1, ITEMS_PER_PAGE);
+      setDogs(data);
+      if (data.length === ITEMS_PER_PAGE) {
+        setTotalPages(currentPage + 1);
+      } else {
+        setTotalPages(currentPage);
+      }
+    } catch (error) {
+      console.error("유기견 목록 로드 실패:", error);
+      setDogs([]);
+      setTotalPages(1);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
@@ -125,7 +235,7 @@ const Pets = () => {
                   <Input
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
-                    placeholder="이름, 특징 등 검색"
+                    placeholder="이름으로 검색"
                     className="h-10 bg-transparent border-0 focus-visible:ring-0 px-0"
                   />
                 </div>
@@ -147,9 +257,9 @@ const Pets = () => {
                               <SelectValue placeholder="선택하기" />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="소형견">소형</SelectItem>
-                              <SelectItem value="중형견">중형</SelectItem>
-                              <SelectItem value="대형견">대형</SelectItem>
+                              <SelectItem value="소형">소형</SelectItem>
+                              <SelectItem value="중형">중형</SelectItem>
+                              <SelectItem value="대형">대형</SelectItem>
                             </SelectContent>
                           </Select>
                         </div>
@@ -264,16 +374,31 @@ const Pets = () => {
               </div>
               <button
                 className="ml-2 h-12 w-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center hover:bg-primary/90 transition-smooth"
-                onClick={() => {
-                  // Apply filters and search
-                  console.log("Search with filters:", { query, filters, age, ageMonths, gender });
-                }}
+                onClick={handleSearch}
               >
                 <Search className="h-5 w-5" />
               </button>
             </div>
           </div>
         </div>
+
+        {/* 검색 결과 표시 및 초기화 버튼 */}
+        {isSearchMode && (
+          <div className="mb-6 flex items-center justify-between bg-muted/50 rounded-lg p-4">
+            <div>
+              <p className="text-sm text-muted-foreground">
+                검색 결과: <strong>{dogs.length}마리</strong>의 유기견을 찾았습니다.
+              </p>
+            </div>
+            <Button
+              variant="outline"
+              onClick={clearSearch}
+              className="text-sm"
+            >
+              검색 초기화
+            </Button>
+          </div>
+        )}
 
         {loading ? (
           <div className="space-y-4 mb-16">
@@ -339,7 +464,7 @@ const Pets = () => {
           </div>
         )}
 
-        {!loading && dogs.length > 0 && (
+        {!loading && dogs.length > 0 && !isSearchMode && (
           <div className="flex items-center justify-center gap-2 mt-4">
             <Button
               variant="outline"
