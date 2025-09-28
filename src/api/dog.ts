@@ -28,7 +28,7 @@ export interface DogCreateRequestDto {
   description: string;
   adoptionStatus: string;
   imageUrl: string;
-  shelterId: number;
+  shelterId: number | null;
 }
 
 export interface DogCreateResponseDto {
@@ -98,7 +98,7 @@ export interface DogUpdateRequestDto {
   description: string;
   adoptionStatus: string;
   imageUrl: string;
-  shelterId: number;
+  shelterId: number | null;
 }
 
 export interface DogUpdateResponseDto {

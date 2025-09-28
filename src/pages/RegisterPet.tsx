@@ -58,7 +58,6 @@ const RegisterPet = () => {
     gender: "",
     weight: "",
     description: "",
-    personality: "",
     medicalInfo: "",
   });
 
@@ -118,7 +117,7 @@ const RegisterPet = () => {
         description: formData.description,
         adoptionStatus: "입양_가능",
         imageUrl: imageUrl,
-        shelterId: shelterId || 0,
+        shelterId: shelterId || null,
       };
 
       console.log("🐕 유기견 등록 API 요청 데이터:", JSON.stringify(dogData, null, 2));
@@ -388,18 +387,6 @@ const RegisterPet = () => {
                   상세 정보
                 </h3>
                 <div className="space-y-6">
-                  <div>
-                    <Label htmlFor="personality" className="text-base font-medium mb-3 block">성격 *</Label>
-                    <Input
-                      id="personality"
-                      placeholder="예: 친근함, 활발함, 조용함"
-                      value={formData.personality}
-                      onChange={(e) => handleInputChange("personality", e.target.value)}
-                      required
-                      className="rounded-xl"
-                    />
-                  </div>
-
                   <div>
                     <Label htmlFor="medicalInfo" className="text-base font-medium mb-3 block">의료 정보 *</Label>  {/* 건강상태*/}
                     <Textarea
