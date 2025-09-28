@@ -341,9 +341,10 @@ const ChatButton = () => {
 
     try {
       const dogDetail = await getDogById(dogId);
+      console.log('로드된 유기견 정보:', dogDetail);
       setDogOwnerInfo(prev => ({
         ...prev,
-        [dogId]: dogDetail.ownerId
+        [dogId]: dogDetail.member.memberId
       }));
     } catch (error) {
       console.error('유기견 정보 로드 실패:', error);
@@ -516,18 +517,33 @@ const ChatButton = () => {
             {selectedChat && (
               <>
                 {/* 분양 신청 버튼 - dogInfo가 있고 본인이 등록자가 아닌 경우에만 표시 */}
-                {getSelectedChatRoom()?.dogInfo?.dogId &&
-                 dogOwnerInfo[getSelectedChatRoom()?.dogInfo?.dogId || 0] !== currentMemberId && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => handleAdoptionApply(getSelectedChatRoom()?.dogInfo?.dogId || 0)}
-                    className="text-primary-foreground hover:bg-primary-foreground/20 gap-1"
-                  >
-                    <Heart className="h-4 w-4" />
-                    분양 신청
-                  </Button>
-                )}
+                {(() => {
+                  const chatRoom = getSelectedChatRoom();
+                  const dogId = chatRoom?.dogInfo?.dogId;
+                  const ownerId = dogId ? dogOwnerInfo[dogId] : undefined;
+
+                  // 디버깅용 로그
+                  console.log('채팅방 분양 신청 버튼 조건 확인:', {
+                    dogId,
+                    ownerId,
+                    currentMemberId,
+                    dogOwnerInfo,
+                    chatRoom: chatRoom?.dogInfo
+                  });
+
+                  // dogInfo가 있고, 소유자 정보가 로드되었으며, 본인이 소유자가 아닌 경우에만 표시
+                  return dogId && ownerId !== undefined && ownerId !== currentMemberId && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleAdoptionApply(dogId)}
+                      className="text-primary-foreground hover:bg-primary-foreground/20 gap-1"
+                    >
+                      <Heart className="h-4 w-4" />
+                      분양 신청
+                    </Button>
+                  );
+                })()}
                 <Button
                   variant="ghost"
                   size="icon"

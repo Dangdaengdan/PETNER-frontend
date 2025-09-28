@@ -427,6 +427,46 @@ const MyProfile = () => {
     try {
       await processDogApply(dogApplyId, { status });
 
+      // 승인된 경우 해당 유기견의 상태를 "입양_절차_중"으로 변경
+      if (status === 'APPROVED') {
+        const application = receivedApplications.find(app => app.dogApplyId === dogApplyId);
+        if (application) {
+          try {
+            // 강아지 상세 정보 조회
+            const dogDetail = await getDogById(application.dogId);
+
+            // 전체 필드 DTO 구성하여 입양 상태만 변경
+            const fullUpdateData: DogUpdateRequestDto = {
+              name: dogDetail.name || null,
+              breedId: dogDetail.breed?.breedId || null,
+              birthDate: dogDetail.birthDate || null,
+              gender: dogDetail.gender || 'MALE',
+              dogSize: dogDetail.dogSize || null,
+              weight: dogDetail.weight || null,
+              healthStatus: dogDetail.healthStatus || null,
+              description: dogDetail.description || null,
+              adoptionStatus: "입양_절차_중",
+              imageUrl: dogDetail.imageUrl || null,
+              shelterId: dogDetail.shelter?.shelterId || null,
+            };
+
+            await updateDog(application.dogId, fullUpdateData);
+
+            // 내가 등록한 유기견 목록에서도 상태 업데이트
+            setRegistrationData(prev =>
+              prev.map(dog =>
+                dog.dogId === application.dogId
+                  ? { ...dog, adoptionStatus: "입양_절차_중" }
+                  : dog
+              )
+            );
+          } catch (dogUpdateError) {
+            console.error('유기견 상태 업데이트 실패:', dogUpdateError);
+            // 유기견 상태 업데이트가 실패해도 입양 신청 처리는 성공했으므로 계속 진행
+          }
+        }
+      }
+
       // 로컬 상태 업데이트
       setReceivedApplications(prev =>
         prev.map(app =>
@@ -436,7 +476,7 @@ const MyProfile = () => {
         )
       );
 
-      alert(`입양 신청이 ${status === 'APPROVED' ? '승인' : '거절'}되었습니다.`);
+      alert(`입양 신청이 ${status === 'APPROVED' ? '승인' : '거절'}되었습니다.${status === 'APPROVED' ? ' 해당 유기견의 상태가 "입양 절차 중"으로 변경되었습니다.' : ''}`);
     } catch (error) {
       console.error('입양 신청 처리 실패:', error);
       alert('입양 신청 처리에 실패했습니다. 다시 시도해주세요.');
