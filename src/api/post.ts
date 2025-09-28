@@ -237,3 +237,37 @@ export const searchPosts = async (
     throw new Error(errorMessage);
   }
 };
+
+// 내 게시물 조회
+export const getMyPosts = async (
+  page: number = 0,
+  size: number = 10,
+  sort: string = 'createdAt,desc'
+): Promise<PostsPageResponse> => {
+  try {
+    const response = await axios.get(`${POSTS_BASE_URL}/my`, {
+      params: {
+        page: page.toString(),
+        size: size.toString(),
+        sort: sort,
+      },
+      withCredentials: true,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    return response.data;
+  } catch (error) {
+    let errorMessage = `내 게시물 조회 실패`;
+    if (axios.isAxiosError(error)) {
+      errorMessage += `: ${error.response?.status}`;
+      if (error.response?.data) {
+        console.error('백엔드 에러 응답:', error.response.data);
+        errorMessage += ` - ${JSON.stringify(error.response.data)}`;
+      }
+    } else {
+      console.error('에러 응답 파싱 실패:', error);
+    }
+    throw new Error(errorMessage);
+  }
+};

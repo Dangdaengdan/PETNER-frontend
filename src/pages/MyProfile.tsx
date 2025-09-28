@@ -9,7 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Heart, MapPin, Calendar, Camera, Edit, Clock, CheckCircle, FileText, PawPrint, Trash2 } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import RegionSelector from "@/components/RegionSelector";
@@ -17,6 +17,7 @@ import PhoneNumberInput from "@/components/PhoneNumberInput";
 import { getUserProfile, UserProfile, updateProfile, checkNickname, checkEmail } from "@/api/member";
 import { searchLocationByName } from "@/api/location";
 import { getMyDogs, DogListResponseDto, updateDog, DogUpdateRequestDto, getDogById, deleteDog } from "@/api/dog";
+import { getMyPosts, PostSummaryResponse } from "@/api/post";
 import { getMyDogApplies, getReceivedDogApplies, processDogApply, deleteDogApply, MyDogApplyResponse, ReceivedDogApplyResponse } from "@/api/dogapply";
 import { ProtectedImage } from "@/components/ProtectedImage";
 
@@ -34,6 +35,25 @@ const defaultUserData = {
   profileImage: "/api/placeholder/150/150",
   locationId: 0
 };
+
+const adoptionApplications = [
+  {
+    id: 1,
+    petName: "똥깨",
+    petImage: "/src/assets/dog1.jpg",
+    status: "입양 처리 중",
+    applicationDate: "2024-03-01",
+    shelter: "강남 동물보호소"
+  },
+  {
+    id: 2,
+    petName: "땅콩이",
+    petImage: "/src/assets/dog3.jpg",
+    status: "입양 완료",
+    applicationDate: "2024-02-15",
+    shelter: "서초 동물보호소"
+  }
+];
 
 const myPosts = [
   {
@@ -110,8 +130,6 @@ const MyProfile = () => {
   const [editData, setEditData] = useState(defaultUserData);
   const [originalData, setOriginalData] = useState(defaultUserData); // 원본 데이터 저장
   const [registrationData, setRegistrationData] = useState<DogListResponseDto[]>([]);
-  const [myApplications, setMyApplications] = useState<MyDogApplyResponse[]>([]);
-  const [receivedApplications, setReceivedApplications] = useState<ReceivedDogApplyResponse[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [validation, setValidation] = useState({
@@ -120,19 +138,14 @@ const MyProfile = () => {
     nicknameChecked: false,
     emailChecked: false,
   });
-  const [deleteConfirm, setDeleteConfirm] = useState<{ isOpen: boolean; dogId?: number; dogName?: string }>({
-    isOpen: false
-  });
 
-  // 사용자 프로필 및 데이터 로드
+  // 사용자 프로필 및 내 유기견 데이터 로드
   useEffect(() => {
     const loadData = async () => {
       try {
-        const [profile, myDogs, myApplies, receivedApplies] = await Promise.all([
+        const [profile, myDogs] = await Promise.all([
           getUserProfile(),
-          getMyDogs(),
-          getMyDogApplies(),
-          getReceivedDogApplies()
+          getMyDogs()
         ]);
 
         const transformedData = {
@@ -154,9 +167,6 @@ const MyProfile = () => {
 
         // 내 유기견 데이터 설정
         setRegistrationData(myDogs);
-        // 입양 신청 데이터 설정
-        setMyApplications(myApplies);
-        setReceivedApplications(receivedApplies);
       } catch (error) {
         console.error('데이터 로드 실패:', error);
       } finally {
@@ -390,120 +400,6 @@ const MyProfile = () => {
     }
   };
 
-  const handleDeleteClick = (dogId: number, dogName: string) => {
-    setDeleteConfirm({
-      isOpen: true,
-      dogId,
-      dogName
-    });
-  };
-
-  const handleDeleteConfirm = async () => {
-    if (!deleteConfirm.dogId) return;
-
-    try {
-      await deleteDog(deleteConfirm.dogId);
-
-      // 로컬 상태에서 삭제된 강아지 제거
-      setRegistrationData(prev =>
-        prev.filter(dog => dog.dogId !== deleteConfirm.dogId)
-      );
-
-      alert(`${deleteConfirm.dogName}이(가) 성공적으로 삭제되었습니다.`);
-    } catch (error) {
-      console.error('유기견 삭제 실패:', error);
-      alert('유기견 삭제에 실패했습니다. 다시 시도해주세요.');
-    } finally {
-      setDeleteConfirm({ isOpen: false });
-    }
-  };
-
-  const handleDeleteCancel = () => {
-    setDeleteConfirm({ isOpen: false });
-  };
-
-  // 입양 신청 처리 (승인/거절)
-  const handleApplicationProcess = async (dogApplyId: number, status: 'APPROVED' | 'REJECTED') => {
-    try {
-      await processDogApply(dogApplyId, { status });
-
-      // 승인된 경우 해당 유기견의 상태를 "입양_절차_중"으로 변경
-      if (status === 'APPROVED') {
-        const application = receivedApplications.find(app => app.dogApplyId === dogApplyId);
-        if (application) {
-          try {
-            // 강아지 상세 정보 조회
-            const dogDetail = await getDogById(application.dogId);
-
-            // 전체 필드 DTO 구성하여 입양 상태만 변경
-            const fullUpdateData: DogUpdateRequestDto = {
-              name: dogDetail.name || null,
-              breedId: dogDetail.breed?.breedId || null,
-              birthDate: dogDetail.birthDate || null,
-              gender: dogDetail.gender || 'MALE',
-              dogSize: dogDetail.dogSize || null,
-              weight: dogDetail.weight || null,
-              healthStatus: dogDetail.healthStatus || null,
-              description: dogDetail.description || null,
-              adoptionStatus: "입양_절차_중",
-              imageUrl: dogDetail.imageUrl || null,
-              shelterId: dogDetail.shelter?.shelterId || null,
-            };
-
-            await updateDog(application.dogId, fullUpdateData);
-
-            // 내가 등록한 유기견 목록에서도 상태 업데이트
-            setRegistrationData(prev =>
-              prev.map(dog =>
-                dog.dogId === application.dogId
-                  ? { ...dog, adoptionStatus: "입양_절차_중" }
-                  : dog
-              )
-            );
-          } catch (dogUpdateError) {
-            console.error('유기견 상태 업데이트 실패:', dogUpdateError);
-            // 유기견 상태 업데이트가 실패해도 입양 신청 처리는 성공했으므로 계속 진행
-          }
-        }
-      }
-
-      // 로컬 상태 업데이트
-      setReceivedApplications(prev =>
-        prev.map(app =>
-          app.dogApplyId === dogApplyId
-            ? { ...app, status, processedAt: new Date().toISOString() }
-            : app
-        )
-      );
-
-      alert(`입양 신청이 ${status === 'APPROVED' ? '승인' : '거절'}되었습니다.${status === 'APPROVED' ? ' 해당 유기견의 상태가 "입양 절차 중"으로 변경되었습니다.' : ''}`);
-    } catch (error) {
-      console.error('입양 신청 처리 실패:', error);
-      alert('입양 신청 처리에 실패했습니다. 다시 시도해주세요.');
-    }
-  };
-
-  // 내 입양 신청 삭제
-  const handleMyApplicationDelete = async (dogApplyId: number) => {
-    if (!window.confirm('정말로 이 입양 신청을 취소하시겠습니까?')) {
-      return;
-    }
-
-    try {
-      await deleteDogApply(dogApplyId);
-
-      // 로컬 상태에서 삭제
-      setMyApplications(prev =>
-        prev.filter(app => app.dogApplyId !== dogApplyId)
-      );
-
-      alert('입양 신청이 취소되었습니다.');
-    } catch (error) {
-      console.error('입양 신청 취소 실패:', error);
-      alert('입양 신청 취소에 실패했습니다. 다시 시도해주세요.');
-    }
-  };
-
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "입양_가능":
@@ -512,19 +408,6 @@ const MyProfile = () => {
         return <Badge variant="secondary" className="bg-yellow-100 text-yellow-800"><Clock className="w-3 h-3 mr-1" />입양 절차 중</Badge>;
       case "입양_완료":
         return <Badge variant="secondary" className="bg-green-100 text-green-800"><CheckCircle className="w-3 h-3 mr-1" />입양 완료</Badge>;
-      default:
-        return <Badge variant="outline">{status}</Badge>;
-    }
-  };
-
-  const getApplicationStatusBadge = (status: string) => {
-    switch (status) {
-      case "PENDING":
-        return <Badge variant="secondary" className="bg-yellow-100 text-yellow-800"><Clock className="w-3 h-3 mr-1" />대기 중</Badge>;
-      case "APPROVED":
-        return <Badge variant="secondary" className="bg-green-100 text-green-800"><CheckCircle className="w-3 h-3 mr-1" />승인됨</Badge>;
-      case "REJECTED":
-        return <Badge variant="secondary" className="bg-red-100 text-red-800"><CheckCircle className="w-3 h-3 mr-1" />거절됨</Badge>;
       default:
         return <Badge variant="outline">{status}</Badge>;
     }
@@ -738,130 +621,48 @@ const MyProfile = () => {
 
             {/* 입양 신청 현황 */}
             <TabsContent value="applications">
-              <div className="space-y-6">
-                {/* 내가 요청한 입양 */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <FileText className="h-5 w-5" />
-                      내가 요청한 입양
-                    </CardTitle>
-                    <p className="text-sm text-muted-foreground">내가 신청한 입양 신청 목록입니다</p>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      {myApplications.length > 0 ? (
-                        myApplications.map((application) => (
-                          <div key={application.dogApplyId} className="border rounded-lg p-4">
-                            <div className="flex items-center justify-between">
-                              <div className="flex items-center space-x-4">
-                                <ProtectedImage
-                                  objectName={application.dogImageUrl}
-                                  alt={application.dogName}
-                                  className="w-16 h-16 rounded-lg object-cover"
-                                />
-                                <div>
-                                  <h3 className="font-semibold text-foreground">{application.dogName}</h3>
-                                  <p className="text-sm text-muted-foreground">{application.breedName} · {application.location}</p>
-                                  <p className="text-sm text-muted-foreground">신청일: {new Date(application.createdAt).toLocaleDateString('ko-KR')}</p>
-                                  <p className="text-sm text-muted-foreground">상대방: {application.counterpartNickname}</p>
-                                </div>
-                              </div>
-                              <div className="flex items-center gap-3">
-                                <div className="text-right">
-                                  {getApplicationStatusBadge(application.status)}
-                                </div>
-                                {application.status === 'PENDING' && (
-                                  <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() => handleMyApplicationDelete(application.dogApplyId)}
-                                    className="text-red-600 border-red-200 hover:bg-red-600 hover:text-white hover:border-red-600"
-                                  >
-                                    취소
-                                  </Button>
-                                )}
-                              </div>
+              <Card className="min-h-[70vh] flex flex-col">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <FileText className="h-5 w-5" />
+                    입양 신청 현황
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="flex-1 flex flex-col">
+                  <div className="space-y-4 flex-1">
+                    {adoptionApplications.map((application) => (
+                      <div key={application.id} className="border rounded-lg p-4">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center space-x-4">
+                            <img
+                              src={application.petImage}
+                              alt={application.petName}
+                              className="w-16 h-16 rounded-lg object-cover"
+                            />
+                            <div>
+                              <h3 className="font-semibold text-foreground">{application.petName}</h3>
+                              <p className="text-sm text-muted-foreground">{application.shelter}</p>
+                              <p className="text-sm text-muted-foreground">신청일: {application.applicationDate}</p>
                             </div>
                           </div>
-                        ))
-                      ) : (
-                        <div className="text-center py-12 text-muted-foreground">
-                          <PawPrint className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                          <p className="text-lg">아직 신청한 입양이 없습니다</p>
-                          <p className="text-sm mt-2">새로운 가족을 기다리는 아이들을 찾아보세요</p>
-                        </div>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
-
-                {/* 받은 입양 신청 요청 */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <FileText className="h-5 w-5" />
-                      받은 입양 신청 요청
-                    </CardTitle>
-                    <p className="text-sm text-muted-foreground">내 유기견에 대한 입양 신청을 승인하거나 거절할 수 있습니다</p>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      {receivedApplications.length > 0 ? (
-                        receivedApplications.map((application) => (
-                          <div key={application.dogApplyId} className="border rounded-lg p-4">
-                            <div className="flex items-center justify-between">
-                              <div className="flex items-center space-x-4">
-                                <ProtectedImage
-                                  objectName={application.dogImageUrl}
-                                  alt={application.dogName}
-                                  className="w-16 h-16 rounded-lg object-cover"
-                                />
-                                <div>
-                                  <h3 className="font-semibold text-foreground">{application.dogName}</h3>
-                                  <p className="text-sm text-muted-foreground">{application.breedName} · {application.location}</p>
-                                  <p className="text-sm text-muted-foreground">신청일: {new Date(application.createdAt).toLocaleDateString('ko-KR')}</p>
-                                  <p className="text-sm text-muted-foreground">신청자: {application.counterpartNickname}</p>
-                                </div>
-                              </div>
-                              <div className="flex items-center gap-3">
-                                <div className="text-right">
-                                  {getApplicationStatusBadge(application.status)}
-                                </div>
-                                {application.status === 'PENDING' && (
-                                  <div className="flex gap-2">
-                                    <Button
-                                      size="sm"
-                                      onClick={() => handleApplicationProcess(application.dogApplyId, 'APPROVED')}
-                                      className="bg-green-600 hover:bg-green-700 text-white"
-                                    >
-                                      승인
-                                    </Button>
-                                    <Button
-                                      variant="outline"
-                                      size="sm"
-                                      onClick={() => handleApplicationProcess(application.dogApplyId, 'REJECTED')}
-                                      className="text-red-600 border-red-200 hover:bg-red-600 hover:text-white hover:border-red-600"
-                                    >
-                                      거절
-                                    </Button>
-                                  </div>
-                                )}
-                              </div>
-                            </div>
+                          <div className="text-right">
+                            {getStatusBadge(application.status)}
                           </div>
-                        ))
-                      ) : (
-                        <div className="text-center py-12 text-muted-foreground">
-                          <PawPrint className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                          <p className="text-lg">아직 받은 입양 신청이 없습니다</p>
-                          <p className="text-sm mt-2">내 유기견에 관심을 가져주는 분들을 기다려보세요</p>
                         </div>
-                      )}
+                      </div>
+                    ))}
+                  </div>
+                  
+                  {/* 빈 공간에 표시될 메시지 */}
+                  <div className="flex-1 flex items-start justify-center pt-16">
+                    <div className="text-center text-muted-foreground">
+                      <PawPrint className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                      <p className="text-lg">더 많은 유기견을 입양해주세요.</p>
+                      <p className="text-sm mt-2">새로운 가족을 기다리는 아이들이 있습니다.</p>
                     </div>
-                  </CardContent>
-                </Card>
-              </div>
+                  </div>
+                </CardContent>
+              </Card>
             </TabsContent>
 
             {/* 내가 등록한 유기견 */}
@@ -892,18 +693,8 @@ const MyProfile = () => {
                               <p className="text-sm text-muted-foreground">보호소: {dog.shelterName}</p>
                             </div>
                           </div>
-                          <div className="flex items-center gap-3">
-                            <div className="text-right">
-                              {getStatusBadge(dog.adoptionStatus)}
-                            </div>
-                            <Button
-                              variant="outline"
-                              onClick={() => handleDeleteClick(dog.dogId, dog.name)}
-                              className="gap-2 text-red-600 border-red-200 hover:bg-red-600 hover:text-white hover:border-red-600"
-                            >
-                              <Trash2 className="h-4 w-4" />
-                              삭제
-                            </Button>
+                          <div className="text-right">
+                            {getStatusBadge(dog.adoptionStatus)}
                           </div>
                         </div>
                       </div>
@@ -1042,38 +833,6 @@ const MyProfile = () => {
       </main>
 
       <Footer />
-
-      {/* 삭제 확인 모달 */}
-      {deleteConfirm.isOpen && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-background rounded-lg p-6 max-w-md w-full mx-4">
-            <h3 className="text-lg font-semibold text-foreground mb-4">
-              유기견 삭제 확인
-            </h3>
-            <p className="text-muted-foreground mb-6">
-              <strong>{deleteConfirm.dogName}</strong>을(를) 정말 삭제하시겠습니까?
-              <br />
-              삭제된 정보는 복구할 수 없습니다.
-            </p>
-            <div className="flex gap-3 justify-end">
-              <Button
-                variant="outline"
-                onClick={handleDeleteCancel}
-              >
-                취소
-              </Button>
-              <Button
-                variant="outline"
-                onClick={handleDeleteConfirm}
-                className="gap-2 text-red-600 border-red-200 hover:bg-red-600 hover:text-white hover:border-red-600"
-              >
-                <Trash2 className="h-4 w-4" />
-                삭제
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
