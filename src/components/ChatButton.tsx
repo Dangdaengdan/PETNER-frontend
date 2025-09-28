@@ -441,6 +441,11 @@ const ChatButton = forwardRef<ChatButtonRef>((props, ref) => {
   };
 
   const handleBackToList = () => {
+    // 현재 채팅방의 읽음 시간을 업데이트 (내가 보낸 메시지도 읽음으로 처리)
+    if (selectedChat) {
+      setLastReadTime(selectedChat, new Date().toISOString());
+    }
+    
     setSelectedChat(null);
     setCurrentMessages([]);
   };
