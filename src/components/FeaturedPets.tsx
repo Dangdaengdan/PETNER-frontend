@@ -170,9 +170,7 @@ const FeaturedPets = () => {
     });
   };
   
-  // Add age and gender filters consistent with Register UI
-  const [age, setAge] = useState("");
-  const [ageMonths, setAgeMonths] = useState("");
+  // Add gender filter consistent with Register UI
   const [gender, setGender] = useState("");
   return (
     <section className="py-16 bg-gradient-soft">
@@ -191,7 +189,7 @@ const FeaturedPets = () => {
         <div className="mb-12">
           <div className="w-full max-w-3xl mx-auto rounded-full bg-background border border-border shadow-warm px-2 py-2">
             <div className="flex items-center">
-              <div className="grid grid-cols-6 gap-0 flex-1 px-3 py-2">
+              <div className="grid grid-cols-5 gap-0 flex-1 px-3 py-2">
                 {/* Search (col-span-2) */}
                 <div className="col-span-2 flex items-center h-12 px-4">
                   <Search className="h-5 w-5 text-muted-foreground mr-3" />
@@ -238,49 +236,6 @@ const FeaturedPets = () => {
                               ))}
                             </SelectContent>
                           </Select>
-                        </div>
-                      </div>
-                    </PopoverContent>
-                  </Popover>
-                </div>
-                {/* Age (col-span-1) */}
-                <div className="col-span-1 flex items-center h-12 px-4 border-l border-border">
-                  <Popover>
-                    <PopoverTrigger className="flex items-center gap-2 text-left w-full">
-                      <span className="text-sm text-muted-foreground">나이</span>
-                      <span className="text-sm font-medium text-foreground truncate">
-                        {age ? (age === "0" && ageMonths ? `${age}세 ${ageMonths}개월` : `${age}세`) : "선택"}
-                      </span>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-80" align="start">
-                      <div className="space-y-3">
-                        <div className="grid grid-cols-2 gap-4">
-                          <div>
-                            <label className="text-sm font-medium text-foreground mb-2 block">세</label>
-                            <Input
-                              type="number"
-                              min="0"
-                              placeholder="예: 2"
-                              value={age}
-                              onChange={(e) => {
-                                const v = e.target.value;
-                                setAge(v);
-                                if (v !== "0" && v !== "") setAgeMonths("");
-                              }}
-                            />
-                          </div>
-                          <div>
-                            <label className="text-sm font-medium text-foreground mb-2 block">개월 (0세)</label>
-                            <Input
-                              type="number"
-                              min="1"
-                              max="11"
-                              placeholder="0세일 때만"
-                              value={ageMonths}
-                              onChange={(e) => setAgeMonths(e.target.value)}
-                              disabled={age !== "0"}
-                            />
-                          </div>
                         </div>
                       </div>
                     </PopoverContent>
