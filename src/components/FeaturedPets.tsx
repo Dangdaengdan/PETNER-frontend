@@ -8,12 +8,14 @@ import { useState, useEffect } from "react";
 import RegionSelector from "./RegionSelector";
 import { ProtectedImage } from "./ProtectedImage";
 import { getDogs, DogListResponseDto } from "@/api/dog";
+import { getAllMyFavorites } from "@/api/favorite";
 import { calculateAge } from "@/utils/ageCalculator";
 import { Card, CardContent } from "@/components/ui/card";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Badge } from "@/components/ui/badge";
 import { Heart, MapPin, Calendar } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useFavorite } from "@/hooks/useFavorite";
 type BRFilterState = { dogSize: string; dogBreed: string; location: string };
 import { useNavigate } from "react-router-dom";
 
@@ -27,10 +29,12 @@ interface FeaturedPetCardProps {
   imageUrl: string;
   gender: string;
   size: string;
+  initialIsFavorite: boolean;
 }
 
-const FeaturedPetCard = ({ id, name, breed, birthDate, location, imageUrl, gender, size }: FeaturedPetCardProps) => {
-  const [isFavorited, setIsFavorited] = useState(false);
+const FeaturedPetCard = ({ id, name, breed, birthDate, location, imageUrl, gender, size, initialIsFavorite }: FeaturedPetCardProps) => {
+  const { isFavorited, isLoading, toggleFavorite } = useFavorite(Number(id), initialIsFavorite);
+  console.log('FeaturedPetCard 디버그:', { id, name, initialIsFavorite, isFavorited });
 
   return (
     <Card className="group overflow-hidden bg-card border-border rounded-3xl shadow-petcard w-full transition-transform duration-300 hover:-translate-y-2 p-8">
@@ -49,14 +53,15 @@ const FeaturedPetCard = ({ id, name, breed, birthDate, location, imageUrl, gende
           )}
         </AspectRatio>
         <button
-          onClick={() => setIsFavorited(!isFavorited)}
-          className="absolute top-3 right-3 p-3 rounded-full bg-background/80 backdrop-blur-sm"
+          onClick={toggleFavorite}
+          disabled={isLoading}
+          className="absolute top-3 right-3 p-3 rounded-full bg-background/80 backdrop-blur-sm transition-colors hover:bg-background/90 disabled:opacity-50"
         >
           <Heart
-            className={`h-5 w-5 ${
+            className={`h-5 w-5 transition-colors ${
               isFavorited
-                ? "text-accent fill-current"
-                : "text-muted-foreground"
+                ? "text-red-500 fill-current"
+                : "text-muted-foreground hover:text-red-400"
             }`}
           />
         </button>
@@ -116,7 +121,7 @@ const FeaturedPets = () => {
   const [regionCity, setRegionCity] = useState("");
 
   // API state
-  const [featuredDogs, setFeaturedDogs] = useState<DogListResponseDto[]>([]);
+  const [featuredDogs, setFeaturedDogs] = useState<(DogListResponseDto & { isFavorite: boolean })[]>([]);
   const [loading, setLoading] = useState(true);
 
   // Load featured dogs on component mount
@@ -124,12 +129,26 @@ const FeaturedPets = () => {
     const loadFeaturedDogs = async () => {
       try {
         setLoading(true);
-        // 최신 6마리 가져오기 (첫 번째 페이지에서 6개)
-        const data = await getDogs(0, 6);
+
+        // 두 개 API 병렬 호출
+        const [dogsData, favoritesData] = await Promise.all([
+          getDogs(0, 6), // 최신 6마리 가져오기
+          getAllMyFavorites().catch((error) => {
+            console.error('즐겨찾기 목록 조회 실패:', error);
+            return []; // 에러 시 빈 배열 반환
+          })
+        ]);
 
         // "입양_가능" 상태인 유기견만 필터링
-        const availableDogs = data.filter(dog => dog.adoptionStatus === "입양_가능");
-        setFeaturedDogs(availableDogs);
+        const availableDogs = dogsData.filter(dog => dog.adoptionStatus === "입양_가능");
+
+        // 즐겨찾기 상태 추가
+        const dogsWithFavoriteStatus = availableDogs.map(dog => ({
+          ...dog,
+          isFavorite: favoritesData.some(fav => fav.dogInfo?.dogId === dog.dogId)
+        }));
+
+        setFeaturedDogs(dogsWithFavoriteStatus);
       } catch (error) {
         console.error("추천 유기견 로드 실패:", error);
         setFeaturedDogs([]);
@@ -333,6 +352,7 @@ const FeaturedPets = () => {
                   imageUrl={dog.imageUrl}
                   gender={dog.gender === 'MALE' ? '수컷' : '암컷'}
                   size={dog.dogSize}
+                  initialIsFavorite={dog.isFavorite}
                 />
               </div>
             ))}

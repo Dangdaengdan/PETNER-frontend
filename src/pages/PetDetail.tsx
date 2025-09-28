@@ -1,4 +1,4 @@
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -14,17 +14,26 @@ import { useState, useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { getDogById, DogDetailResponseDto } from "@/api/dog";
+import { isFavorite } from "@/api/favorite";
 import { calculateAge } from "@/utils/ageCalculator";
 import { ProtectedImage } from "@/components/ProtectedImage";
+import { useFavorite } from "@/hooks/useFavorite";
 
 
 const PetDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [isFavorited, setIsFavorited] = useState(false);
+  const [searchParams] = useSearchParams();
   const [dog, setDog] = useState<DogDetailResponseDto | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [initialIsFavorite, setInitialIsFavorite] = useState<boolean | undefined>(undefined);
+
+  // 관심 목록 훅 (dog가 로드된 후에만 사용)
+  const { isFavorited, isLoading: favoriteLoading, toggleFavorite } = useFavorite(
+    dog?.dogId || 0,
+    initialIsFavorite
+  );
 
   useEffect(() => {
     const loadDogDetail = async () => {
@@ -33,8 +42,15 @@ const PetDetail = () => {
       try {
         setLoading(true);
         setError(null);
-        const dogData = await getDogById(Number(id));
+
+        // 강아지 정보와 즐겨찾기 상태 병렬 호출
+        const [dogData, favoriteStatus] = await Promise.all([
+          getDogById(Number(id)),
+          isFavorite(Number(id)).catch(() => false) // 에러 시 false 반환
+        ]);
+
         setDog(dogData);
+        setInitialIsFavorite(favoriteStatus);
       } catch (error) {
         console.error("유기견 상세 정보 로드 실패:", error);
         setError(error instanceof Error ? error.message : "알 수 없는 오류가 발생했습니다.");
@@ -84,10 +100,19 @@ const PetDetail = () => {
       
       <main className="mx-auto px-8 sm:px-16 md:px-24 lg:px-48 py-8">
         {/* Back Button */}
-        <Button 
-          variant="ghost" 
-          onClick={() => navigate('/')}
-          className="mb-2 text-muted-foreground hover:text-foreground"
+        <Button
+          variant="ghost"
+          onClick={() => {
+            const from = searchParams.get('from');
+            const tab = searchParams.get('tab');
+
+            if (from === 'profile' && tab) {
+              navigate(`/profile?tab=${tab}`);
+            } else {
+              navigate(-1);
+            }
+          }}
+          className="mb-2 text-muted-foreground hover:bg-primary/10 hover:text-primary"
         >
           <ArrowLeft className="h-4 w-4 mr-2" />
           돌아가기
@@ -120,14 +145,15 @@ const PetDetail = () => {
                   <CarouselNext className="absolute right-2 top-1/2 -translate-y-1/2" />
                 </Carousel>
                 <button
-                  onClick={() => setIsFavorited(!isFavorited)}
-                  className="absolute top-3 right-3 p-2 rounded-full bg-background/90 backdrop-blur-sm transition-smooth hover:bg-background z-10"
+                  onClick={toggleFavorite}
+                  disabled={favoriteLoading || !dog?.dogId}
+                  className="absolute top-3 right-3 p-2 rounded-full bg-background/90 backdrop-blur-sm transition-smooth hover:bg-background z-10 disabled:opacity-50"
                 >
                   <Heart
                     className={`h-5 w-5 transition-smooth ${
-                      isFavorited 
-                        ? "text-accent fill-current" 
-                        : "text-muted-foreground hover:text-accent"
+                      isFavorited
+                        ? "text-red-500 fill-current"
+                        : "text-muted-foreground hover:text-red-400"
                     }`}
                   />
                 </button>
