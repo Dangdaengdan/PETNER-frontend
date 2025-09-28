@@ -19,6 +19,7 @@ import {
   type ChatMessage,
   type ChatRoomCreateRequest
 } from "@/api/chat";
+import { ProtectedImage } from "@/components/ProtectedImage";
 
 export interface ChatButtonRef {
   openChatRoom: (chatRoomId: number) => void;
@@ -38,6 +39,7 @@ const ChatButton = forwardRef<ChatButtonRef>((props, ref) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [unreadCounts, setUnreadCounts] = useState<Record<number, number>>({});
   const [dogOwnerInfo, setDogOwnerInfo] = useState<Record<number, number>>({});
+  const [dogImageInfo, setDogImageInfo] = useState<Record<number, string>>({});
   
   // 사용자별 채팅방 마지막 읽은 시간 관리
   const getLastReadTime = (chatRoomId: number): string | null => {
@@ -188,6 +190,23 @@ const ChatButton = forwardRef<ChatButtonRef>((props, ref) => {
     });
   };
 
+  // 유기견 이미지 정보 로드
+  const loadDogImageInfo = async (dogId: number) => {
+    if (dogImageInfo[dogId]) return; // 이미 로드된 경우 스킵
+
+    try {
+      const dogDetail = await getDogById(dogId);
+      if (dogDetail.imageUrl) {
+        setDogImageInfo(prev => ({
+          ...prev,
+          [dogId]: dogDetail.imageUrl
+        }));
+      }
+    } catch (error) {
+      console.error('유기견 이미지 정보 로드 실패:', error);
+    }
+  };
+
   // 채팅방 목록 로드 함수
   const loadChatRooms = async (profileCompleted?: boolean) => {
     try {
@@ -200,6 +219,15 @@ const ChatButton = forwardRef<ChatButtonRef>((props, ref) => {
       }
       
       setChatRooms(sortChatRooms(rooms || []));
+
+      // 유기견이 있는 채팅방들의 이미지 정보 로드
+      if (rooms) {
+        rooms.forEach(room => {
+          if (room.dogInfo?.dogId) {
+            loadDogImageInfo(room.dogInfo.dogId);
+          }
+        });
+      }
     } catch (error) {
       console.error('채팅방 로드 실패:', error);
     } finally {
@@ -693,9 +721,17 @@ const ChatButton = forwardRef<ChatButtonRef>((props, ref) => {
                     >
                       <div className="relative">
                         <Avatar className="h-12 w-12">
-                          <AvatarFallback>
-                            {room.dogInfo?.name ? '🐕' : (room.otherMemberInfo?.nickname?.charAt(0) || 'U')}
-                          </AvatarFallback>
+                          {room.dogInfo?.dogId && dogImageInfo[room.dogInfo.dogId] ? (
+                            <ProtectedImage
+                              objectName={dogImageInfo[room.dogInfo.dogId]}
+                              alt={`${room.dogInfo.name} 프로필`}
+                              className="w-full h-full object-cover rounded-full"
+                            />
+                          ) : (
+                            <AvatarFallback>
+                              {room.dogInfo?.name ? '🐕' : (room.otherMemberInfo?.nickname?.charAt(0) || 'U')}
+                            </AvatarFallback>
+                          )}
                         </Avatar>
                       </div>
                       <div className="flex-1 min-w-0">
