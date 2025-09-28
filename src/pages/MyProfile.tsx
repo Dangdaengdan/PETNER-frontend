@@ -9,7 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Heart, MapPin, Calendar, Camera, Edit, Clock, CheckCircle, FileText, PawPrint, Trash2 } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation, useSearchParams } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import RegionSelector from "@/components/RegionSelector";
@@ -19,7 +19,9 @@ import { searchLocationByName } from "@/api/location";
 import { getMyDogs, DogListResponseDto, updateDog, DogUpdateRequestDto, getDogById, deleteDog } from "@/api/dog";
 import { getMyPosts, PostSummaryResponse } from "@/api/post";
 import { getMyDogApplies, getReceivedDogApplies, processDogApply, deleteDogApply, MyDogApplyResponse, ReceivedDogApplyResponse } from "@/api/dogapply";
+import { getMyFavorites, FavoriteResponse, removeFavorite } from "@/api/favorite";
 import { ProtectedImage } from "@/components/ProtectedImage";
+import { useToast } from "@/hooks/use-toast";
 
 // 기본 데이터
 const defaultUserData = {
@@ -55,56 +57,7 @@ const adoptionApplications = [
   }
 ];
 
-const myPosts = [
-  {
-    id: 1,
-    title: "강아지 산책 꿀팁 공유해요!",
-    date: "2024-03-05",
-    views: 125,
-    comments: 8
-  },
-  {
-    id: 2,
-    title: "배변훈련 후기",
-    date: "2024-02-28",
-    views: 89,
-    comments: 12
-  },
-  {
-    id: 3,
-    title: "반려동물 건강관리 질문",
-    date: "2024-02-20",
-    views: 67,
-    comments: 5
-  }
-];
 
-const favoritePets = [
-  {
-    id: 1,
-    name: "모카",
-    breed: "골든 리트리버",
-    age: "2세",
-    image: "/src/assets/dog-2.jpg",
-    location: "서울 송파구"
-  },
-  {
-    id: 2,
-    name: "츄츄",
-    breed: "페르시안 고양이",
-    age: "1세",
-    image: "/src/assets/cat-2.jpg",
-    location: "서울 마포구"
-  },
-  {
-    id: 3,
-    name: "베리",
-    breed: "진돗개",
-    age: "3세",
-    image: "/src/assets/dog-3.jpg",
-    location: "서울 용산구"
-  }
-];
 
 
 const adoptionHistory = [
@@ -125,11 +78,21 @@ const adoptionHistory = [
 ];
 
 const MyProfile = () => {
+  const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const currentTab = searchParams.get('tab') || 'profile';
+  const { toast } = useToast();
   const [isEditing, setIsEditing] = useState(false);
   const [userData, setUserData] = useState(defaultUserData);
   const [editData, setEditData] = useState(defaultUserData);
   const [originalData, setOriginalData] = useState(defaultUserData); // 원본 데이터 저장
   const [registrationData, setRegistrationData] = useState<DogListResponseDto[]>([]);
+  const [myPosts, setMyPosts] = useState<PostSummaryResponse[]>([]);
+  const [favoritePets, setFavoritePets] = useState<FavoriteResponse[]>([]);
+  const [postsLoading, setPostsLoading] = useState(false);
+  const [postsPage, setPostsPage] = useState(0);
+  const [hasMorePosts, setHasMorePosts] = useState(false);
+  const [isLoadingMorePosts, setIsLoadingMorePosts] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [validation, setValidation] = useState({
@@ -143,9 +106,10 @@ const MyProfile = () => {
   useEffect(() => {
     const loadData = async () => {
       try {
-        const [profile, myDogs] = await Promise.all([
+        const [profile, myDogs, favorites] = await Promise.all([
           getUserProfile(),
-          getMyDogs()
+          getMyDogs(),
+          getMyFavorites().catch(() => []) // 에러 시 빈 배열 반환
         ]);
 
         const transformedData = {
@@ -167,6 +131,9 @@ const MyProfile = () => {
 
         // 내 유기견 데이터 설정
         setRegistrationData(myDogs);
+
+        // 찜목록 데이터 설정
+        setFavoritePets(favorites);
       } catch (error) {
         console.error('데이터 로드 실패:', error);
       } finally {
@@ -176,6 +143,102 @@ const MyProfile = () => {
 
     loadData();
   }, []);
+
+  // 탭 변경 함수
+  const handleTabChange = (tab: string) => {
+    setSearchParams({ tab });
+  };
+
+  // 찜목록에서 제거 함수
+  const handleRemoveFavorite = async (dogId: number) => {
+    try {
+      await removeFavorite(dogId);
+      // 성공적으로 제거되면 state에서도 제거
+      setFavoritePets(prev => prev.filter(fav => fav.dogInfo.dogId !== dogId));
+      toast({
+        title: "찜목록에서 제거되었습니다",
+        description: "관심 반려동물에서 성공적으로 제거되었습니다.",
+      });
+    } catch (error) {
+      console.error('찜목록 제거 실패:', error);
+      toast({
+        title: "제거 실패",
+        description: "찜목록 제거에 실패했습니다. 다시 시도해주세요.",
+      });
+    }
+  };
+
+  // 내 게시물 로드 함수
+  const loadMyPosts = async (page: number = 0, isLoadMore: boolean = false) => {
+    if (isLoadMore) {
+      setIsLoadingMorePosts(true);
+    } else {
+      setPostsLoading(true);
+    }
+
+    try {
+      const postsData = await getMyPosts(page, 10, 'createdAt,desc');
+
+      if (isLoadMore) {
+        // 무한스크롤: 기존 게시물에 추가
+        setMyPosts(prev => [...prev, ...postsData.content]);
+      } else {
+        // 초기 로드: 게시물 전체 교체
+        setMyPosts(postsData.content);
+      }
+
+      setPostsPage(page);
+      setHasMorePosts(!postsData.last);
+    } catch (error) {
+      console.error('내 게시물 로드 실패:', error);
+      if (!isLoadMore) {
+        setMyPosts([]);
+      }
+    } finally {
+      if (isLoadMore) {
+        setIsLoadingMorePosts(false);
+      } else {
+        setPostsLoading(false);
+      }
+    }
+  };
+
+  // 더 많은 게시물 로드
+  const loadMorePosts = async () => {
+    if (!hasMorePosts || isLoadingMorePosts) return;
+
+    const nextPage = postsPage + 1;
+    await loadMyPosts(nextPage, true);
+  };
+
+  // 무한스크롤을 위한 Intersection Observer
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const target = entries[0];
+        if (target.isIntersecting && hasMorePosts && !isLoadingMorePosts && !postsLoading) {
+          loadMorePosts();
+        }
+      },
+      { threshold: 0.1, rootMargin: '50px' }
+    );
+
+    const timeoutId = setTimeout(() => {
+      const sentinel = document.getElementById('posts-sentinel');
+      if (sentinel) {
+        observer.observe(sentinel);
+      }
+    }, 100);
+
+    return () => {
+      clearTimeout(timeoutId);
+      const sentinel = document.getElementById('posts-sentinel');
+      if (sentinel) {
+        observer.unobserve(sentinel);
+      }
+      observer.disconnect();
+    };
+  }, [hasMorePosts, isLoadingMorePosts, postsLoading, myPosts.length]);
 
   // 닉네임 자동 중복 체크
   useEffect(() => {
@@ -269,7 +332,10 @@ const MyProfile = () => {
           locationId = locationData.locationId;
         } catch (error) {
           console.error('지역 정보 조회 실패:', error);
-          alert('지역 정보를 불러오는데 실패했습니다. 다시 시도해주세요.');
+          toast({
+            title: "지역 정보 로드 실패",
+            description: "지역 정보를 불러오는데 실패했습니다. 다시 시도해주세요.",
+          });
           return;
         }
       }
@@ -304,10 +370,16 @@ const MyProfile = () => {
       setEditData(transformedData);
       setOriginalData(transformedData);
       setIsEditing(false);
-      alert('프로필이 성공적으로 수정되었습니다.');
+      toast({
+        title: "프로필 수정 완료",
+        description: "프로필이 성공적으로 수정되었습니다.",
+      });
     } catch (error) {
       console.error('프로필 수정 실패:', error);
-      alert('프로필 수정에 실패했습니다. 다시 시도해주세요.');
+      toast({
+        title: "프로필 수정 실패",
+        description: "프로필 수정에 실패했습니다. 다시 시도해주세요.",
+      });
     } finally {
       setIsSaving(false);
     }
@@ -393,10 +465,16 @@ const MyProfile = () => {
         )
       );
 
-      alert('입양상태가 성공적으로 변경되었습니다.');
+      toast({
+        title: "입양상태 변경 완료",
+        description: "입양상태가 성공적으로 변경되었습니다.",
+      });
     } catch (error) {
       console.error('입양상태 변경 실패:', error);
-      alert('입양상태 변경에 실패했습니다. 다시 시도해주세요.');
+      toast({
+        title: "입양상태 변경 실패",
+        description: "입양상태 변경에 실패했습니다. 다시 시도해주세요.",
+      });
     }
   };
 
@@ -439,13 +517,19 @@ const MyProfile = () => {
             <p className="text-muted-foreground">프로필 정보를 관리하고 나의 반려동물 활동을 확인하세요</p>
           </div>
 
-          <Tabs defaultValue="profile" className="space-y-6">
+          <Tabs value={currentTab} className="space-y-6" onValueChange={(value) => {
+            handleTabChange(value);
+            // posts 탭이 클릭될 때 내 게시물 로드
+            if (value === 'posts' && !postsLoading) {
+              loadMyPosts();
+            }
+          }}>
             <TabsList className="grid w-full grid-cols-5">
-              <TabsTrigger value="profile">프로필</TabsTrigger>
-              <TabsTrigger value="applications">입양 신청 현황</TabsTrigger>
-              <TabsTrigger value="registrations">내가 등록한 유기견</TabsTrigger>
-              <TabsTrigger value="posts">내 글</TabsTrigger>
-              <TabsTrigger value="favorites">찜 목록</TabsTrigger>
+              <TabsTrigger value="profile" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">프로필</TabsTrigger>
+              <TabsTrigger value="applications" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">입양 신청 현황</TabsTrigger>
+              <TabsTrigger value="registrations" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">내가 등록한 유기견</TabsTrigger>
+              <TabsTrigger value="posts" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">내 글</TabsTrigger>
+              <TabsTrigger value="favorites" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">찜 목록</TabsTrigger>
             </TabsList>
 
             {/* 프로필 관리 */}
@@ -749,41 +833,75 @@ const MyProfile = () => {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="flex-1 flex flex-col">
-                  <div className="space-y-4 flex-1">
-                    {myPosts.map((post) => (
-                      <div key={post.id} className="border rounded-lg p-4">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <Link to={`/post/${post.id}`} className="font-semibold text-foreground hover:text-primary">
-                              {post.title}
-                            </Link>
-                            <div className="flex items-center space-x-4 mt-2 text-sm text-muted-foreground">
-                              <span>{post.date}</span>
-                              <span>조회 {post.views}</span>
-                              <span>댓글 {post.comments}</span>
+                  {postsLoading ? (
+                    <div className="flex justify-center py-8">
+                      <div className="text-muted-foreground">내 게시물 로딩 중...</div>
+                    </div>
+                  ) : (
+                    <div className="space-y-4 flex-1">
+                      {myPosts.length > 0 ? (
+                        myPosts.map((post) => (
+                          <div key={post.postId} className="border rounded-lg p-4">
+                            <div className="flex items-center justify-between">
+                              <div className="flex-1 min-w-0 mr-4">
+                                <Link to={`/post/${post.postId}`} className="font-semibold text-foreground hover:text-primary block">
+                                  <span className="truncate block" title={post.title}>
+                                    {post.title}
+                                  </span>
+                                </Link>
+                                <div className="flex items-center space-x-4 mt-2 text-sm text-muted-foreground">
+                                  <span>{new Date(post.createdAt).toLocaleDateString('ko-KR')}</span>
+                                  <span>조회 {post.viewCount}</span>
+                                </div>
+                              </div>
+                              <div className="flex gap-2 flex-shrink-0">
+                                <Button
+                                  variant="default"
+                                  size="sm"
+                                  onClick={() => {
+                                    // React Router의 navigate 사용하여 쿼리 파라미터와 함께 이동
+                                    navigate(`/post/${post.postId}?edit=true`);
+                                  }}
+                                >
+                                  수정
+                                </Button>
+                                <Button variant="outline" size="sm" asChild>
+                                  <Link to={`/post/${post.postId}`}>보기</Link>
+                                </Button>
+                              </div>
                             </div>
                           </div>
-                          <div className="flex gap-2">
-                            <Button variant="default" size="sm" asChild>
-                              <Link to={`/post/${post.id}/edit`}>수정</Link>
-                            </Button>
-                            <Button variant="outline" size="sm" asChild>
-                              <Link to={`/post/${post.id}`}>보기</Link>
-                            </Button>
-                          </div>
+                        ))
+                      ) : (
+                        <div className="text-center py-8 text-muted-foreground">
+                          작성한 게시글이 없습니다.
                         </div>
-                      </div>
-                    ))}
-                  </div>
-                  
-                  {/* 빈 공간에 표시될 메시지 */}
-                  <div className="flex-1 flex items-start justify-center pt-16">
-                    <div className="text-center text-muted-foreground">
-                      <FileText className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                      <p className="text-lg">더 많은 이야기를 공유해주세요.</p>
-                      <p className="text-sm mt-2">반려동물과의 소중한 경험을 나누어보세요.</p>
+                      )}
+
+                      {/* 무한스크롤을 위한 센티넬 요소 */}
+                      {myPosts.length > 0 && hasMorePosts && (
+                        <div id="posts-sentinel" className="h-4"></div>
+                      )}
+
+                      {/* 더 많은 게시물 로딩 중 표시 */}
+                      {isLoadingMorePosts && (
+                        <div className="text-center py-4">
+                          <div className="text-muted-foreground text-sm">더 많은 게시물 로딩 중...</div>
+                        </div>
+                      )}
                     </div>
-                  </div>
+                  )}
+
+                  {/* 게시물이 없을 때만 표시되는 빈 공간 메시지 */}
+                  {!postsLoading && myPosts.length === 0 && (
+                    <div className="flex-1 flex items-start justify-center pt-16">
+                      <div className="text-center text-muted-foreground">
+                        <FileText className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                        <p className="text-lg">더 많은 이야기를 공유해주세요.</p>
+                        <p className="text-sm mt-2">반려동물과의 소중한 경험을 나누어보세요.</p>
+                      </div>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </TabsContent>
@@ -798,33 +916,52 @@ const MyProfile = () => {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {favoritePets.map((pet) => (
-                      <div key={pet.id} className="border rounded-lg p-4">
-                        <img
-                          src={pet.image}
-                          alt={pet.name}
-                          className="w-full h-48 rounded-lg object-cover mb-4"
-                        />
-                        <div className="space-y-2">
-                          <h3 className="font-semibold text-foreground">{pet.name}</h3>
-                          <p className="text-sm text-muted-foreground">{pet.breed} · {pet.age}</p>
-                          <p className="text-sm text-muted-foreground flex items-center gap-1">
-                            <MapPin className="h-3 w-3" />
-                            {pet.location}
-                          </p>
-                          <div className="flex space-x-2">
-                            <Button size="sm" asChild>
-                              <Link to={`/pet/${pet.id}`}>자세히 보기</Link>
-                            </Button>
-                            <Button variant="outline" size="sm">
-                              <Heart className="h-4 w-4 text-red-500 fill-current" />
-                            </Button>
+                  {favoritePets.length === 0 ? (
+                    <div className="text-center py-8">
+                      <Heart className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+                      <p className="text-muted-foreground">관심 반려동물이 없습니다.</p>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {favoritePets.map((favorite) => (
+                        <div key={favorite.favoriteId} className="border rounded-lg p-4">
+                          {favorite.dogInfo.imageUrl ? (
+                            <ProtectedImage
+                              objectName={favorite.dogInfo.imageUrl}
+                              alt={favorite.dogInfo.name}
+                              className="w-full h-48 rounded-lg object-cover mb-4"
+                            />
+                          ) : (
+                            <div className="w-full h-48 rounded-lg bg-gray-200 flex items-center justify-center mb-4">
+                              <span className="text-gray-500">이미지 없음</span>
+                            </div>
+                          )}
+                          <div className="space-y-2">
+                            <h3 className="font-semibold text-foreground">{favorite.dogInfo.name}</h3>
+                            <p className="text-sm text-muted-foreground">
+                              {favorite.dogInfo.breedName} · {favorite.dogInfo.dogSize} · {favorite.dogInfo.gender === 'MALE' ? '수컷' : '암컷'}
+                            </p>
+                            <p className="text-sm text-muted-foreground flex items-center gap-1">
+                              <MapPin className="h-3 w-3" />
+                              {favorite.dogInfo.shelterName || "보호소 정보 없음"}
+                            </p>
+                            <div className="flex space-x-2">
+                              <Button size="sm" asChild>
+                                <Link to={`/pet/${favorite.dogInfo.dogId}?from=profile&tab=favorites`}>자세히 보기</Link>
+                              </Button>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleRemoveFavorite(favorite.dogInfo.dogId)}
+                              >
+                                <Heart className="h-4 w-4 text-red-500 fill-current" />
+                              </Button>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    ))}
-                  </div>
+                      ))}
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </TabsContent>

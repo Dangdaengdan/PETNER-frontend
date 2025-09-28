@@ -32,8 +32,7 @@ export const uploadImageToGCP = async (file: File): Promise<string> => {
 export const getProtectedImageUrl = async (objectName: string): Promise<string> => {
     try {
         const res = await axios.get(`${UPLOAD_URL}/presigned-url/download`, {
-            params: { objectName },
-            withCredentials: true
+            params: { objectName }
         });
 
         return res.data.url;

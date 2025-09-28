@@ -1,4 +1,4 @@
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -14,19 +14,30 @@ import { useState, useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { getDogById, DogDetailResponseDto } from "@/api/dog";
+import { isFavorite } from "@/api/favorite";
 import { calculateAge } from "@/utils/ageCalculator";
 import { ProtectedImage } from "@/components/ProtectedImage";
 import { createChatRoom } from "@/api/chat";
 import { getCurrentMember } from "@/api/auth";
+import { useFavorite } from "@/hooks/useFavorite";
+import { useToast } from "@/hooks/use-toast";
 
 
 const PetDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [isFavorited, setIsFavorited] = useState(false);
+  const [searchParams] = useSearchParams();
+  const { toast } = useToast();
   const [dog, setDog] = useState<DogDetailResponseDto | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [initialIsFavorite, setInitialIsFavorite] = useState<boolean | undefined>(undefined);
+
+  // 관심 목록 훅 (dog가 로드된 후에만 사용)
+  const { isFavorited, isLoading: favoriteLoading, toggleFavorite } = useFavorite(
+    dog?.dogId || 0,
+    initialIsFavorite
+  );
   const [currentMemberId, setCurrentMemberId] = useState<number | null>(null);
   const [chatLoading, setChatLoading] = useState(false);
 
@@ -37,8 +48,15 @@ const PetDetail = () => {
       try {
         setLoading(true);
         setError(null);
-        const dogData = await getDogById(Number(id));
+
+        // 강아지 정보와 즐겨찾기 상태 병렬 호출
+        const [dogData, favoriteStatus] = await Promise.all([
+          getDogById(Number(id)),
+          isFavorite(Number(id)).catch(() => false) // 에러 시 false 반환
+        ]);
+
         setDog(dogData);
+        setInitialIsFavorite(favoriteStatus);
       } catch (error) {
         console.error("유기견 상세 정보 로드 실패:", error);
         setError(error instanceof Error ? error.message : "알 수 없는 오류가 발생했습니다.");
@@ -67,13 +85,19 @@ const PetDetail = () => {
   // 채팅방 생성 또는 이동
   const handleStartChat = async () => {
     if (!dog || !currentMemberId) {
-      alert('로그인이 필요합니다.');
+      toast({
+        title: "로그인 필요",
+        description: "채팅을 시작하려면 로그인이 필요합니다.",
+      });
       return;
     }
 
     // 본인이 등록한 유기견인지 확인
     if (dog.member.memberId === currentMemberId) {
-      alert('본인이 등록한 유기견에는 채팅을 할 수 없습니다.');
+      toast({
+        title: "채팅 불가",
+        description: "본인이 등록한 유기견에는 채팅을 할 수 없습니다.",
+      });
       return;
     }
 
@@ -84,7 +108,7 @@ const PetDetail = () => {
 
     try {
       setChatLoading(true);
-      
+
       // 채팅방 생성 (이미 있으면 기존 채팅방 반환)
       const chatRoomResponse = await createChatRoom({
         otherMemberId: dog.member.memberId,
@@ -92,16 +116,19 @@ const PetDetail = () => {
       });
 
       console.log('채팅방 생성/조회 성공:', chatRoomResponse);
-      
+
       // 채팅방으로 바로 이동
       // window 이벤트를 통해 ChatButton에 신호 전송
       window.dispatchEvent(new CustomEvent('openChatRoom', {
         detail: { chatRoomId: chatRoomResponse.chatRoomId }
       }));
-      
+
     } catch (error) {
       console.error('채팅방 생성 실패:', error);
-      alert('채팅방 생성에 실패했습니다. 다시 시도해주세요.');
+      toast({
+        title: "채팅방 생성 실패",
+        description: "채팅방 생성에 실패했습니다. 다시 시도해주세요.",
+      });
     } finally {
       setChatLoading(false);
     }
@@ -145,10 +172,19 @@ const PetDetail = () => {
       
       <main className="mx-auto px-8 sm:px-16 md:px-24 lg:px-48 py-8">
         {/* Back Button */}
-        <Button 
-          variant="ghost" 
-          onClick={() => navigate('/')}
-          className="mb-2 text-muted-foreground hover:text-foreground"
+        <Button
+          variant="ghost"
+          onClick={() => {
+            const from = searchParams.get('from');
+            const tab = searchParams.get('tab');
+
+            if (from === 'profile' && tab) {
+              navigate(`/profile?tab=${tab}`);
+            } else {
+              navigate(-1);
+            }
+          }}
+          className="mb-2 text-muted-foreground hover:bg-primary/10 hover:text-primary"
         >
           <ArrowLeft className="h-4 w-4 mr-2" />
           돌아가기
@@ -181,14 +217,15 @@ const PetDetail = () => {
                   <CarouselNext className="absolute right-2 top-1/2 -translate-y-1/2" />
                 </Carousel>
                 <button
-                  onClick={() => setIsFavorited(!isFavorited)}
-                  className="absolute top-3 right-3 p-2 rounded-full bg-background/90 backdrop-blur-sm transition-smooth hover:bg-background z-10"
+                  onClick={toggleFavorite}
+                  disabled={favoriteLoading || !dog?.dogId}
+                  className="absolute top-3 right-3 p-2 rounded-full bg-background/90 backdrop-blur-sm transition-smooth hover:bg-background z-10 disabled:opacity-50"
                 >
                   <Heart
                     className={`h-5 w-5 transition-smooth ${
-                      isFavorited 
-                        ? "text-accent fill-current" 
-                        : "text-muted-foreground hover:text-accent"
+                      isFavorited
+                        ? "text-red-500 fill-current"
+                        : "text-muted-foreground hover:text-red-400"
                     }`}
                   />
                 </button>
@@ -204,7 +241,7 @@ const PetDetail = () => {
                 disabled={chatLoading || !currentMemberId || (dog && dog.member.memberId === currentMemberId)}
               >
                 <MessageCircle className="h-6 w-6 mr-2" />
-                {chatLoading ? '채팅방 생성 중...' : 
+                {chatLoading ? '채팅방 생성 중...' :
                  (dog && dog.member.memberId === currentMemberId) ? '본인 등록 유기견' : '채팅 하기'}
               </Button>
             </div>
