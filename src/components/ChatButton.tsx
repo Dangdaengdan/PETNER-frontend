@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from "react";
-import { MessageCircle, X, ArrowLeft, Send, Phone, MoreVertical, Maximize2, Minimize2 } from "lucide-react";
+import { MessageCircle, X, ArrowLeft, Send, Phone, MoreVertical, Maximize2, Minimize2, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -8,12 +8,14 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { useWebSocket } from "@/hooks/use-websocket";
 import { getCurrentMember } from "@/api/auth";
-import { 
-  getChatRooms, 
-  getAllChatMessages, 
+import { getDogById } from "@/api/dog";
+import { createDogApply } from "@/api/dogapply";
+import {
+  getChatRooms,
+  getAllChatMessages,
   createChatRoom,
   leaveChatRoom,
-  type ChatRoom, 
+  type ChatRoom,
   type ChatMessage,
   type ChatRoomCreateRequest
 } from "@/api/chat";
@@ -30,6 +32,7 @@ const ChatButton = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [unreadCounts, setUnreadCounts] = useState<Record<number, number>>({});
+  const [dogOwnerInfo, setDogOwnerInfo] = useState<Record<number, number>>({});
   
   // 사용자별 채팅방 마지막 읽은 시간 관리
   const getLastReadTime = (chatRoomId: number): string | null => {
@@ -267,19 +270,24 @@ const ChatButton = () => {
     try {
       setSelectedChat(chatRoom.chatRoomId);
       await loadChatMessages(chatRoom.chatRoomId);
-      
+
+      // 유기견 정보가 있는 경우 소유자 정보 로드
+      if (chatRoom.dogInfo?.dogId) {
+        await loadDogOwnerInfo(chatRoom.dogInfo.dogId);
+      }
+
       // 마지막 읽은 시간을 현재 시간으로 업데이트
       setLastReadTime(chatRoom.chatRoomId, new Date().toISOString());
-      
+
       // 읽지 않은 메시지 수 초기화
       setUnreadCounts(prev => ({
         ...prev,
         [chatRoom.chatRoomId]: 0
       }));
-      
+
       // WebSocket 구독
       const subscription = subscribeToChatRoom(chatRoom.chatRoomId);
-      
+
       return () => {
         subscription?.unsubscribe();
       };
@@ -326,6 +334,47 @@ const ChatButton = () => {
       console.error('채팅방 나가기 실패:', error);
     }
   }, [selectedChat, currentMemberId]);
+
+  // 유기견 정보 로드 (소유자 확인용)
+  const loadDogOwnerInfo = async (dogId: number) => {
+    if (dogOwnerInfo[dogId]) return; // 이미 로드된 경우 스킵
+
+    try {
+      const dogDetail = await getDogById(dogId);
+      setDogOwnerInfo(prev => ({
+        ...prev,
+        [dogId]: dogDetail.ownerId
+      }));
+    } catch (error) {
+      console.error('유기견 정보 로드 실패:', error);
+    }
+  };
+
+  // 분양 신청
+  const handleAdoptionApply = async (dogId: number) => {
+    if (!currentMemberId) {
+      alert('로그인이 필요합니다.');
+      return;
+    }
+
+    // 본인이 등록한 유기견인지 확인
+    if (dogOwnerInfo[dogId] === currentMemberId) {
+      alert('본인이 등록한 유기견에는 분양 신청할 수 없습니다.');
+      return;
+    }
+
+    if (!window.confirm('이 유기견에 대한 분양 신청을 하시겠습니까?')) {
+      return;
+    }
+
+    try {
+      await createDogApply({ dogId });
+      alert('분양 신청이 완료되었습니다. 상대방의 승인을 기다려주세요.');
+    } catch (error) {
+      console.error('분양 신청 실패:', error);
+      alert('분양 신청에 실패했습니다. 이미 신청했거나 다른 문제가 발생했을 수 있습니다.');
+    }
+  };
 
   const handleBackToList = () => {
     setSelectedChat(null);
@@ -466,15 +515,28 @@ const ChatButton = () => {
           <div className="flex items-center space-x-1">
             {selectedChat && (
               <>
-                <Button 
-                  variant="ghost" 
+                {/* 분양 신청 버튼 - dogInfo가 있고 본인이 등록자가 아닌 경우에만 표시 */}
+                {getSelectedChatRoom()?.dogInfo?.dogId &&
+                 dogOwnerInfo[getSelectedChatRoom()?.dogInfo?.dogId || 0] !== currentMemberId && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleAdoptionApply(getSelectedChatRoom()?.dogInfo?.dogId || 0)}
+                    className="text-primary-foreground hover:bg-primary-foreground/20 gap-1"
+                  >
+                    <Heart className="h-4 w-4" />
+                    분양 신청
+                  </Button>
+                )}
+                <Button
+                  variant="ghost"
                   size="icon"
                   className="text-primary-foreground hover:bg-primary-foreground/20"
                 >
                   <Phone className="h-4 w-4" />
                 </Button>
-                <Button 
-                  variant="ghost" 
+                <Button
+                  variant="ghost"
                   size="icon"
                   onClick={handleLeaveChatRoom}
                   className="text-primary-foreground hover:bg-primary-foreground/20"
