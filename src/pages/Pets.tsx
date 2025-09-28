@@ -313,10 +313,10 @@ const Pets = () => {
                   <div className="flex items-center justify-between">
                     <h3 className="text-lg font-semibold text-foreground truncate">{dog.name}</h3>
                     <div className="flex items-center gap-2 shrink-0">
-                      <Badge variant="secondary" className="bg-background/90 text-foreground">
+                      <Badge variant="secondary" className="bg-primary/10 text-primary text-sm px-3 py-1">
                         {dog.gender === 'MALE' ? '수컷' : '암컷'}
                       </Badge>
-                      <Badge variant="secondary" className="bg-background/90 text-foreground">{dog.dogSize}</Badge>
+                      <Badge variant="secondary" className="bg-accent/10 text-accent text-sm px-3 py-1">{dog.dogSize}</Badge>
                     </div>
                   </div>
                   <div className="mt-1 flex items-center gap-4 text-sm text-muted-foreground">

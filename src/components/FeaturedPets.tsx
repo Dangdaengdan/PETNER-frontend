@@ -62,10 +62,10 @@ const FeaturedPetCard = ({ id, name, breed, birthDate, location, imageUrl, gende
         </button>
 
         <div className="absolute bottom-3 left-3 flex gap-2">
-          <Badge variant="secondary" className="bg-background/90 text-foreground">
+          <Badge variant="secondary" className="bg-primary/10 text-primary text-sm px-3 py-1">
             {gender}
           </Badge>
-          <Badge variant="secondary" className="bg-background/90 text-foreground">
+          <Badge variant="secondary" className="bg-accent/10 text-accent text-sm px-3 py-1">
             {size}
           </Badge>
         </div>
@@ -220,9 +220,9 @@ const FeaturedPets = () => {
                               <SelectValue placeholder="선택하기" />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="소형견">소형</SelectItem>
-                              <SelectItem value="중형견">중형</SelectItem>
-                              <SelectItem value="대형견">대형</SelectItem>
+                              <SelectItem value="소형">소형</SelectItem>
+                              <SelectItem value="중형">중형</SelectItem>
+                              <SelectItem value="대형">대형</SelectItem>
                             </SelectContent>
                           </Select>
                         </div>
