@@ -31,6 +31,68 @@ const ChatButton = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [unreadCounts, setUnreadCounts] = useState<Record<number, number>>({});
   
+  // 사용자별 채팅방 마지막 읽은 시간 관리
+  const getLastReadTime = (chatRoomId: number): string | null => {
+    if (!currentMemberId) return null;
+    return localStorage.getItem(`user_${currentMemberId}_chatRoom_${chatRoomId}_lastRead`);
+  };
+  
+  const setLastReadTime = (chatRoomId: number, time: string) => {
+    if (!currentMemberId) return;
+    localStorage.setItem(`user_${currentMemberId}_chatRoom_${chatRoomId}_lastRead`, time);
+  };
+  
+  // 마지막 로그아웃 시간 관리
+  const getLastLogoutTime = (): string | null => {
+    if (!currentMemberId) return null;
+    return localStorage.getItem(`user_${currentMemberId}_lastLogout`);
+  };
+  
+  const setLastLogoutTime = (time: string) => {
+    if (!currentMemberId) return;
+    localStorage.setItem(`user_${currentMemberId}_lastLogout`, time);
+  };
+  
+  // 로그인 시 읽음 시간 초기화
+  const initializeReadTimes = (rooms: ChatRoom[], isProfileCompleted: boolean) => {
+    if (!currentMemberId) return;
+    
+    const lastLogoutTime = getLastLogoutTime();
+    
+    rooms.forEach(room => {
+      const existingReadTime = getLastReadTime(room.chatRoomId);
+      if (!existingReadTime) {
+        if (!isProfileCompleted) {
+          // 프로필 미완성 = 첫 로그인, 현재 시간을 기준으로 설정
+          setLastReadTime(room.chatRoomId, new Date().toISOString());
+        } else if (lastLogoutTime) {
+          // 재로그인하는 경우, 마지막 로그아웃 시간을 기준으로 설정
+          setLastReadTime(room.chatRoomId, lastLogoutTime);
+        } else {
+          // 로그아웃 시간이 없는 경우, 보수적으로 메시지가 있으면 읽지 않음으로 표시
+          // (프로필 완성된 사용자인데 로그아웃 기록이 없는 경우는 거의 없음)
+        }
+      }
+    });
+  };
+  
+  // 읽지 않은 메시지 여부 확인
+  const hasUnreadMessage = (room: ChatRoom): boolean => {
+    // 메시지가 없는 채팅방은 읽지 않음으로 표시하지 않음
+    if (!room.lastMessageSentAt || !room.lastMessageContent) return false;
+    
+    const lastReadTime = getLastReadTime(room.chatRoomId);
+    if (!lastReadTime) {
+      // 한 번도 읽지 않았으면 읽지 않음으로 표시
+      return true;
+    }
+    
+    const lastMessageTime = new Date(room.lastMessageSentAt).getTime();
+    const lastReadTimeMs = new Date(lastReadTime).getTime();
+    
+    return lastMessageTime > lastReadTimeMs;
+  };
+  
   const messagesEndRef = useRef<HTMLDivElement>(null);
   
   // WebSocket 훅 설정
@@ -109,10 +171,16 @@ const ChatButton = () => {
   };
 
   // 채팅방 목록 로드 함수
-  const loadChatRooms = async () => {
+  const loadChatRooms = async (profileCompleted?: boolean) => {
     try {
       setIsLoading(true);
       const rooms = await getChatRooms();
+      
+      // 프로필 완성 여부가 전달된 경우에만 읽음 시간 초기화
+      if (profileCompleted !== undefined) {
+        initializeReadTimes(rooms || [], profileCompleted);
+      }
+      
       setChatRooms(sortChatRooms(rooms || []));
     } catch (error) {
       console.error('채팅방 로드 실패:', error);
@@ -121,7 +189,7 @@ const ChatButton = () => {
     }
   };
 
-  // 초기 로드
+  // 초기 로드 (백그라운드에서 미리 로드)
   useEffect(() => {
     const initializeChat = async () => {
       try {
@@ -130,8 +198,12 @@ const ChatButton = () => {
           setCurrentMemberId(member.memberId);
           setIsAuthenticated(true);
           
-          // 채팅방 목록 로드
+          // 채팅방 목록을 백그라운드에서 미리 로드 (알림 표시용)
           const rooms = await getChatRooms();
+          
+          // 프로필 완성 여부에 따라 읽음 시간 초기화
+          initializeReadTimes(rooms || [], member.profileCompleted);
+          
           setChatRooms(sortChatRooms(rooms || []));
           
           connect();
@@ -142,10 +214,9 @@ const ChatButton = () => {
       }
     };
     
-    if (isOpen) {
-      initializeChat();
-    }
-  }, [isOpen, connect]);
+    // 페이지 로드 시 바로 초기화 (모달을 열지 않아도)
+    initializeChat();
+  }, [connect]);
 
   // 정리
   useEffect(() => {
@@ -153,6 +224,25 @@ const ChatButton = () => {
       disconnect();
     }
   }, [isOpen, disconnect]);
+
+  // 페이지 떠날 때 로그아웃 시간 저장
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      if (currentMemberId) {
+        setLastLogoutTime(new Date().toISOString());
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+      // 컴포넌트 언마운트 시에도 저장
+      if (currentMemberId) {
+        setLastLogoutTime(new Date().toISOString());
+      }
+    };
+  }, [currentMemberId]);
 
   // 채팅방 메시지 로드
   const loadChatMessages = useCallback(async (chatRoomId: number) => {
@@ -177,6 +267,15 @@ const ChatButton = () => {
     try {
       setSelectedChat(chatRoom.chatRoomId);
       await loadChatMessages(chatRoom.chatRoomId);
+      
+      // 마지막 읽은 시간을 현재 시간으로 업데이트
+      setLastReadTime(chatRoom.chatRoomId, new Date().toISOString());
+      
+      // 읽지 않은 메시지 수 초기화
+      setUnreadCounts(prev => ({
+        ...prev,
+        [chatRoom.chatRoomId]: 0
+      }));
       
       // WebSocket 구독
       const subscription = subscribeToChatRoom(chatRoom.chatRoomId);
@@ -305,7 +404,7 @@ const ChatButton = () => {
   };
 
   // 총 읽지 않은 메시지 수 계산
-  const totalUnreadCount = Object.values(unreadCounts).reduce((sum, count) => sum + count, 0);
+  const totalUnreadCount = chatRooms.filter(room => hasUnreadMessage(room)).length;
 
   if (!isOpen) {
     return (
@@ -431,7 +530,11 @@ const ChatButton = () => {
                     <div
                       key={room.chatRoomId}
                       onClick={() => handleChatClick(room)}
-                      className="flex items-center space-x-3 p-3 hover:bg-muted/50 rounded-lg cursor-pointer transition-colors"
+                      className={`flex items-center space-x-3 p-3 rounded-lg cursor-pointer transition-colors ${
+                        hasUnreadMessage(room)
+                          ? 'bg-primary/5 hover:bg-primary/10' 
+                          : 'hover:bg-muted/50'
+                      }`}
                     >
                       <div className="relative">
                         <Avatar className="h-12 w-12">
@@ -439,33 +542,44 @@ const ChatButton = () => {
                             {room.dogInfo?.name ? '🐕' : (room.otherMemberInfo?.nickname?.charAt(0) || 'U')}
                           </AvatarFallback>
                         </Avatar>
-                        {(unreadCounts[room.chatRoomId] || 0) > 0 && (
-                          <Badge 
-                            variant="destructive" 
-                            className="absolute -top-1 -right-1 h-5 w-5 rounded-full p-0 flex items-center justify-center text-xs"
-                          >
-                            {(unreadCounts[room.chatRoomId] || 0) > 99 ? '99+' : (unreadCounts[room.chatRoomId] || 0)}
-                          </Badge>
-                        )}
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between">
-                          <p className="text-sm font-medium truncate">
+                          <p className={`text-sm truncate ${
+                            hasUnreadMessage(room)
+                              ? 'font-extrabold text-foreground' 
+                              : 'font-medium text-foreground'
+                          }`}>
                             {room.otherMemberInfo?.nickname || '알 수 없는 사용자'}
                             {room.dogInfo?.name && (
-                              <span className="text-xs text-muted-foreground ml-1">
+                              <span className="text-xs text-muted-foreground ml-1 font-normal">
                                 ({room.dogInfo.name})
                               </span>
                             )}
                           </p>
-                          {room.lastMessageSentAt && (
-                            <span className="text-xs text-muted-foreground">
-                              {formatLastMessageTime(room.lastMessageSentAt)}
-                            </span>
-                          )}
+                          <div className="flex flex-col items-end space-y-1">
+                            {room.lastMessageSentAt && (
+                              <span className={`text-xs ${
+                                hasUnreadMessage(room)
+                                  ? 'text-foreground font-semibold' 
+                                  : 'text-muted-foreground'
+                              }`}>
+                                {formatLastMessageTime(room.lastMessageSentAt)}
+                              </span>
+                            )}
+                            {hasUnreadMessage(room) && (
+                              <div className="bg-red-500 text-white text-xs font-bold rounded-full h-5 min-w-[20px] flex items-center justify-center px-1.5">
+                                N
+                              </div>
+                            )}
+                          </div>
                         </div>
                         {room.lastMessageContent && (
-                          <p className="text-sm text-muted-foreground truncate">
+                          <p className={`text-sm truncate ${
+                            hasUnreadMessage(room)
+                              ? 'text-foreground font-semibold' 
+                              : 'text-muted-foreground'
+                          }`}>
                             {room.lastMessageContent}
                           </p>
                         )}
