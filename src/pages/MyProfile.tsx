@@ -332,7 +332,10 @@ const MyProfile = () => {
           locationId = locationData.locationId;
         } catch (error) {
           console.error('지역 정보 조회 실패:', error);
-          alert('지역 정보를 불러오는데 실패했습니다. 다시 시도해주세요.');
+          toast({
+            title: "지역 정보 로드 실패",
+            description: "지역 정보를 불러오는데 실패했습니다. 다시 시도해주세요.",
+          });
           return;
         }
       }
@@ -367,10 +370,16 @@ const MyProfile = () => {
       setEditData(transformedData);
       setOriginalData(transformedData);
       setIsEditing(false);
-      alert('프로필이 성공적으로 수정되었습니다.');
+      toast({
+        title: "프로필 수정 완료",
+        description: "프로필이 성공적으로 수정되었습니다.",
+      });
     } catch (error) {
       console.error('프로필 수정 실패:', error);
-      alert('프로필 수정에 실패했습니다. 다시 시도해주세요.');
+      toast({
+        title: "프로필 수정 실패",
+        description: "프로필 수정에 실패했습니다. 다시 시도해주세요.",
+      });
     } finally {
       setIsSaving(false);
     }
@@ -456,10 +465,16 @@ const MyProfile = () => {
         )
       );
 
-      alert('입양상태가 성공적으로 변경되었습니다.');
+      toast({
+        title: "입양상태 변경 완료",
+        description: "입양상태가 성공적으로 변경되었습니다.",
+      });
     } catch (error) {
       console.error('입양상태 변경 실패:', error);
-      alert('입양상태 변경에 실패했습니다. 다시 시도해주세요.');
+      toast({
+        title: "입양상태 변경 실패",
+        description: "입양상태 변경에 실패했습니다. 다시 시도해주세요.",
+      });
     }
   };
 
