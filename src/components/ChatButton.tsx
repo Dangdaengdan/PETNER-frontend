@@ -59,6 +59,9 @@ const ChatButton = () => {
           [messageChatRoomId]: (prev[messageChatRoomId] || 0) + 1
         }));
       }
+      
+      // 새 메시지가 오면 채팅방 목록 다시 로드 (정렬 반영)
+      loadChatRooms();
     },
     onConnect: () => {
       console.log('WebSocket 연결됨');
@@ -92,12 +95,25 @@ const ChatButton = () => {
     scrollToBottom();
   }, [currentMessages, scrollToBottom]);
 
+  // 채팅방 목록 정렬 함수 (최신 메시지 시간순)
+  const sortChatRooms = (rooms: ChatRoom[]) => {
+    return rooms.sort((a, b) => {
+      // lastMessageSentAt이 없는 경우 맨 아래로
+      if (!a.lastMessageSentAt && !b.lastMessageSentAt) return 0;
+      if (!a.lastMessageSentAt) return 1;
+      if (!b.lastMessageSentAt) return -1;
+      
+      // 날짜 비교 (최신순)
+      return new Date(b.lastMessageSentAt).getTime() - new Date(a.lastMessageSentAt).getTime();
+    });
+  };
+
   // 채팅방 목록 로드 함수
   const loadChatRooms = async () => {
     try {
       setIsLoading(true);
       const rooms = await getChatRooms();
-      setChatRooms(rooms || []);
+      setChatRooms(sortChatRooms(rooms || []));
     } catch (error) {
       console.error('채팅방 로드 실패:', error);
     } finally {
@@ -116,7 +132,7 @@ const ChatButton = () => {
           
           // 채팅방 목록 로드
           const rooms = await getChatRooms();
-          setChatRooms(rooms || []);
+          setChatRooms(sortChatRooms(rooms || []));
           
           connect();
         }
