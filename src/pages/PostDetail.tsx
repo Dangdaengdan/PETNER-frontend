@@ -1,4 +1,4 @@
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { Heart, MessageSquare, Calendar, ArrowLeft, Eye, User, Edit, Reply, Trash2, MessageCircle, FileText, Image, Upload, MoreVertical } from "lucide-react";
 import { useState, useEffect } from "react";
 import Navbar from "@/components/Navbar";
@@ -29,6 +29,7 @@ import { getComments, createComment, updateComment, deleteComment, CommentRespon
 const PostDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { toast } = useToast();
   const [post, setPost] = useState<PostResponse | null>(null);
   const [loading, setLoading] = useState(true);
@@ -326,6 +327,33 @@ const PostDetail = () => {
 
     fetchPost();
   }, [id]);
+
+  // URL 쿼리 파라미터로 편집 모드 확인
+  useEffect(() => {
+    const editParam = searchParams.get('edit');
+    console.log('Edit mode check:', {
+      editParam,
+      hasPost: !!post,
+      hasCurrentUser: !!currentUser,
+      isAuthor: currentUser && post && currentUser.nickname === post.authorNickname,
+      postAuthor: post?.authorNickname,
+      currentUserNickname: currentUser?.nickname
+    });
+
+    if (editParam === 'true' && post && currentUser && currentUser.nickname === post.authorNickname) {
+      console.log('Activating edit mode...');
+      // 편집 모드 활성화
+      setEditTitle(post.title);
+      setEditContent(post.content);
+      setEditImageFile(null);
+      setEditImagePreview(null);
+      setIsEditing(true);
+
+      // URL에서 edit 파라미터 제거 (뒤로 가기 시 다시 편집 모드가 되지 않도록)
+      const newUrl = window.location.pathname;
+      window.history.replaceState({}, '', newUrl);
+    }
+  }, [post, currentUser, searchParams]);
 
   // 댓글 조회 API (초기 로드)
   const fetchComments = async (page: number = 0, isLoadMore: boolean = false) => {
