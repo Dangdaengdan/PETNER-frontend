@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, useImperativeHandle, forwardRef } from "react";
 import { MessageCircle, X, ArrowLeft, Send, Phone, MoreVertical, Maximize2, Minimize2, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -20,7 +20,12 @@ import {
   type ChatRoomCreateRequest
 } from "@/api/chat";
 
-const ChatButton = () => {
+export interface ChatButtonRef {
+  openChatRoom: (chatRoomId: number) => void;
+  openChat: () => void;
+}
+
+const ChatButton = forwardRef<ChatButtonRef>((props, ref) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
@@ -268,6 +273,43 @@ const ChatButton = () => {
     };
   }, [currentMemberId]);
 
+  // 외부에서 발생한 채팅방 열기 이벤트 수신
+  useEffect(() => {
+    const handleOpenChatRoom = (event: CustomEvent) => {
+      const { chatRoomId } = event.detail;
+      if (chatRoomId) {
+        setIsOpen(true);
+        // 약간의 딜레이 후 채팅방 로드 (채팅방 목록이 업데이트될 시간을 줌)
+        setTimeout(async () => {
+          try {
+            await loadChatRooms();
+            // 최신 채팅방 목록에서 찾기
+            const rooms = await getChatRooms();
+            const targetRoom = rooms?.find(room => room.chatRoomId === chatRoomId);
+            if (targetRoom) {
+              setSelectedChat(targetRoom.chatRoomId);
+              await loadChatMessages(targetRoom.chatRoomId);
+              
+              // 마지막 읽은 시간을 현재 시간으로 업데이트
+              setLastReadTime(targetRoom.chatRoomId, new Date().toISOString());
+              
+              // WebSocket 구독
+              subscribeToChatRoom(targetRoom.chatRoomId);
+            }
+          } catch (error) {
+            console.error('채팅방 열기 실패:', error);
+          }
+        }, 500);
+      }
+    };
+
+    window.addEventListener('openChatRoom', handleOpenChatRoom as EventListener);
+    
+    return () => {
+      window.removeEventListener('openChatRoom', handleOpenChatRoom as EventListener);
+    };
+  }, []); // 의존성 배열 비우기
+
   // 채팅방 메시지 로드
   const loadChatMessages = useCallback(async (chatRoomId: number) => {
     try {
@@ -473,6 +515,20 @@ const ChatButton = () => {
       return '';
     }
   };
+
+  // 외부에서 호출 가능한 메서드들 노출
+  useImperativeHandle(ref, () => ({
+    openChat: () => {
+      setIsOpen(true);
+    },
+    openChatRoom: async (chatRoomId: number) => {
+      setIsOpen(true);
+      // window 이벤트 사용
+      window.dispatchEvent(new CustomEvent('openChatRoom', {
+        detail: { chatRoomId }
+      }));
+    }
+  }), []);
 
   // 총 읽지 않은 메시지 수 계산
   const totalUnreadCount = chatRooms.filter(room => hasUnreadMessage(room)).length;
@@ -745,6 +801,6 @@ const ChatButton = () => {
   );
 
   return chatContainer;
-};
+});
 
 export default ChatButton;
