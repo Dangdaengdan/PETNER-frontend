@@ -126,7 +126,10 @@ const FeaturedPets = () => {
         setLoading(true);
         // 최신 6마리 가져오기 (첫 번째 페이지에서 6개)
         const data = await getDogs(0, 6);
-        setFeaturedDogs(data);
+
+        // "입양_가능" 상태인 유기견만 필터링
+        const availableDogs = data.filter(dog => dog.adoptionStatus === "입양_가능");
+        setFeaturedDogs(availableDogs);
       } catch (error) {
         console.error("추천 유기견 로드 실패:", error);
         setFeaturedDogs([]);

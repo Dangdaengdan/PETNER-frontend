@@ -66,7 +66,10 @@ const Pets = () => {
         setLoading(true);
         // API는 0 based pagination이므로 currentPage - 1
         const data = await getDogs(currentPage - 1, ITEMS_PER_PAGE);
-        setDogs(data);
+
+        // "입양_가능" 상태인 유기견만 필터링
+        const availableDogs = data.filter(dog => dog.adoptionStatus === "입양_가능");
+        setDogs(availableDogs);
 
         // 서버에서 전체 페이지 수를 제공하지 않으므로, 받은 데이터로 추정
         // 받은 데이터가 페이지 크기와 같으면 다음 페이지가 있을 수 있음
@@ -178,7 +181,9 @@ const Pets = () => {
         createdAt: result.createdAt
       }));
 
-      setDogs(convertedResults);
+      // "입양_가능" 상태인 유기견만 필터링
+      const availableResults = convertedResults.filter(dog => dog.adoptionStatus === "입양_가능");
+      setDogs(availableResults);
       setTotalPages(1); // 검색 모드에서는 페이지네이션 비활성화
     } catch (error) {
       console.error("검색 실패:", error);
