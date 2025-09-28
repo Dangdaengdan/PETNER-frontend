@@ -490,7 +490,7 @@ const PostDetail = () => {
                   onChange={(e) => setEditTitle(e.target.value)}
                   placeholder="제목을 입력하세요"
                   required
-                  className="text-2xl font-bold border-2"
+                  className="text-2xl font-bold border-2 border-gray-400 focus:border-primary"
                 />
               </div>
 
@@ -515,7 +515,7 @@ const PostDetail = () => {
                   type="file"
                   accept="image/*"
                   onChange={handleEditImageChange}
-                  className="mb-4"
+                  className="mb-4 border-2 border-gray-400 focus:border-primary"
                 />
 
                 {editImagePreview && (
@@ -540,7 +540,7 @@ const PostDetail = () => {
                   placeholder="내용을 입력하세요"
                   rows={15}
                   required
-                  className="text-lg leading-relaxed"
+                  className="text-lg leading-relaxed border-2 border-gray-400 focus:border-primary"
                 />
               </div>
 
@@ -633,10 +633,6 @@ const PostDetail = () => {
 
               {/* 액션 버튼들 */}
               <div className="flex items-center justify-center gap-6">
-                <Button variant="outline" className="gap-2 py-3 px-6 border-gray-400 text-gray-700 hover:bg-primary/10 hover:text-primary hover:border-primary/40">
-                  <Heart className="h-4 w-4" />
-                  좋아요
-                </Button>
                 <Button variant="outline" className="gap-2 py-3 px-6 border-gray-400 text-gray-700 hover:bg-primary/10 hover:text-primary hover:border-primary/40">
                   <MessageSquare className="h-4 w-4" />
                   댓글 {comments.reduce((total, comment) => total + 1 + comment.replies.length, 0)}
