@@ -107,9 +107,9 @@ const Navbar = () => {
   // 서비스 접근 핸들러 (Register, Community용)
   const handleServiceAccess = (e: React.MouseEvent) => {
     if (!isLoggedIn) {
-      // 로그아웃 상태에서는 Alert 표시
+      // 로그아웃 상태에서는 로그인 모달 표시
       e.preventDefault();
-      alert('로그인 후 이용해주세요.');
+      setIsLoginModalOpen(true);
     } else if (isLoggedIn && !profileCompleted) {
       // 로그인했지만 프로필 미완성인 경우
       e.preventDefault();

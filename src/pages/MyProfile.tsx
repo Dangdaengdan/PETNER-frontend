@@ -23,6 +23,7 @@ import { getAllMyFavorites, FavoriteResponse } from "@/api/favorite";
 import { ProtectedImage } from "@/components/ProtectedImage";
 import { useToast } from "@/hooks/use-toast";
 import { useFavorite } from "@/hooks/useFavorite";
+import LoginModal from "@/components/LoginModal";
 
 // 기본 데이터
 const defaultUserData = {
@@ -62,9 +63,12 @@ const adoptionHistory = [
 
 // 개별 찜 아이템 컴포넌트
 const FavoriteItem = ({ favorite, onRemove }: { favorite: FavoriteResponse; onRemove: () => void }) => {
+  const [showLoginModal, setShowLoginModal] = useState(false);
+
   const { isFavorited, isLoading: favoriteLoading, toggleFavorite } = useFavorite(
     favorite.dogInfo.dogId,
-    true // 이미 찜 목록에 있는 아이템이므로 true
+    true, // 이미 찜 목록에 있는 아이템이므로 true
+    () => setShowLoginModal(true) // 로그인이 필요할 때 모달 표시
   );
 
   // 찜 상태가 해제되면 목록에서 제거
@@ -124,6 +128,15 @@ const FavoriteItem = ({ favorite, onRemove }: { favorite: FavoriteResponse; onRe
           </Button>
         </div>
       </div>
+
+      <LoginModal
+        isOpen={showLoginModal}
+        onClose={() => setShowLoginModal(false)}
+        onSuccess={() => {
+          setShowLoginModal(false);
+          window.location.reload();
+        }}
+      />
     </div>
   );
 };
@@ -489,9 +502,6 @@ const MyProfile = () => {
         imageUrl: dogDetail.imageUrl || null,
         shelterId: dogDetail.shelter?.shelterId || null,
       };
-
-      console.log('🔥 전체 필드 DTO:', fullUpdateData);
-      console.log('🔥 전송할 JSON:', JSON.stringify(fullUpdateData, null, 2));
 
       // 실제 API 호출
       await updateDog(dogId, fullUpdateData);

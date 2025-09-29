@@ -3,7 +3,7 @@ import { addFavorite, removeFavorite, isFavorite } from '@/api/favorite';
 import { useToast } from '@/hooks/use-toast';
 import { getCurrentMember } from '@/api/auth';
 
-export const useFavorite = (dogId: number, initialIsFavorite?: boolean) => {
+export const useFavorite = (dogId: number, initialIsFavorite?: boolean, onLoginRequired?: () => void) => {
   const [isFavorited, setIsFavorited] = useState(initialIsFavorite ?? false);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
@@ -43,10 +43,14 @@ export const useFavorite = (dogId: number, initialIsFavorite?: boolean) => {
     try {
       await getCurrentMember();
     } catch (error) {
-      toast({
-        title: "로그인이 필요합니다",
-        description: "찜목록 기능을 사용하려면 로그인해주세요.",
-      });
+      if (onLoginRequired) {
+        onLoginRequired();
+      } else {
+        toast({
+          title: "로그인이 필요합니다",
+          description: "찜목록 기능을 사용하려면 로그인해주세요.",
+        });
+      }
       return;
     }
 

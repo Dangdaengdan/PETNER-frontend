@@ -16,6 +16,7 @@ import { Badge } from "@/components/ui/badge";
 import { Heart, MapPin, Calendar } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useFavorite } from "@/hooks/useFavorite";
+import LoginModal from "@/components/LoginModal";
 type BRFilterState = { dogSize: string; dogBreed: string; location: string };
 import { useNavigate } from "react-router-dom";
 
@@ -33,7 +34,12 @@ interface FeaturedPetCardProps {
 }
 
 const FeaturedPetCard = ({ id, name, breed, birthDate, location, imageUrl, gender, size, initialIsFavorite }: FeaturedPetCardProps) => {
-  const { isFavorited, isLoading, toggleFavorite } = useFavorite(Number(id), initialIsFavorite);
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const { isFavorited, isLoading, toggleFavorite } = useFavorite(
+    Number(id),
+    initialIsFavorite,
+    () => setShowLoginModal(true) // 로그인이 필요할 때 모달 표시
+  );
   console.log('FeaturedPetCard 디버그:', { id, name, initialIsFavorite, isFavorited });
 
   return (
@@ -108,6 +114,15 @@ const FeaturedPetCard = ({ id, name, breed, birthDate, location, imageUrl, gende
           </div>
         </div>
       </CardContent>
+
+      <LoginModal
+        isOpen={showLoginModal}
+        onClose={() => setShowLoginModal(false)}
+        onSuccess={() => {
+          setShowLoginModal(false);
+          window.location.reload();
+        }}
+      />
     </Card>
   );
 };
