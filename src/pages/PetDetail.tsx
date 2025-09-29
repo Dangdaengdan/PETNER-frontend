@@ -21,6 +21,7 @@ import { createChatRoom } from "@/api/chat";
 import { getCurrentMember } from "@/api/auth";
 import { useFavorite } from "@/hooks/useFavorite";
 import { useToast } from "@/hooks/use-toast";
+import LoginModal from "@/components/LoginModal";
 import { createDogApply } from "@/api/dogapply";
 
 
@@ -37,11 +38,13 @@ const PetDetail = () => {
   // 관심 목록 훅 (dog가 로드된 후에만 사용)
   const { isFavorited, isLoading: favoriteLoading, toggleFavorite } = useFavorite(
     dog?.dogId || 0,
-    initialIsFavorite
+    initialIsFavorite,
+    () => setShowLoginModal(true) // 로그인이 필요할 때 모달 표시
   );
   const [currentMemberId, setCurrentMemberId] = useState<number | null>(null);
   const [chatLoading, setChatLoading] = useState(false);
   const [applyLoading, setApplyLoading] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
 
   useEffect(() => {
     const loadDogDetail = async () => {
@@ -418,6 +421,16 @@ const PetDetail = () => {
       </main>
 
       <Footer />
+
+      <LoginModal
+        isOpen={showLoginModal}
+        onClose={() => setShowLoginModal(false)}
+        onSuccess={() => {
+          setShowLoginModal(false);
+          // 로그인 후 찜 상태를 다시 확인할 수 있도록 페이지 새로고침
+          window.location.reload();
+        }}
+      />
     </div>
   );
 };

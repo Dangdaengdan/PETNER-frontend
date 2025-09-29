@@ -10,9 +10,11 @@ import { useNavigate } from "react-router-dom";
 import { FileText, Image, Upload } from "lucide-react";
 import { createPost } from "@/api/post";
 import { uploadImageToGCP } from "@/api/upload";
+import { useToast } from "@/hooks/use-toast";
 
 const PostCreate = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -34,7 +36,10 @@ const PostCreate = () => {
     e.preventDefault();
 
     if (!title.trim() || !content.trim()) {
-      alert("제목과 내용을 모두 입력해주세요.");
+      toast({
+        title: "입력 오류",
+        description: "제목과 내용을 모두 입력해주세요.",
+      });
       return;
     }
 
@@ -58,11 +63,17 @@ const PostCreate = () => {
 
       await createPost(postData);
 
-      alert("게시물이 성공적으로 등록되었습니다.");
+      toast({
+        title: "등록 완료",
+        description: "게시물이 성공적으로 등록되었습니다.",
+      });
       navigate("/community");
     } catch (error) {
       console.error("게시물 등록 실패:", error);
-      alert("게시물 등록에 실패했습니다. 다시 시도해주세요.");
+      toast({
+        title: "등록 실패",
+        description: "게시물 등록에 실패했습니다. 다시 시도해주세요.",
+      });
     } finally {
       setIsLoading(false);
     }

@@ -8,6 +8,8 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { useWebSocket } from "@/hooks/use-websocket";
 import { getCurrentMember } from "@/api/auth";
+import LoginModal from "@/components/LoginModal";
+import { useToast } from "@/hooks/use-toast";
 import { getDogById } from "@/api/dog";
 import { createDogApply } from "@/api/dogapply";
 import {
@@ -27,6 +29,7 @@ export interface ChatButtonRef {
 }
 
 const ChatButton = forwardRef<ChatButtonRef>((props, ref) => {
+  const { toast } = useToast();
   const [isOpen, setIsOpen] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
@@ -40,7 +43,8 @@ const ChatButton = forwardRef<ChatButtonRef>((props, ref) => {
   const [unreadCounts, setUnreadCounts] = useState<Record<number, number>>({});
   const [dogOwnerInfo, setDogOwnerInfo] = useState<Record<number, number>>({});
   const [dogImageInfo, setDogImageInfo] = useState<Record<number, string>>({});
-  
+  const [showLoginModal, setShowLoginModal] = useState(false);
+
   // 사용자별 채팅방 마지막 읽은 시간 관리
   const getLastReadTime = (chatRoomId: number): string | null => {
     if (!currentMemberId) return null;
@@ -445,13 +449,16 @@ const ChatButton = forwardRef<ChatButtonRef>((props, ref) => {
   // 분양 신청
   const handleAdoptionApply = async (dogId: number) => {
     if (!currentMemberId) {
-      alert('로그인이 필요합니다.');
+      setShowLoginModal(true);
       return;
     }
 
     // 본인이 등록한 유기견인지 확인
     if (dogOwnerInfo[dogId] === currentMemberId) {
-      alert('본인이 등록한 유기견에는 분양 신청할 수 없습니다.');
+      toast({
+        title: "분양 신청 불가",
+        description: "본인이 등록한 유기견에는 분양 신청할 수 없습니다.",
+      });
       return;
     }
 
@@ -461,10 +468,16 @@ const ChatButton = forwardRef<ChatButtonRef>((props, ref) => {
 
     try {
       await createDogApply({ dogId });
-      alert('분양 신청이 완료되었습니다. 상대방의 승인을 기다려주세요.');
+      toast({
+        title: "분양 신청 완료",
+        description: "분양 신청이 완료되었습니다. 상대방의 승인을 기다려주세요.",
+      });
     } catch (error) {
       console.error('분양 신청 실패:', error);
-      alert('분양 신청에 실패했습니다. 이미 신청했거나 다른 문제가 발생했을 수 있습니다.');
+      toast({
+        title: "분양 신청 실패",
+        description: "분양 신청에 실패했습니다. 이미 신청했거나 다른 문제가 발생했을 수 있습니다.",
+      });
     }
   };
 
@@ -841,7 +854,19 @@ const ChatButton = forwardRef<ChatButtonRef>((props, ref) => {
     </Card>
   );
 
-  return chatContainer;
+  return (
+    <>
+      {chatContainer}
+      <LoginModal
+        isOpen={showLoginModal}
+        onClose={() => setShowLoginModal(false)}
+        onSuccess={() => {
+          setShowLoginModal(false);
+          window.location.reload();
+        }}
+      />
+    </>
+  );
 });
 
 export default ChatButton;

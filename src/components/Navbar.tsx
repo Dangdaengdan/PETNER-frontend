@@ -8,8 +8,10 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { checkSession, kakaoLogout, getCurrentMember } from "@/api/auth";
 import { getUserProfile } from "@/api/member";
 import LoginModal from "./LoginModal";
+import { useToast } from "@/hooks/use-toast";
 
 const Navbar = () => {
+  const { toast } = useToast();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -107,13 +109,16 @@ const Navbar = () => {
   // 서비스 접근 핸들러 (Register, Community용)
   const handleServiceAccess = (e: React.MouseEvent) => {
     if (!isLoggedIn) {
-      // 로그아웃 상태에서는 Alert 표시
+      // 로그아웃 상태에서는 로그인 모달 표시
       e.preventDefault();
-      alert('로그인 후 이용해주세요.');
+      setIsLoginModalOpen(true);
     } else if (isLoggedIn && !profileCompleted) {
       // 로그인했지만 프로필 미완성인 경우
       e.preventDefault();
-      alert('프로필 정보를 모두 입력하고 이용해주세요.');
+      toast({
+        title: "프로필 완성 필요",
+        description: "프로필 정보를 모두 입력하고 이용해주세요.",
+      });
     }
     // 로그인하고 프로필도 완성된 경우는 정상 동작 (페이지 이동)
   };
