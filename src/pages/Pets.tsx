@@ -13,12 +13,14 @@ import RegionSelector from "@/components/RegionSelector";
 import { ProtectedImage } from "@/components/ProtectedImage";
 import { getDogs, DogListResponseDto, searchDogs, DogSearchRequestDto } from "@/api/dog";
 import { calculateAge } from "@/utils/ageCalculator";
+import { useToast } from "@/hooks/use-toast";
 
 const ITEMS_PER_PAGE = 6;
 
 const Pets = () => {
   const [params] = useSearchParams();
   const navigate = useNavigate();
+  const { toast } = useToast();
   const currentPage = Math.max(1, Number(params.get("page") || 1));
   const [query, setQuery] = useState<string>(params.get("q") || "");
 
@@ -119,7 +121,10 @@ const Pets = () => {
       // 모든 검색 조건이 비어있으면 경고
       const hasSearchCriteria = query.trim() || filters.dogSize || filters.dogBreed || gender || filters.location;
       if (!hasSearchCriteria) {
-        alert('검색 조건을 하나 이상 입력해주세요.');
+        toast({
+          title: "검색 조건 필요",
+          description: "검색 조건을 하나 이상 입력해주세요.",
+        });
         setLoading(false);
         setIsSearchMode(false);
         return;

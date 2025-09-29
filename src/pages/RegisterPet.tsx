@@ -13,6 +13,7 @@ import { createDog, DogCreateRequestDto } from "@/api/dog";
 import { uploadImageToGCP } from "@/api/upload";
 import { searchBreedByName } from "@/api/breed";
 import { searchShelterByName } from "@/api/shelter";
+import { useToast } from "@/hooks/use-toast";
 import RegionSelector from "@/components/RegionSelector";
 import ShelterSelector from "@/components/ShelterSelector";
 
@@ -43,6 +44,7 @@ const dogBreedsBySize = {
 
 const RegisterPet = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -123,11 +125,17 @@ const RegisterPet = () => {
       console.log("🐕 유기견 등록 API 요청 데이터:", JSON.stringify(dogData, null, 2));
 
       await createDog(dogData);
-      alert("유기견이 성공적으로 등록되었습니다!");
+      toast({
+        title: "등록 완료",
+        description: "유기견이 성공적으로 등록되었습니다!",
+      });
       navigate("/");
     } catch (error) {
       console.error("유기견 등록 실패:", error);
-      alert("유기견 등록에 실패했습니다. 다시 시도해주세요.");
+      toast({
+        title: "등록 실패",
+        description: "유기견 등록에 실패했습니다. 다시 시도해주세요.",
+      });
     } finally {
       setIsSubmitting(false);
     }
