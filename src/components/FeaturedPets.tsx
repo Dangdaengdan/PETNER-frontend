@@ -105,7 +105,7 @@ const FeaturedPetCard = ({ id, name, breed, birthDate, location, imageUrl, gende
           <div className="flex gap-2 pt-2">
             <Button
               asChild
-              className="flex-1 bg-[#A3966A] hover:bg-[#895D2B] text-white rounded-full transition-colors"
+              className="flex-1 bg-brown-400 hover:bg-brown-600 text-white rounded-full transition-colors"
             >
               <Link to={`/pet/${id}`}>
                 Meet {name}
@@ -218,7 +218,7 @@ const FeaturedPets = () => {
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             사랑스러운 반려 친구들이 평생의 가족을 찾고 있어요.
-            모두가 특별한 성격과 따뜻한 마음을 가지고 있으며, 지금 새로운 시작을 함께할 주인을 기다립니다.
+            <br/>모두가 따뜻한 마음을 가지고 있으며, 지금 새로운 시작을 함께할 주인을 기다립니다.
           </p>
         </div>
 
@@ -377,7 +377,7 @@ const FeaturedPets = () => {
         <div className="text-center">
           <Button
             size="lg"
-            className="bg-primary hover:bg-[#453021] text-primary-foreground shadow-warm transition-smooth rounded-3xl text-lg px-8 py-4 h-auto group"
+            className="bg-primary hover:bg-brown-800 text-primary-foreground shadow-warm transition-smooth rounded-3xl text-lg px-8 py-4 h-auto group"
             onClick={() => navigate("/pets")}
           >
             더 많은 친구들 보기

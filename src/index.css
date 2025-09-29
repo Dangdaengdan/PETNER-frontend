@@ -11,7 +11,7 @@ All colors MUST be HSL.
     /* Global Color System - 100-900 Scale */
     
     /* Primary Colors - Brown */
-    --color-brown-100: #F4EFE7;
+    --color-brown-100: #F2EFE9;
     --color-brown-400: #BFA887;
     --color-brown-500: #A38B6B;
     --color-brown-600: #8E775B;
@@ -27,6 +27,14 @@ All colors MUST be HSL.
     --color-neutral-200: #E7E7E7;
     --color-neutral-700: #5A5A5A;
     --color-neutral-900: #333333;
+
+
+    /* Accent Colors - Pink (cute, playful) */
+    --color-pink-100: #FFE6F0;
+    --color-pink-300: #FF66B3;
+    --color-pink-500: #FF1493;
+    --color-pink-700: #CC1180;
+    --color-pink-900: #990066;
 
     /* Legacy Petner Brand Colors (for backward compatibility) */
     --background: 40 42% 92%; /* #F4EFE4 */

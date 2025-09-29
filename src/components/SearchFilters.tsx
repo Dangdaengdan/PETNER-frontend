@@ -81,7 +81,7 @@ const SearchFilters = ({ onFilterChange }: SearchFiltersProps) => {
       <Button
         variant="outline"
         onClick={() => setIsExpanded(!isExpanded)}
-        className="w-full sm:w-auto mb-4 border-border hover:bg-[#A64F1C] hover:text-white transition-smooth"
+        className="w-full sm:w-auto mb-4 border-border hover:bg-orange-700 hover:text-white transition-smooth"
       >
         <Filter className="mr-2 h-4 w-4" />
         필터 {hasActiveFilters && `(${Object.values(filters).filter(v => v).length})`}
@@ -96,7 +96,7 @@ const SearchFilters = ({ onFilterChange }: SearchFiltersProps) => {
                 variant="ghost"
                 size="sm"
                 onClick={clearFilters}
-                className="text-muted-foreground hover:text-[#A64F1C]"
+                className="text-muted-foreground hover:text-orange-700"
               >
                 <X className="mr-1 h-4 w-4" />
                 초기화

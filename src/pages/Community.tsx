@@ -252,7 +252,7 @@ const Community = () => {
         {/* Total Count */}
         <div className="mb-4">
           <span className="text-[var(--color-neutral-700)]">
-            총 <span className="text-[#007bff] font-semibold">{totalElements}</span> 건의 글이 있습니다.
+            총 <span className="text-blue-500 font-semibold">{totalElements}</span> 건의 글이 있습니다.
           </span>
         </div>
 
@@ -260,7 +260,7 @@ const Community = () => {
         <div className="border-t-2 border-[var(--color-neutral-900)] mb-0"></div>
 
         {/* Table Header */}
-        <div className="px-6 py-4 bg-[#f8f9fa] border-b border-[var(--color-neutral-200)]">
+        <div className="px-6 py-4 bg-neutral-200 border-b border-neutral-200">
           <div className="grid grid-cols-12 gap-4 text-base font-medium text-[var(--color-neutral-900)]">
             <div className="col-span-1">NO</div>
             <div className="col-span-2">작성자</div>

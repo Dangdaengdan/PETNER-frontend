@@ -625,7 +625,7 @@ const MyProfile = () => {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "입양_가능":
-        return <Badge variant="secondary" className="bg-[#A64F1C]/10 text-[#A64F1C]"><Heart className="w-3 h-3 mr-1" />입양 가능</Badge>;
+        return <Badge variant="secondary" className="bg-orange-700/10 text-orange-700"><Heart className="w-3 h-3 mr-1" />입양 가능</Badge>;
       case "입양_절차_중":
         return <Badge variant="secondary" className="bg-yellow-100 text-yellow-800"><Clock className="w-3 h-3 mr-1" />입양 절차 중</Badge>;
       case "입양_완료":

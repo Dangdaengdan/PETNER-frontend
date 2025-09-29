@@ -48,11 +48,11 @@ const AdoptionProcess = () => {
                   <CardContent className="p-6">
                     <div className="relative mb-6">
                       <div className="w-16 h-16 mx-auto bg-secondary rounded-full flex items-center justify-center group-hover:scale-110 transition-smooth border-4 border-background">
-                        <IconComponent className="h-8 w-8 text-primary group-hover:text-[#A64F1C]" />
+                        <IconComponent className="h-8 w-8 text-primary group-hover:text-orange-700" />
                       </div>
                     </div>
                   
-                  <h3 className="text-xl font-semibold text-foreground mb-3 group-hover:text-[#A64F1C] transition-smooth">
+                  <h3 className="text-xl font-semibold text-foreground mb-3 group-hover:text-orange-700 transition-smooth">
                     {step.title}
                   </h3>
                   

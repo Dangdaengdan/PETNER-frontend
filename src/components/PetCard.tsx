@@ -107,7 +107,7 @@ const PetCard = ({ id, name, breed, birthDate, location, image, gender, size }: 
           <div className="flex gap-2 pt-2">
             <Button 
               asChild
-              className="flex-1 bg-[#A3966A] hover:bg-[#895D2B] text-white rounded-full transition-colors"
+              className="flex-1 bg-brown-400 hover:bg-brown-600 text-white rounded-full transition-colors"
             >
               <Link to={`/pet/${id}`}>
                 Meet {name}

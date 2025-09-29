@@ -60,6 +60,53 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        // Custom color system
+        brown: {
+          100: "var(--color-brown-100)",
+          400: "var(--color-brown-400)",
+          500: "var(--color-brown-500)",
+          600: "var(--color-brown-600)",
+          800: "var(--color-brown-800)",
+        },
+        green: {
+          300: "var(--color-green-300)",
+          400: "var(--color-green-400)",
+          500: "var(--color-green-500)",
+          700: "var(--color-green-700)",
+        },
+        neutral: {
+          200: "var(--color-neutral-200)",
+          700: "var(--color-neutral-700)",
+          900: "var(--color-neutral-900)",
+        },
+        orange: {
+          100: "var(--color-orange-100)",
+          300: "var(--color-orange-300)",
+          500: "var(--color-orange-500)",
+          700: "var(--color-orange-700)",
+          900: "var(--color-orange-900)",
+        },
+        blue: {
+          100: "var(--color-blue-100)",
+          300: "var(--color-blue-300)",
+          500: "var(--color-blue-500)",
+          700: "var(--color-blue-700)",
+          900: "var(--color-blue-900)",
+        },
+        purple: {
+          100: "var(--color-purple-100)",
+          300: "var(--color-purple-300)",
+          500: "var(--color-purple-500)",
+          700: "var(--color-purple-700)",
+          900: "var(--color-purple-900)",
+        },
+        pink: {
+          100: "var(--color-pink-100)",
+          300: "var(--color-pink-300)",
+          500: "var(--color-pink-500)",
+          700: "var(--color-pink-700)",
+          900: "var(--color-pink-900)",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",

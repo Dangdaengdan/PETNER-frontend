@@ -141,7 +141,7 @@ const Navbar = () => {
 
   return (
     <TooltipProvider>
-      <nav className="navbar bg-[#F4EFE4] backdrop-blur-sm border-b border-border sticky top-0 z-50">
+      <nav className="navbar bg-brown-100 backdrop-blur-sm border-b border-border sticky top-0 z-50">
         <div className="px-4 sm:px-6">
           <div className="flex justify-between items-center h-16">
             {/* Logo and Navigation */}
@@ -155,49 +155,37 @@ const Navbar = () => {
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <NavLink to="/" end className="navitem" onClick={handleMenuClick}>
-                      Home
+                      홈
                     </NavLink>
                   </TooltipTrigger>
-                  <TooltipContent>
-                    <p>홈</p>
-                  </TooltipContent>
                 </Tooltip>
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <NavLink to="/register" end className="navitem" onClick={handleServiceAccess}>
-                      Register
+                      등록
                     </NavLink>
                   </TooltipTrigger>
-                  <TooltipContent>
-                    <p>유기견 등록하기</p>
-                  </TooltipContent>
                 </Tooltip>
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <NavLink to="/community" end className="navitem" onClick={handleServiceAccess}>
-                      Community
+                      게시판
                     </NavLink>
                   </TooltipTrigger>
-                  <TooltipContent>
-                    <p>게시판</p>
-                  </TooltipContent>
                 </Tooltip>
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <NavLink to="/about" end className="navitem" onClick={handleMenuClick}>
-                      About
+                      소개
                     </NavLink>
                   </TooltipTrigger>
-                  <TooltipContent>
-                    <p>소개</p>
-                  </TooltipContent>
                 </Tooltip>
               </div>
             </div>
 
           {/* Search and Actions */}
           <div className="hidden md:flex items-center space-x-4">
-            <Button className="bg-[#F4EFE4] text-[#453021] hover:bg-[#A29770] border border-[#453021]" asChild>
+            <Button className="bg-brown-100 text-brown-800 hover:bg-brown-400 border border-brown-800" asChild>
               <Link to="/profile" onClick={handleProfileClick}>
                 <User className="h-5 w-5 mr-2" />
                 내 정보
@@ -212,7 +200,7 @@ const Navbar = () => {
                 로그아웃
               </Button>
             ) : (
-              <Button className="bg-[#895842] hover:bg-[#453021] text-white" onClick={handleLoginClick}>
+              <Button className="bg-brown-600 hover:bg-brown-800 text-white" onClick={handleLoginClick}>
                 로그인/회원가입
               </Button>
             )}
@@ -241,19 +229,19 @@ const Navbar = () => {
                   className="pl-10 bg-background border-border"
                 />
               </div>
-              <NavLink to="/" end className={({isActive}) => `py-2 px-2 rounded-md transition-smooth ${isActive ? 'bg-[#895842] text-[#F4EFE4]' : 'text-foreground hover:bg-foreground/10'}`} onClick={handleMenuClick}>
+              <NavLink to="/" end className={({isActive}) => `py-2 px-2 rounded-md transition-smooth ${isActive ? 'bg-brown-600 text-brown-100' : 'text-foreground hover:bg-foreground/10'}`} onClick={handleMenuClick}>
                 Home
               </NavLink>
-              <NavLink to="/register" end className={({isActive}) => `py-2 px-2 rounded-md transition-smooth ${isActive ? 'bg-[#895842] text-[#F4EFE4]' : 'text-foreground hover:bg-foreground/10'}`} onClick={handleServiceAccess}>
+              <NavLink to="/register" end className={({isActive}) => `py-2 px-2 rounded-md transition-smooth ${isActive ? 'bg-brown-600 text-brown-100' : 'text-foreground hover:bg-foreground/10'}`} onClick={handleServiceAccess}>
                 Register
               </NavLink>
-              <NavLink to="/community" end className={({isActive}) => `py-2 px-2 rounded-md transition-smooth ${isActive ? 'bg-[#895842] text-[#F4EFE4]' : 'text-foreground hover:bg-foreground/10'}`} onClick={handleServiceAccess}>
+              <NavLink to="/community" end className={({isActive}) => `py-2 px-2 rounded-md transition-smooth ${isActive ? 'bg-brown-600 text-brown-100' : 'text-foreground hover:bg-foreground/10'}`} onClick={handleServiceAccess}>
                 Community
               </NavLink>
-              <NavLink to="/about" end className={({isActive}) => `py-2 px-2 rounded-md transition-smooth ${isActive ? 'bg-[#895842] text-[#F4EFE4]' : 'text-foreground hover:bg-foreground/10'}`} onClick={handleMenuClick}>
+              <NavLink to="/about" end className={({isActive}) => `py-2 px-2 rounded-md transition-smooth ${isActive ? 'bg-brown-600 text-brown-100' : 'text-foreground hover:bg-foreground/10'}`} onClick={handleMenuClick}>
                 About
               </NavLink>
-              <Button className="bg-[#895842] hover:bg-[#895842]/90 text-white w-full" asChild>
+              <Button className="bg-brown-600 hover:bg-brown-600/90 text-white w-full" asChild>
                 <Link to="/profile" onClick={handleProfileClick}>
                   <User className="h-5 w-5 mr-2" />
                   내 정보
@@ -268,7 +256,7 @@ const Navbar = () => {
                   로그아웃
                 </Button>
               ) : (
-                <Button className="bg-[#A64F1C] hover:bg-[#A64F1C]/90 text-white w-full" onClick={handleLoginClick}>
+                <Button className="bg-orange-700 hover:bg-orange-700/90 text-white w-full" onClick={handleLoginClick}>
                   로그인/회원가입
                 </Button>
               )}
