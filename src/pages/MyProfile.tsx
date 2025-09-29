@@ -622,6 +622,33 @@ const MyProfile = () => {
     }
   };
 
+  // 내가 등록한 유기견 삭제
+  const handleDeleteClick = async (dogId: number, dogName: string) => {
+    if (!window.confirm(`정말로 "${dogName}"을(를) 삭제하시겠습니까?\n\n이 작업은 되돌릴 수 없으며, 해당 유기견과 관련된 모든 입양 신청도 함께 삭제됩니다.`)) {
+      return;
+    }
+
+    try {
+      await deleteDog(dogId);
+
+      // 로컬 상태에서 삭제
+      setRegistrationData(prev =>
+        prev.filter(dog => dog.dogId !== dogId)
+      );
+
+      toast({
+        title: '유기견 삭제 완료',
+        description: `"${dogName}"이(가) 성공적으로 삭제되었습니다.`,
+      });
+    } catch (error) {
+      console.error('유기견 삭제 실패:', error);
+      toast({
+        title: '유기견 삭제 실패',
+        description: '유기견 삭제에 실패했습니다. 다시 시도해주세요.',
+      });
+    }
+  };
+
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "입양_가능":
@@ -1017,8 +1044,18 @@ const MyProfile = () => {
                               <p className="text-sm text-muted-foreground">보호소: {dog.shelterName}</p>
                             </div>
                           </div>
-                          <div className="text-right">
-                            {getStatusBadge(dog.adoptionStatus)}
+                          <div className="flex items-center gap-3">
+                            <div className="text-right">
+                              {getStatusBadge(dog.adoptionStatus)}
+                            </div>
+                            <Button
+                              variant="outline"
+                              onClick={() => handleDeleteClick(dog.dogId, dog.name)}
+                              className="gap-2 text-red-600 border-red-200 hover:bg-red-600 hover:text-white hover:border-red-600"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                              삭제
+                            </Button>
                           </div>
                         </div>
                       </div>
