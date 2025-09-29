@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef, useImperativeHandle, forwardRef } from "react";
-import { MessageCircle, X, ArrowLeft, Send, Phone, MoreVertical, Maximize2, Minimize2, Heart } from "lucide-react";
+import { MessageCircle, X, ArrowLeft, Send, Phone, Trash2, Maximize2, Minimize2, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -44,6 +44,7 @@ const ChatButton = forwardRef<ChatButtonRef>((props, ref) => {
   const [dogOwnerInfo, setDogOwnerInfo] = useState<Record<number, number>>({});
   const [dogImageInfo, setDogImageInfo] = useState<Record<number, string>>({});
   const [showLoginModal, setShowLoginModal] = useState(false);
+  const [badgeBounce, setBadgeBounce] = useState(false);
 
   // 사용자별 채팅방 마지막 읽은 시간 관리
   const getLastReadTime = (chatRoomId: number): string | null => {
@@ -578,6 +579,14 @@ const ChatButton = forwardRef<ChatButtonRef>((props, ref) => {
 
   // 총 읽지 않은 메시지 수 계산
   const totalUnreadCount = chatRooms.filter(room => hasUnreadMessage(room)).length;
+  const prevUnreadRef = useRef(0);
+  useEffect(() => {
+    if (totalUnreadCount > prevUnreadRef.current) {
+      setBadgeBounce(true);
+      setTimeout(() => setBadgeBounce(false), 350);
+    }
+    prevUnreadRef.current = totalUnreadCount;
+  }, [totalUnreadCount]);
 
   if (!isOpen) {
     return (
@@ -589,7 +598,9 @@ const ChatButton = forwardRef<ChatButtonRef>((props, ref) => {
         >
           <MessageCircle className="h-6 w-6" />
           {totalUnreadCount > 0 && (
-            <div className="absolute -top-1 -right-1 h-3 w-3 bg-red-500 rounded-full" />
+            <div className={`absolute -top-1 -right-1 bg-[var(--color-pink-900)] text-white text-[10px] font-bold rounded-full h-4 min-w-[16px] px-1 flex items-center justify-center leading-none ${badgeBounce ? 'animate-notify-bounce' : ''}`}>
+              N
+            </div>
           )}
         </Button>
       </div>
@@ -597,28 +608,28 @@ const ChatButton = forwardRef<ChatButtonRef>((props, ref) => {
   }
 
   const chatContainer = (
-    <Card className={`shadow-2xl ${
+    <Card className={`shadow-[0_20px_60px_rgba(78,64,50,0.35)] ${
       isFullscreen 
         ? "fixed inset-0 z-50 rounded-none" 
         : isMobile 
-          ? "fixed inset-4 z-50" 
-          : "fixed bottom-6 right-6 w-96 h-[600px] z-50"
+          ? "fixed inset-4 z-50 rounded-3xl overflow-hidden" 
+          : "fixed bottom-6 right-6 w-96 h-[600px] z-50 rounded-3xl overflow-hidden"
     }`}>
       <CardContent className="p-0 h-full flex flex-col">
         {/* 헤더 */}
-        <div className="flex items-center justify-between p-4 border-b bg-orange-700 text-white">
+        <div className="flex items-center justify-between p-4 border-b bg-brown-100 text-brown-800">
           <div className="flex items-center space-x-2">
             {selectedChat && (
               <Button 
                 variant="ghost" 
                 size="icon" 
                 onClick={handleBackToList}
-                className="text-white hover:bg-white/20"
+                className="text-brown-800 hover:bg-brown-400/20"
               >
                 <ArrowLeft className="h-4 w-4" />
               </Button>
             )}
-            <h3 className="font-semibold text-lg">
+            <h3 className="font-medium text-base">
               {selectedChat ? (
                 <>
                   {getSelectedChatRoom()?.otherMemberInfo?.nickname || '채팅'}
@@ -655,27 +666,24 @@ const ChatButton = forwardRef<ChatButtonRef>((props, ref) => {
                       variant="ghost"
                       size="sm"
                       onClick={() => handleAdoptionApply(dogId)}
-                      className="text-white hover:bg-white/20 gap-1"
+                      className="text-red-500 hover:text-green-700 hover:bg-transparent gap-1"
                     >
                       <Heart className="h-4 w-4" />
-                      분양 신청
                     </Button>
                   );
                 })()}
+                {/* Phone button removed per design */}
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="text-white hover:bg-white/20"
+                  onClick={() => {
+                    if (window.confirm('채팅방을 나가시겠습니까?')) {
+                      handleLeaveChatRoom();
+                    }
+                  }}
+                  className="text-brown-800 hover:bg-brown-400/20"
                 >
-                  <Phone className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={handleLeaveChatRoom}
-                  className="text-white hover:bg-white/20"
-                >
-                  <MoreVertical className="h-4 w-4" />
+                  <Trash2 className="h-4 w-4" />
                 </Button>
               </>
             )}
@@ -684,7 +692,7 @@ const ChatButton = forwardRef<ChatButtonRef>((props, ref) => {
                 variant="ghost" 
                 size="icon" 
                 onClick={() => setIsFullscreen(!isFullscreen)}
-                className="text-white hover:bg-white/20"
+                className="text-brown-800 hover:bg-brown-400/20"
               >
                 {isFullscreen ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
               </Button>
@@ -697,7 +705,7 @@ const ChatButton = forwardRef<ChatButtonRef>((props, ref) => {
                 setSelectedChat(null);
                 setCurrentMessages([]);
               }}
-              className="text-white hover:bg-white/20"
+              className="text-brown-800 hover:bg-brown-400/20"
             >
               <X className="h-4 w-4" />
             </Button>
@@ -712,12 +720,12 @@ const ChatButton = forwardRef<ChatButtonRef>((props, ref) => {
               <div className="p-2">
                 {isLoading ? (
                   <div className="flex justify-center items-center h-32">
-                    <div className="text-sm text-neutral-700">로딩 중...</div>
+                    <div className="text-sm text-brown-800">로딩 중...</div>
                   </div>
                 ) : chatRooms.length === 0 ? (
                   <div className="flex flex-col items-center justify-center h-32 text-center">
-                    <MessageCircle className="h-8 w-8 text-neutral-700 mb-2" />
-                    <p className="text-sm text-neutral-700">
+                    <MessageCircle className="h-8 w-8 text-brown-800 mb-2" />
+                    <p className="text-sm text-brown-800">
                       아직 채팅방이 없습니다
                     </p>
                   </div>
@@ -751,12 +759,12 @@ const ChatButton = forwardRef<ChatButtonRef>((props, ref) => {
                         <div className="flex items-center justify-between">
                           <p className={`text-sm truncate ${
                             hasUnreadMessage(room)
-                              ? 'font-extrabold text-foreground' 
-                              : 'font-medium text-foreground'
+                              ? 'font-extrabold text-brown-800' 
+                              : 'font-medium text-brown-800'
                           }`}>
                             {room.otherMemberInfo?.nickname || '알 수 없는 사용자'}
                             {room.dogInfo?.name && (
-                              <span className="text-xs text-neutral-700 ml-1 font-normal">
+                              <span className="text-xs text-brown-800 ml-1 font-normal">
                                 ({room.dogInfo.name})
                               </span>
                             )}
@@ -765,14 +773,14 @@ const ChatButton = forwardRef<ChatButtonRef>((props, ref) => {
                             {room.lastMessageSentAt && (
                               <span className={`text-xs ${
                                 hasUnreadMessage(room)
-                                  ? 'text-foreground font-semibold' 
-                                  : 'text-neutral-700'
+                                  ? 'text-brown-800 font-semibold' 
+                                  : 'text-brown-800'
                               }`}>
                                 {formatLastMessageTime(room.lastMessageSentAt)}
                               </span>
                             )}
                             {hasUnreadMessage(room) && (
-                              <div className="bg-red-500 text-white text-xs font-bold rounded-full h-5 min-w-[20px] flex items-center justify-center px-1.5">
+                              <div className="bg-[var(--color-pink-900)] text-white text-xs font-bold rounded-full h-5 min-w-[20px] flex items-center justify-center px-1.5">
                                 N
                               </div>
                             )}
@@ -781,8 +789,8 @@ const ChatButton = forwardRef<ChatButtonRef>((props, ref) => {
                         {room.lastMessageContent && (
                           <p className={`text-sm truncate ${
                             hasUnreadMessage(room)
-                              ? 'text-foreground font-semibold' 
-                              : 'text-neutral-700'
+                              ? 'text-brown-800 font-semibold' 
+                              : 'text-brown-800'
                           }`}>
                             {room.lastMessageContent}
                           </p>
@@ -808,8 +816,8 @@ const ChatButton = forwardRef<ChatButtonRef>((props, ref) => {
                       <div
                         className={`max-w-[70%] rounded-lg px-3 py-2 ${
                           message.senderId === currentMemberId
-                            ? 'bg-orange-700 text-white'
-                            : 'bg-muted'
+                            ? 'bg-brown-600 text-white rounded-br-none'
+                            : 'bg-muted text-brown-800 rounded-bl-none'
                         }`}
                       >
                         <p className="text-sm">{message.content}</p>

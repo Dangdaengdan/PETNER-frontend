@@ -299,8 +299,8 @@ const PetDetail = () => {
                 size="lg"
                 className={`w-full text-lg py-4 rounded-full ${
                   (dog && dog.member.memberId === currentMemberId)
-                    ? "bg-green-500 hover:bg-green-600 text-white"
-                    : "bg-green-500 hover:bg-green-600 text-white"
+                    ? "bg-green-500 hover:bg-green-700 text-white"
+                    : "bg-green-500 hover:bg-green-700 text-white"
                 }`}
                 onClick={handleAdoptionApply}
                 disabled={

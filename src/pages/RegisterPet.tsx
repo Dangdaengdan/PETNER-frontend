@@ -191,39 +191,39 @@ const RegisterPet = () => {
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* Left column: Photo Upload then Shelter Info */}
                 <div className="space-y-8">
-                  {/* Photo Upload */}
-                  <div className="border border-border rounded-2xl p-10">
-                    <h3 className="text-xl font-semibold mb-6 flex items-center gap-2">
-                      <Upload className="h-5 w-5" />
-                      사진 등록
-                    </h3>
-                    <input
-                      type="file"
-                      ref={fileInputRef}
-                      onChange={handleFileUpload}
-                      accept="image/*"
-                      className="hidden"
-                    />
-                    <div
-                      className="border-2 border-dashed border-border rounded-2xl p-10 text-center hover:border-primary transition-smooth cursor-pointer"
-                      onClick={handleUploadClick}
-                    >
-                      {imagePreview ? (
-                        <div className="space-y-4">
-                          <img src={imagePreview} alt="Preview" className="max-h-48 mx-auto rounded-lg" />
-                          <p className="text-base text-green-600">사진이 업로드되었습니다!</p>
-                        </div>
-                      ) : (
-                        <>
-                          <Upload className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                          <p className="text-base text-muted-foreground mb-2">클릭하여 사진을 업로드하세요</p>
-                          <p className="text-sm text-muted-foreground">
-                            최대 1장까지 업로드 가능 (JPG, PNG)
-                          </p>
-                        </>
-                      )}
+              {/* Photo Upload */}
+              <div className="border border-border rounded-2xl p-10">
+                <h3 className="text-xl font-semibold mb-6 flex items-center gap-2">
+                  <Upload className="h-5 w-5" />
+                  사진 등록
+                </h3>
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleFileUpload}
+                  accept="image/*"
+                  className="hidden"
+                />
+                <div
+                  className="border-2 border-dashed border-border rounded-2xl p-10 text-center hover:border-primary transition-smooth cursor-pointer"
+                  onClick={handleUploadClick}
+                >
+                  {imagePreview ? (
+                    <div className="space-y-4">
+                      <img src={imagePreview} alt="Preview" className="max-h-48 mx-auto rounded-lg" />
+                      <p className="text-base text-green-600">사진이 업로드되었습니다!</p>
                     </div>
-                  </div>
+                  ) : (
+                    <>
+                      <Upload className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                      <p className="text-base text-muted-foreground mb-2">클릭하여 사진을 업로드하세요</p>
+                      <p className="text-sm text-muted-foreground">
+                        최대 1장까지 업로드 가능 (JPG, PNG)
+                      </p>
+                    </>
+                  )}
+                </div>
+              </div>
 
                   {/* Shelter Information (Optional) */}
                   <div className="border border-border rounded-2xl p-10">
@@ -250,146 +250,146 @@ const RegisterPet = () => {
                 </div>
 
                 {/* Right column: Basic Information */}
-                <div className="border border-border rounded-2xl p-10">
+              <div className="border border-border rounded-2xl p-10">
                   <h3 className="text-xl font-semibold mb-8 flex items-center gap-2">
-                    <Heart className="h-5 w-5" />
-                    기본 정보
-                  </h3>
+                  <Heart className="h-5 w-5" />
+                  기본 정보
+                </h3>
                   <div className="space-y-8">
-                    <div>
-                      <Label htmlFor="name" className="text-base font-medium mb-3 block">이름 *</Label>
-                      <Input
-                        id="name"
+                  <div>
+                    <Label htmlFor="name" className="text-base font-medium mb-3 block">이름 *</Label>
+                    <Input
+                      id="name"
                         placeholder="유기견의 이름을 입력하세요"
-                        value={formData.name}
-                        onChange={(e) => handleInputChange("name", e.target.value)}
+                      value={formData.name}
+                      onChange={(e) => handleInputChange("name", e.target.value)}
+                      required
+                      className="rounded-xl"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-8">
+                    <div>
+                      <Label htmlFor="gender" className="text-base font-medium mb-3 block">성별 *</Label>
+                      <Select onValueChange={(value) => handleInputChange("gender", value)}>
+                        <SelectTrigger className="rounded-xl">
+                          <SelectValue placeholder="성별 선택" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="male">수컷</SelectItem>
+                          <SelectItem value="female">암컷</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label htmlFor="weight" className="text-base font-medium mb-3 block">무게 (kg) *</Label>
+                      <Input
+                        id="weight"
+                        type="number"
+                        step="0.1"
+                        min="0"
+                        placeholder="예: 5.5"
+                        value={formData.weight}
+                        onChange={(e) => handleInputChange("weight", e.target.value)}
                         required
                         className="rounded-xl"
                       />
                     </div>
+                  </div>
 
+                  <div>
+                      <Label htmlFor="dogSize" className="text-base font-medium mb-3 block">견종 *</Label>
                     <div className="grid grid-cols-2 gap-8">
                       <div>
-                        <Label htmlFor="gender" className="text-base font-medium mb-3 block">성별 *</Label>
-                        <Select onValueChange={(value) => handleInputChange("gender", value)}>
+                        <Select value={formData.dogSize} onValueChange={(value) => handleDogBreedChange("dogSize", value)}>
                           <SelectTrigger className="rounded-xl">
-                            <SelectValue placeholder="성별 선택" />
+                            <SelectValue placeholder="크기 선택" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="male">수컷</SelectItem>
-                            <SelectItem value="female">암컷</SelectItem>
+                            <SelectItem value="소형">소형</SelectItem>
+                            <SelectItem value="중형">중형</SelectItem>
+                            <SelectItem value="대형">대형</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
                       <div>
-                        <Label htmlFor="weight" className="text-base font-medium mb-3 block">무게 (kg) *</Label>
-                        <Input
-                          id="weight"
-                          type="number"
-                          step="0.1"
-                          min="0"
-                          placeholder="예: 5.5"
-                          value={formData.weight}
-                          onChange={(e) => handleInputChange("weight", e.target.value)}
-                          required
-                          className="rounded-xl"
-                        />
+                        <Select 
+                          value={formData.dogBreed} 
+                          onValueChange={(value) => handleDogBreedChange("dogBreed", value)}
+                          disabled={!formData.dogSize}
+                        >
+                          <SelectTrigger className="rounded-xl">
+                            <SelectValue placeholder={formData.dogSize ? "견종 선택" : "먼저 크기를 선택하세요"} />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {formData.dogSize && dogBreedsBySize[formData.dogSize as keyof typeof dogBreedsBySize]?.map((breed) => (
+                              <SelectItem key={breed} value={breed}>
+                                {breed}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                       </div>
-                    </div>
-
-                    <div>
-                      <Label htmlFor="dogSize" className="text-base font-medium mb-3 block">견종 *</Label>
-                      <div className="grid grid-cols-2 gap-8">
-                        <div>
-                          <Select value={formData.dogSize} onValueChange={(value) => handleDogBreedChange("dogSize", value)}>
-                            <SelectTrigger className="rounded-xl">
-                              <SelectValue placeholder="크기 선택" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="소형">소형</SelectItem>
-                              <SelectItem value="중형">중형</SelectItem>
-                              <SelectItem value="대형">대형</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                        <div>
-                          <Select 
-                            value={formData.dogBreed} 
-                            onValueChange={(value) => handleDogBreedChange("dogBreed", value)}
-                            disabled={!formData.dogSize}
-                          >
-                            <SelectTrigger className="rounded-xl">
-                              <SelectValue placeholder={formData.dogSize ? "견종 선택" : "먼저 크기를 선택하세요"} />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {formData.dogSize && dogBreedsBySize[formData.dogSize as keyof typeof dogBreedsBySize]?.map((breed) => (
-                                <SelectItem key={breed} value={breed}>
-                                  {breed}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div>
-                      <Label htmlFor="age" className="text-base font-medium mb-3 block">나이 * (추정되는 나이를 적어주세요)</Label>
-                      <div className="grid grid-cols-2 gap-6">
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <Input
-                              id="age"
-                              type="number"
-                              min="0"
-                              placeholder="(예: 2)"
-                              value={formData.age}
-                              onChange={(e) => {
-                                const value = e.target.value;
-                                handleInputChange("age", value);
-                                if (value !== "0" && value !== "") {
-                                  handleInputChange("ageMonths", "");
-                                }
-                              }}
-                              required
-                              className="rounded-xl"
-                            />
-                            <span className="text-base text-gray-500 whitespace-nowrap">
-                              세
-                            </span>
-                          </div>
-                        </div>
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <Input
-                              id="ageMonths"
-                              type="number"
-                              min="1"
-                              max="11"
-                              placeholder="(0세일 때만)"
-                              value={formData.ageMonths}
-                              onChange={(e) => handleInputChange("ageMonths", e.target.value)}
-                              disabled={formData.age !== "0"}
-                              className="rounded-xl"
-                            />
-                            <span className="text-base text-gray-500 whitespace-nowrap">
-                              개월
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                      {formData.age === "0" && formData.ageMonths && (
-                        <p className="text-base text-blue-600 mt-1">
-                          ✓ {formData.ageMonths}개월로 등록됩니다
-                        </p>
-                      )}
-                      {formData.age !== "0" && formData.age && (
-                        <p className="text-base text-blue-600 mt-1">
-                          ✓ {formData.age}세로 등록됩니다
-                        </p>
-                      )}
                     </div>
                   </div>
+
+                  <div>
+                    <Label htmlFor="age" className="text-base font-medium mb-3 block">나이 * (추정되는 나이를 적어주세요)</Label>
+                    <div className="grid grid-cols-2 gap-6">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <Input
+                            id="age"
+                            type="number"
+                            min="0"
+                            placeholder="(예: 2)"
+                            value={formData.age}
+                            onChange={(e) => {
+                              const value = e.target.value;
+                              handleInputChange("age", value);
+                              if (value !== "0" && value !== "") {
+                                handleInputChange("ageMonths", "");
+                              }
+                            }}
+                            required
+                            className="rounded-xl"
+                          />
+                          <span className="text-base text-gray-500 whitespace-nowrap">
+                            세
+                          </span>
+                        </div>
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <Input
+                            id="ageMonths"
+                            type="number"
+                            min="1"
+                            max="11"
+                            placeholder="(0세일 때만)"
+                            value={formData.ageMonths}
+                            onChange={(e) => handleInputChange("ageMonths", e.target.value)}
+                            disabled={formData.age !== "0"}
+                            className="rounded-xl"
+                          />
+                          <span className="text-base text-gray-500 whitespace-nowrap">
+                            개월
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                    {formData.age === "0" && formData.ageMonths && (
+                      <p className="text-base text-blue-600 mt-1">
+                        ✓ {formData.ageMonths}개월로 등록됩니다
+                      </p>
+                    )}
+                    {formData.age !== "0" && formData.age && (
+                      <p className="text-base text-blue-600 mt-1">
+                        ✓ {formData.age}세로 등록됩니다
+                      </p>
+                    )}
+                  </div>
+                </div>
                 </div>
               </div>
 
