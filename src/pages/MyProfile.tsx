@@ -636,6 +636,15 @@ const MyProfile = () => {
         prev.filter(dog => dog.dogId !== dogId)
       );
 
+      // 해당 유기견과 관련된 입양 신청 기록도 로컬 상태에서 제거
+      setMyApplications(prev =>
+        prev.filter(app => app.dogId !== dogId)
+      );
+
+      setReceivedApplications(prev =>
+        prev.filter(app => app.dogId !== dogId)
+      );
+
       toast({
         title: '유기견 삭제 완료',
         description: `"${dogName}"이(가) 성공적으로 삭제되었습니다.`,
