@@ -21,6 +21,7 @@ import { createChatRoom } from "@/api/chat";
 import { getCurrentMember } from "@/api/auth";
 import { useFavorite } from "@/hooks/useFavorite";
 import { useToast } from "@/hooks/use-toast";
+import { createDogApply } from "@/api/dogapply";
 
 
 const PetDetail = () => {
@@ -40,6 +41,7 @@ const PetDetail = () => {
   );
   const [currentMemberId, setCurrentMemberId] = useState<number | null>(null);
   const [chatLoading, setChatLoading] = useState(false);
+  const [applyLoading, setApplyLoading] = useState(false);
 
   useEffect(() => {
     const loadDogDetail = async () => {
@@ -81,6 +83,61 @@ const PetDetail = () => {
 
     loadCurrentMember();
   }, []);
+
+  // 분양 신청
+  const handleAdoptionApply = async () => {
+    if (!dog || !currentMemberId) {
+      toast({
+        title: "로그인 필요",
+        description: "분양 신청을 하려면 로그인이 필요합니다.",
+      });
+      return;
+    }
+
+    // 본인이 등록한 유기견인지 확인
+    if (dog.member.memberId === currentMemberId) {
+      toast({
+        title: "분양 신청 불가",
+        description: "본인이 등록한 유기견에는 분양 신청을 할 수 없습니다.",
+      });
+      return;
+    }
+
+    // 입양 가능 상태가 아닌 경우 체크
+    if (dog.adoptionStatus !== "입양_가능") {
+      toast({
+        title: "분양 신청 불가",
+        description: "현재 입양 가능한 상태가 아닙니다.",
+      });
+      return;
+    }
+
+    // 분양 신청 확인
+    if (!window.confirm(`${dog.name}에 대한 분양 신청을 하시겠습니까?`)) {
+      return;
+    }
+
+    try {
+      setApplyLoading(true);
+
+      // 분양 신청 API 호출
+      await createDogApply({ dogId: dog.dogId });
+
+      toast({
+        title: "분양 신청 완료",
+        description: "분양 신청이 완료되었습니다. 등록자의 승인을 기다려주세요.",
+      });
+
+    } catch (error) {
+      console.error('분양 신청 실패:', error);
+      toast({
+        title: "분양 신청 실패",
+        description: "분양 신청에 실패했습니다. 이미 신청했거나 다른 문제가 발생했을 수 있습니다.",
+      });
+    } finally {
+      setApplyLoading(false);
+    }
+  };
 
   // 채팅방 생성 또는 이동
   const handleStartChat = async () => {
@@ -233,9 +290,29 @@ const PetDetail = () => {
             </Card>
 
             {/* Action Buttons */}
-            <div className="mt-6">
-              <Button 
-                size="lg" 
+            <div className="mt-6 space-y-3">
+              {/* 분양 신청 버튼 */}
+              <Button
+                size="lg"
+                className="w-full bg-accent hover:bg-accent/90 text-accent-foreground text-lg py-4"
+                onClick={handleAdoptionApply}
+                disabled={
+                  applyLoading ||
+                  !currentMemberId ||
+                  (dog && dog.member.memberId === currentMemberId) ||
+                  (dog && dog.adoptionStatus !== "입양_가능")
+                }
+              >
+                <Heart className="h-6 w-6 mr-2" />
+                {applyLoading ? '분양 신청 중...' :
+                 (dog && dog.member.memberId === currentMemberId) ? '본인 등록 유기견' :
+                 (dog && dog.adoptionStatus !== "입양_가능") ? `입양 불가 (${dog.adoptionStatus.replace('_', ' ')})` :
+                 '분양 신청'}
+              </Button>
+
+              {/* 채팅 버튼 */}
+              <Button
+                size="lg"
                 className="w-full bg-primary hover:bg-primary/90 text-primary-foreground text-lg py-4"
                 onClick={handleStartChat}
                 disabled={chatLoading || !currentMemberId || (dog && dog.member.memberId === currentMemberId)}
