@@ -422,7 +422,7 @@ const Pets = () => {
                 </div>
                 <div className="shrink-0 mr-4">
                   <Badge variant="secondary" className="bg-background/90 text-foreground text-xs px-2 py-1">
-                    {dog.healthStatus ? dog.healthStatus : "건강 정보 없음"}
+                    {dog.adoptionStatus === "입양_가능" ? "입양 가능" : dog.adoptionStatus}
                   </Badge>
                 </div>
                 <Button asChild className="shrink-0 mr-10">
