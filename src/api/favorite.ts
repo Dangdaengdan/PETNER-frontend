@@ -8,8 +8,8 @@ export interface FavoriteResponse {
   createdAt: string;
   dogInfo: {
     dogId: number;
-    dogName: string;
-    dogImageUrl?: string;
+    name: string;
+    imageUrl?: string;
     breedName: string;
     dogSize: string;
     age: number;

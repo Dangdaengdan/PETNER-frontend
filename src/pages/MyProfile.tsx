@@ -19,9 +19,10 @@ import { searchLocationByName } from "@/api/location";
 import { getMyDogs, DogListResponseDto, updateDog, DogUpdateRequestDto, getDogById, deleteDog } from "@/api/dog";
 import { getMyPosts, PostSummaryResponse } from "@/api/post";
 import { getMyDogApplies, getReceivedDogApplies, processDogApply, deleteDogApply, MyDogApplyResponse, ReceivedDogApplyResponse } from "@/api/dogapply";
-import { getMyFavorites, FavoriteResponse, removeFavorite } from "@/api/favorite";
+import { getAllMyFavorites, FavoriteResponse } from "@/api/favorite";
 import { ProtectedImage } from "@/components/ProtectedImage";
 import { useToast } from "@/hooks/use-toast";
+import { useFavorite } from "@/hooks/useFavorite";
 
 // 기본 데이터
 const defaultUserData = {
@@ -59,6 +60,74 @@ const adoptionHistory = [
   }
 ];
 
+// 개별 찜 아이템 컴포넌트
+const FavoriteItem = ({ favorite, onRemove }: { favorite: FavoriteResponse; onRemove: () => void }) => {
+  const { isFavorited, isLoading: favoriteLoading, toggleFavorite } = useFavorite(
+    favorite.dogInfo.dogId,
+    true // 이미 찜 목록에 있는 아이템이므로 true
+  );
+
+  // 찜 상태가 해제되면 목록에서 제거
+  useEffect(() => {
+    if (!isFavorited) {
+      onRemove();
+    }
+  }, [isFavorited, onRemove]);
+
+  const handleToggleFavorite = async () => {
+    await toggleFavorite();
+  };
+
+  // 실제 API 응답 구조에 맞는 데이터 접근
+  const dogInfo = favorite.dogInfo;
+  const dogName = dogInfo.name;
+  const dogImageUrl = dogInfo.imageUrl;
+  const breedName = dogInfo.breedName;
+  const dogSize = dogInfo.dogSize;
+  const gender = dogInfo.gender;
+  const shelterName = dogInfo.shelterName || "보호소 정보 없음";
+  const dogId = dogInfo.dogId;
+
+  return (
+    <div className="border rounded-lg p-4">
+      {dogImageUrl ? (
+        <ProtectedImage
+          objectName={dogImageUrl}
+          alt={dogName}
+          className="w-full h-48 rounded-lg object-cover mb-4"
+        />
+      ) : (
+        <div className="w-full h-48 rounded-lg bg-gray-200 flex items-center justify-center mb-4">
+          <span className="text-gray-500">이미지 없음</span>
+        </div>
+      )}
+      <div className="space-y-2">
+        <h3 className="font-semibold text-foreground">{dogName}</h3>
+        <p className="text-sm text-muted-foreground">
+          {breedName} · {dogSize} · {gender === 'MALE' ? '수컷' : gender === 'FEMALE' ? '암컷' : gender}
+        </p>
+        <p className="text-sm text-muted-foreground flex items-center gap-1">
+          <MapPin className="h-3 w-3" />
+          {shelterName}
+        </p>
+        <div className="flex space-x-2">
+          <Button size="sm" asChild>
+            <Link to={`/pet/${dogId}?from=profile&tab=favorites`}>자세히 보기</Link>
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleToggleFavorite}
+            disabled={favoriteLoading}
+          >
+            <Heart className={`h-4 w-4 ${isFavorited ? 'text-red-500 fill-current' : 'text-gray-400'}`} />
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const MyProfile = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -95,7 +164,7 @@ const MyProfile = () => {
           getMyDogs(),
           getMyDogApplies(),
           getReceivedDogApplies(),
-          getMyFavorites().catch(() => []) // 에러 시 빈 배열 반환
+          getAllMyFavorites().catch(() => []), // 에러 시 빈 배열 반환
         ]);
 
         const transformedData = {
@@ -133,29 +202,11 @@ const MyProfile = () => {
     loadData();
   }, []);
 
-  // 탭 변경 함수
+  // 탭 변경 함수1
   const handleTabChange = (tab: string) => {
     setSearchParams({ tab });
   };
 
-  // 찜목록에서 제거 함수
-  const handleRemoveFavorite = async (dogId: number) => {
-    try {
-      await removeFavorite(dogId);
-      // 성공적으로 제거되면 state에서도 제거
-      setFavoritePets(prev => prev.filter(fav => fav.dogInfo.dogId !== dogId));
-      toast({
-        title: "찜목록에서 제거되었습니다",
-        description: "관심 반려동물에서 성공적으로 제거되었습니다.",
-      });
-    } catch (error) {
-      console.error('찜목록 제거 실패:', error);
-      toast({
-        title: "제거 실패",
-        description: "찜목록 제거에 실패했습니다. 다시 시도해주세요.",
-      });
-    }
-  };
 
   // 내 게시물 로드 함수
   const loadMyPosts = async (page: number = 0, isLoadMore: boolean = false) => {
@@ -1103,41 +1154,13 @@ const MyProfile = () => {
                   ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                       {favoritePets.map((favorite) => (
-                        <div key={favorite.favoriteId} className="border rounded-lg p-4">
-                          {favorite.dogInfo.imageUrl ? (
-                            <ProtectedImage
-                              objectName={favorite.dogInfo.imageUrl}
-                              alt={favorite.dogInfo.name}
-                              className="w-full h-48 rounded-lg object-cover mb-4"
-                            />
-                          ) : (
-                            <div className="w-full h-48 rounded-lg bg-gray-200 flex items-center justify-center mb-4">
-                              <span className="text-gray-500">이미지 없음</span>
-                            </div>
-                          )}
-                          <div className="space-y-2">
-                            <h3 className="font-semibold text-foreground">{favorite.dogInfo.name}</h3>
-                            <p className="text-sm text-muted-foreground">
-                              {favorite.dogInfo.breedName} · {favorite.dogInfo.dogSize} · {favorite.dogInfo.gender === 'MALE' ? '수컷' : '암컷'}
-                            </p>
-                            <p className="text-sm text-muted-foreground flex items-center gap-1">
-                              <MapPin className="h-3 w-3" />
-                              {favorite.dogInfo.shelterName || "보호소 정보 없음"}
-                            </p>
-                            <div className="flex space-x-2">
-                              <Button size="sm" asChild>
-                                <Link to={`/pet/${favorite.dogInfo.dogId}?from=profile&tab=favorites`}>자세히 보기</Link>
-                              </Button>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => handleRemoveFavorite(favorite.dogInfo.dogId)}
-                              >
-                                <Heart className="h-4 w-4 text-red-500 fill-current" />
-                              </Button>
-                            </div>
-                          </div>
-                        </div>
+                        <FavoriteItem
+                          key={favorite.favoriteId}
+                          favorite={favorite}
+                          onRemove={() => {
+                            setFavoritePets(prev => prev.filter(fav => fav.favoriteId !== favorite.favoriteId));
+                          }}
+                        />
                       ))}
                     </div>
                   )}
