@@ -141,15 +141,16 @@ const Navbar = () => {
 
   return (
     <TooltipProvider>
-      <nav className="navbar backdrop-blur-sm border-b border-border sticky top-0 z-50" style={{ backgroundColor: '#F4EFE4' }}>
+      <nav className="navbar backdrop-blur-sm border-b border-border sticky top-0 z-50"
+           style={{backgroundColor: '#F4EFE0'}}>
         <div className="px-4 sm:px-6">
           <div className="flex justify-between items-center h-16">
             {/* Logo and Navigation */}
             <div className="flex items-center space-x-8">
               <Link to="/" className="flex items-center space-x-2" onClick={handleMenuClick}>
-                <img src={logo} alt="Petner" className="h-8 w-auto" />
+                <img src={logo} alt="Petner" className="h-8 w-auto"/>
               </Link>
-              
+
               {/* Desktop Navigation */}
               <div className="hidden md:flex items-center space-x-2">
                 <Tooltip>
@@ -183,92 +184,103 @@ const Navbar = () => {
               </div>
             </div>
 
-          {/* Search and Actions */}
-          <div className="hidden md:flex items-center space-x-4">
-            <Button className="bg-brown-100 text-brown-800 hover:bg-brown-400 border border-brown-800" asChild>
-              <Link to="/profile" onClick={handleProfileClick}>
-                <User className="h-5 w-5 mr-2" />
-                내 정보
-              </Link>
-            </Button>
-            {isLoading ? (
-              <Button disabled className="bg-gray-400 text-white">
-                로딩중...
-              </Button>
-            ) : isLoggedIn ? (
-              <Button className="bg-primary hover:bg-primary/90 text-primary-foreground" onClick={handleLogout}>
-                로그아웃
-              </Button>
-            ) : (
-              <Button className="bg-brown-600 hover:bg-brown-800 text-white" onClick={handleLoginClick}>
-                로그인/회원가입
-              </Button>
-            )}
-          </div>
-
-          {/* Mobile menu button */}
-          <div className="md:hidden">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-            >
-              <Menu className="h-6 w-6" />
-            </Button>
-          </div>
-        </div>
-
-        {/* Mobile Navigation */}
-        {isMenuOpen && (
-          <div className="md:hidden py-4 border-t border-border">
-            <div className="flex flex-col space-y-4">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Search pets..."
-                  className="pl-10 bg-background border-border"
-                />
-              </div>
-              <NavLink to="/" end className={({isActive}) => `py-2 px-2 rounded-md transition-smooth ${isActive ? 'bg-brown-600 text-brown-100' : 'text-foreground hover:bg-foreground/10'}`} onClick={handleMenuClick}>
-                Home
-              </NavLink>
-              <NavLink to="/register" end className={({isActive}) => `py-2 px-2 rounded-md transition-smooth ${isActive ? 'bg-brown-600 text-brown-100' : 'text-foreground hover:bg-foreground/10'}`} onClick={handleServiceAccess}>
-                Register
-              </NavLink>
-              <NavLink to="/community" end className={({isActive}) => `py-2 px-2 rounded-md transition-smooth ${isActive ? 'bg-brown-600 text-brown-100' : 'text-foreground hover:bg-foreground/10'}`} onClick={handleServiceAccess}>
-                Community
-              </NavLink>
-              <NavLink to="/about" end className={({isActive}) => `py-2 px-2 rounded-md transition-smooth ${isActive ? 'bg-brown-600 text-brown-100' : 'text-foreground hover:bg-foreground/10'}`} onClick={handleMenuClick}>
-                About
-              </NavLink>
-              <Button className="bg-brown-600 hover:bg-brown-600/90 text-white w-full" asChild>
+            {/* Search and Actions */}
+            <div className="hidden md:flex items-center space-x-4">
+              <Button className="bg-brown-100 text-brown-800 hover:bg-brown-400 border border-brown-800" asChild>
                 <Link to="/profile" onClick={handleProfileClick}>
-                  <User className="h-5 w-5 mr-2" />
+                  <User className="h-5 w-5 mr-2"/>
                   내 정보
                 </Link>
               </Button>
               {isLoading ? (
-                <Button disabled className="bg-gray-400 text-white w-full">
-                  로딩중...
-                </Button>
+                  <Button disabled className="bg-gray-400 text-white">
+                    로딩중...
+                  </Button>
               ) : isLoggedIn ? (
-                <Button className="bg-primary hover:bg-primary/90 text-primary-foreground w-full" onClick={handleLogout}>
-                  로그아웃
-                </Button>
+                  <Button className="bg-primary hover:bg-primary/90 text-primary-foreground" onClick={handleLogout}>
+                    로그아웃
+                  </Button>
               ) : (
-                <Button className="bg-orange-700 hover:bg-orange-700/90 text-white w-full" onClick={handleLoginClick}>
-                  로그인/회원가입
-                </Button>
+                  <Button className="bg-brown-600 hover:bg-brown-800 text-white" onClick={handleLoginClick}>
+                    로그인/회원가입
+                  </Button>
               )}
             </div>
+
+            {/* Mobile menu button */}
+            <div className="md:hidden">
+              <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setIsMenuOpen(!isMenuOpen)}
+              >
+                <Menu className="h-6 w-6"/>
+              </Button>
+            </div>
           </div>
-        )}
+
+          {/* Mobile Navigation */}
+          {isMenuOpen && (
+              <div className="md:hidden py-4 border-t border-border">
+                <div className="flex flex-col space-y-4">
+                  <div className="relative">
+                    <Search
+                        className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground"/>
+                    <Input
+                        placeholder="Search pets..."
+                        className="pl-10 bg-background border-border"
+                    />
+                  </div>
+                  <NavLink to="/" end
+                           className={({isActive}) => `py-2 px-2 rounded-md transition-smooth ${isActive ? 'bg-brown-600 text-brown-100' : 'text-foreground hover:bg-foreground/10'}`}
+                           onClick={handleMenuClick}>
+                    Home
+                  </NavLink>
+                  <NavLink to="/register" end
+                           className={({isActive}) => `py-2 px-2 rounded-md transition-smooth ${isActive ? 'bg-brown-600 text-brown-100' : 'text-foreground hover:bg-foreground/10'}`}
+                           onClick={handleServiceAccess}>
+                    Register
+                  </NavLink>
+                  <NavLink to="/community" end
+                           className={({isActive}) => `py-2 px-2 rounded-md transition-smooth ${isActive ? 'bg-brown-600 text-brown-100' : 'text-foreground hover:bg-foreground/10'}`}
+                           onClick={handleServiceAccess}>
+                    Community
+                  </NavLink>
+                  <NavLink to="/about" end
+                           className={({isActive}) => `py-2 px-2 rounded-md transition-smooth ${isActive ? 'bg-brown-600 text-brown-100' : 'text-foreground hover:bg-foreground/10'}`}
+                           onClick={handleMenuClick}>
+                    About
+                  </NavLink>
+                  <Button className="bg-brown-600 hover:bg-brown-600/90 text-white w-full" asChild>
+                    <Link to="/profile" onClick={handleProfileClick}>
+                      <User className="h-5 w-5 mr-2"/>
+                      내 정보
+                    </Link>
+                  </Button>
+                  {isLoading ? (
+                      <Button disabled className="bg-gray-400 text-white w-full">
+                        로딩중...
+                      </Button>
+                  ) : isLoggedIn ? (
+                      <Button className="bg-primary hover:bg-primary/90 text-primary-foreground w-full"
+                              onClick={handleLogout}>
+                        로그아웃
+                      </Button>
+                  ) : (
+                      <Button className="bg-orange-700 hover:bg-orange-700/90 text-white w-full"
+                              onClick={handleLoginClick}>
+                        로그인/회원가입
+                      </Button>
+                  )}
+                </div>
+              </div>
+          )}
         </div>
       </nav>
       <LoginModal
-        isOpen={isLoginModalOpen}
-        onClose={() => setIsLoginModalOpen(false)}
-        onSuccess={handleLoginSuccess}
+          isOpen={isLoginModalOpen}
+          onClose={() => setIsLoginModalOpen(false)}
+          onSuccess={handleLoginSuccess}
         isProfileCompletionRequired={isProfileCompletionRequired}
       />
     </TooltipProvider>

@@ -24,6 +24,7 @@ import { uploadImageToGCP } from "@/api/upload";
 import { useToast } from "@/hooks/use-toast";
 import { ToastAction } from "@/components/ui/toast";
 import { getComments, createComment, updateComment, deleteComment, CommentResponse, CommentsPageResponse } from "@/api/comment";
+import { createChatRoom } from "@/api/chat";
 
 
 const PostDetail = () => {
@@ -55,6 +56,7 @@ const PostDetail = () => {
   const [commentsTotalElements, setCommentsTotalElements] = useState(0);
   const [hasMoreComments, setHasMoreComments] = useState(false);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [chatLoading, setChatLoading] = useState(false);
 
   // 댓글 수정 상태
   const [editingCommentId, setEditingCommentId] = useState<number | null>(null);
@@ -248,7 +250,7 @@ const PostDetail = () => {
   };
 
   // 게시자와 대화하기
-  const handleStartChat = () => {
+  const handleStartChat = async () => {
     if (!post || !currentUser) {
       toast({
         variant: "destructive",
@@ -257,6 +259,14 @@ const PostDetail = () => {
       });
       return;
     }
+
+    console.log('Chat debug:', {
+      isAuthor: isAuthor(),
+      authorNickname: post.authorNickname,
+      currentUserNickname: currentUser.nickname,
+      authorId: post.authorId,
+      currentUserId: currentUser.memberId
+    });
 
     if (isAuthor()) {
       toast({
@@ -267,13 +277,48 @@ const PostDetail = () => {
       return;
     }
 
-    // TODO: 채팅방 생성 API 호출
-    // 현재는 임시로 toast만 표시
-    toast({
-      title: "채팅방 생성",
-      description: `${post.authorNickname}님과의 채팅방을 생성합니다.`,
-    });
-    // navigate('/chat/room-id'); // 실제 채팅방 페이지로 이동
+
+    // 채팅 시작 확인
+    if (!window.confirm(`${post.authorNickname}님과 채팅을 시작하시겠습니까?`)) {
+      return;
+    }
+
+    try {
+      setChatLoading(true);
+
+      const requestData = {
+        otherMemberId: post.authorId,
+        dogId: null // 게시물 채팅방은 dogId가 없음
+      };
+
+      console.log('채팅방 생성 요청 데이터:', requestData);
+
+      // 채팅방 생성 (이미 있으면 기존 채팅방 반환)
+      const chatRoomResponse = await createChatRoom(requestData);
+
+      console.log('채팅방 생성/조회 성공:', chatRoomResponse);
+
+      toast({
+        title: "채팅방 생성 완료",
+        description: `${post.authorNickname}님과의 채팅방이 생성되었습니다.`,
+      });
+
+      // 채팅방으로 바로 이동
+      // window 이벤트를 통해 ChatButton에 신호 전송
+      window.dispatchEvent(new CustomEvent('openChatRoom', {
+        detail: { chatRoomId: chatRoomResponse.chatRoomId }
+      }));
+
+    } catch (error) {
+      console.error('채팅방 생성 실패:', error);
+      toast({
+        variant: "destructive",
+        title: "채팅방 생성 실패",
+        description: "채팅방 생성에 실패했습니다. 다시 시도해주세요.",
+      });
+    } finally {
+      setChatLoading(false);
+    }
   };
 
   // 페이지 로드 시 스크롤을 맨 위로 이동
@@ -667,10 +712,11 @@ const PostDetail = () => {
                 variant="outline"
                 size="sm"
                 onClick={handleStartChat}
+                disabled={chatLoading}
                 className="gap-2 border-primary/60 text-primary hover:bg-primary/90 hover:text-primary-foreground hover:border-primary/90"
               >
                 <MessageCircle className="h-4 w-4" />
-                대화하기
+                {chatLoading ? '채팅방 생성 중...' : '대화하기'}
               </Button>
             )}
           </div>

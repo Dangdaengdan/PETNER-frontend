@@ -20,6 +20,7 @@ export interface PostResponse {
   content: string;
   thumbImageUrl?: string;
   authorNickname: string;
+  authorId: number;
   viewCount: number;
   createdAt: string;
   updatedAt: string;
@@ -30,6 +31,7 @@ export interface PostSummaryResponse {
   title: string;
   thumbImageUrl?: string;
   authorNickname: string;
+  authorId: number;
   viewCount: number;
   createdAt: string;
 }
@@ -44,6 +46,7 @@ export interface PostDocument {
   content: string;
   thumbImageUrl?: string;
   authorNickname: string;
+  authorId: number;
   viewCount: number;
   createdAt: string;
   updatedAt: string;

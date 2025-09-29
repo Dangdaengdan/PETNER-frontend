@@ -26,7 +26,7 @@ export interface ChatMessage {
 
 export interface ChatRoomCreateRequest {
   otherMemberId: number;
-  dogId?: number;
+  dogId?: number | null;
 }
 
 export interface ChatRoomCreateResponse {
@@ -60,6 +60,9 @@ export const getChatRooms = async (): Promise<ChatRoom[]> => {
 
 // 채팅방 생성
 export const createChatRoom = async (request: ChatRoomCreateRequest): Promise<ChatRoomCreateResponse> => {
+  console.log('채팅방 생성 요청:', request);
+  console.log('요청 URL:', `${BASE_URL}/rooms`);
+
   const response = await fetch(`${BASE_URL}/rooms`, {
     method: 'POST',
     credentials: 'include',
