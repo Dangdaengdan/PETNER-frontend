@@ -37,7 +37,7 @@ const HeroSection = () => {
           <div className="max-w-2xl">
           <h1 className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-bold text-left mb-4">
             PET:NER
-            <span className="text-3xl sm:text-4xl lg:text-5xl text-orange-700 block mt-2">
+            <span className="text-3xl sm:text-4xl lg:text-5xl text-green-700 block mt-2">
             Find Your Forever Friend!
             </span>
           </h1>
@@ -68,16 +68,16 @@ const HeroSection = () => {
           {/* Stats */}
           <div className="mt-12 grid grid-cols-3 gap-4 sm:gap-8 max-w-xl text-foreground">
             <div className="text-left">
-              <div className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-orange-700">500+</div>
-              <div className="text-xs sm:text-sm md:text-base text-muted-foreground text-orange-700">입양된 반려동물</div>
+              <div className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-green-700">500+</div>
+              <div className="text-xs sm:text-sm md:text-base text-green-700">입양된 반려동물</div>
             </div>
             <div className="text-left">
-              <div className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-orange-700">50+</div>
-              <div className="text-xs sm:text-sm md:text-base text-muted-foreground text-orange-700">함께하는 보호소</div>
+              <div className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-green-700">50+</div>
+              <div className="text-xs sm:text-sm md:text-base text-green-700">함께하는 보호소</div>
             </div>
             <div className="text-left">
-              <div className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-orange-700">100+</div>
-              <div className="text-xs sm:text-sm md:text-base text-muted-foreground text-orange-700">후원자 수</div>
+              <div className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-green-700">100+</div>
+              <div className="text-xs sm:text-sm md:text-base text-green-700">후원자 수</div>
             </div>
           </div>
           </div>

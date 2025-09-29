@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 
@@ -59,10 +59,13 @@ const ShelterSelector = ({
     { id: 35, name: '하이바이 분양소', address: '와부읍 도곡리 788-4', contact: '010-4284-3233' }
   ];
 
-  // Handle shelter change
+  // Handle shelter change (guard against redundant calls)
   const handleShelterChange = (shelterId: string) => {
     const selectedId = parseInt(shelterId);
     const shelter = shelters.find(s => s.id === selectedId);
+
+    // If the selected id hasn't changed, do nothing
+    if (selectedShelterId === selectedId) return;
 
     setSelectedShelterId(selectedId);
     setSelectedShelterName(shelter?.name || "");
@@ -72,16 +75,21 @@ const ShelterSelector = ({
     }
   };
 
-  // Initialize with initial values if provided
+  // Initialize with initial values if provided (avoid double-call in StrictMode)
+  const hasInitializedRef = useRef(false);
   useEffect(() => {
+    if (hasInitializedRef.current) return;
+    hasInitializedRef.current = true;
     if (initialShelterId) {
       const shelter = shelters.find(s => s.id === initialShelterId);
       if (shelter) {
+        setSelectedShelterId(initialShelterId);
         setSelectedShelterName(shelter.name);
         onShelterChange?.(initialShelterId, shelter.name);
       }
     }
-  }, [initialShelterId]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div className="space-y-4">

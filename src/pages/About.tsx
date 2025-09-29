@@ -3,6 +3,7 @@ import Footer from "@/components/Footer";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Heart, Users, Building2, Mail, Phone, MessageCircle } from "lucide-react";
+import personWithDog from "@/assets/personwithdog.png";
 
 const About = () => {
   const stats = [
@@ -28,20 +29,23 @@ const About = () => {
     <div className="min-h-screen bg-background">
       <Navbar />
       
-      {/* Hero Section - More prominent and separated */}
-      <section className="py-24 bg-gradient-to-b from-primary/10 to-background">
+      {/* Hero Section - Larger with subtle entrance animation */}
+      <section className="py-36 md:py-44 bg-gradient-to-b from-primary/10 to-background overflow-hidden">
         <div className="mx-auto px-8 sm:px-16 md:px-24 lg:px-48 text-center">
-          <h1 className="text-4xl md:text-6xl font-bold mb-6">
+          <h1 className="text-6xl md:text-8xl font-extrabold mb-10 animate-fade-in-up">
             Pet + Partner = PET:NER 
-            <span className="text-2xl md:text-4xl text-primary block mt-4">단순한 펫을 넘어 인생의 파트너를 만나는 곳</span>
+            <div className="flex justify-center mt-6 animate-fade-in-up-delayed">
+              <img src={personWithDog} alt="사람과 반려견" className="h-40 md:h-56 opacity-90 rounded-xl object-contain" />
+            </div>
+            <span className="text-3xl md:text-5xl text-primary block mt-6 animate-fade-in-up-delayed-2">단순한 펫을 넘어 인생의 파트너를 만나는 곳</span>
           </h1>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-           분류된 데이터를 활용해 반려동물과 가족의 생활 환경에 가장 잘 맞는 입양을 돕는 플랫폼입니다.
+          <p className="text-xl text-muted-foreground mx-auto animate-fade-in-up-delayed-2 whitespace-nowrap">
+           분류된 데이터를 활용해 반려동물의 생활 환경에 가장 잘 맞는 입양을 돕는 플랫폼입니다.
           </p>
         </div>
       </section>
 
-      <div className="mx-auto px-8 sm:px-16 md:px-24 lg:px-48 py-8 space-y-20">
+      <div className="mx-auto px-8 sm:px-16 md:px-24 lg:px-48 py-12 space-y-24">
         
         {/* 서비스 소개 */}
         <section>
@@ -57,8 +61,8 @@ const About = () => {
               <CardContent>
                 <p className="text-muted-foreground leading-relaxed">
                   매년 수만 마리의 유기견이 보호소에서 새로운 가족을 기다리고 있습니다. 
-                  하지만 정보 부족과 매칭 시스템의 한계로 많은 동물들이 기회를 얻지 못하고 있습니다. 
-                  우리는 이 문제를 해결하고자 데이터 기반의 스마트한 입양 매칭 서비스를 만들었습니다.
+                  <br/>하지만 정보 부족과 매칭 시스템의 한계로 많은 동물들이 기회를 얻지 못하고 있습니다. 
+                  <br/>우리는 이 문제를 해결하고자 데이터 기반의 스마트한 입양 매칭 서비스를 만들었습니다.
                 </p>
               </CardContent>
             </Card>

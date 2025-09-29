@@ -141,7 +141,7 @@ const Navbar = () => {
 
   return (
     <TooltipProvider>
-      <nav className="navbar bg-brown-100 backdrop-blur-sm border-b border-border sticky top-0 z-50">
+      <nav className="navbar backdrop-blur-sm border-b border-border sticky top-0 z-50" style={{ backgroundColor: '#F4EFE4' }}>
         <div className="px-4 sm:px-6">
           <div className="flex justify-between items-center h-16">
             {/* Logo and Navigation */}

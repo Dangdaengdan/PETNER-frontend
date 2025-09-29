@@ -66,6 +66,7 @@ export default {
           400: "var(--color-brown-400)",
           500: "var(--color-brown-500)",
           600: "var(--color-brown-600)",
+          700: "var(--color-brown-700)",
           800: "var(--color-brown-800)",
         },
         green: {

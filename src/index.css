@@ -15,6 +15,7 @@ All colors MUST be HSL.
     --color-brown-400: #BFA887;
     --color-brown-500: #A38B6B;
     --color-brown-600: #8E775B;
+    --color-brown-700: #6F5E47;
     --color-brown-800: #4E4032;
 
     /* Secondary Colors - Green */
@@ -155,6 +156,15 @@ All colors MUST be HSL.
   .transition-smooth {
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
+
+  /* Subtle entrance animations for About hero */
+  @keyframes fade-in-up {
+    0% { opacity: 0; transform: translateY(16px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+  .animate-fade-in-up { animation: fade-in-up 1200ms ease-out both; }
+  .animate-fade-in-up-delayed { animation: fade-in-up 1500ms ease-out both; }
+  .animate-fade-in-up-delayed-2 { animation: fade-in-up 1800ms ease-out both; }
 
   /* Navbar active/inactive styles using aria-current (NavLink) */
   .navbar a.navitem {
