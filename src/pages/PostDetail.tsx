@@ -803,7 +803,7 @@ const PostDetail = () => {
               {/* 이미지 섹션 */}
               {post.thumbImageUrl && (
                 <div className="mb-12">
-                  <div className="overflow-hidden bg-gray-100 flex items-center justify-center">
+                  <div className="overflow-hidden bg-[#F4EFE4] flex items-center justify-center">
                     <ProtectedImage
                       objectName={post.thumbImageUrl}
                       alt="게시글 이미지"

@@ -1203,7 +1203,7 @@ const MyProfile = () => {
                 </CardHeader>
                 <CardContent>
                   {favoritePets.length === 0 ? (
-                    <div className="text-center py-8">
+                    <div className="text-center py-40">
                       <Heart className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
                       <p className="text-muted-foreground">관심 반려동물이 없습니다.</p>
                     </div>
