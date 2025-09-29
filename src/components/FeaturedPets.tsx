@@ -35,6 +35,7 @@ interface FeaturedPetCardProps {
 
 const FeaturedPetCard = ({ id, name, breed, birthDate, location, imageUrl, gender, size, initialIsFavorite }: FeaturedPetCardProps) => {
   const [showLoginModal, setShowLoginModal] = useState(false);
+  const [isAnimating, setIsAnimating] = useState(false);
   const { isFavorited, isLoading, toggleFavorite } = useFavorite(
     Number(id),
     initialIsFavorite,
@@ -43,7 +44,7 @@ const FeaturedPetCard = ({ id, name, breed, birthDate, location, imageUrl, gende
   console.log('FeaturedPetCard 디버그:', { id, name, initialIsFavorite, isFavorited });
 
   return (
-    <Card className="group overflow-hidden bg-card border-border rounded-3xl shadow-petcard w-full transition-transform duration-300 hover:-translate-y-2 p-8">
+    <Card className="group overflow-hidden bg-card border-brown-400 rounded-3xl shadow-petcard w-full transition-transform duration-300 hover:-translate-y-2 p-8">
       <div className="relative overflow-hidden rounded-2xl">
         <AspectRatio ratio={16 / 9}>
           {imageUrl ? (
@@ -53,30 +54,38 @@ const FeaturedPetCard = ({ id, name, breed, birthDate, location, imageUrl, gende
               className="w-full h-full object-cover object-center"
             />
           ) : (
-            <div className="w-full h-full bg-gray-200 flex items-center justify-center text-gray-500">
+            <div className="w-full h-full bg-neutral-200 flex items-center justify-center text-neutral-700">
               이미지 없음
             </div>
           )}
         </AspectRatio>
         <button
-          onClick={toggleFavorite}
+          onClick={() => {
+            if (!isAnimating) {
+              toggleFavorite();
+              setIsAnimating(true);
+              setTimeout(() => setIsAnimating(false), 600);
+            }
+          }}
           disabled={isLoading}
-          className="absolute top-3 right-3 p-3 rounded-full bg-background/80 backdrop-blur-sm transition-colors hover:bg-background/90 disabled:opacity-50"
+          className="absolute top-3 right-3 p-3 rounded-full bg-brown-100/80 backdrop-blur-sm transition-colors hover:bg-brown-100/90 disabled:opacity-50"
         >
           <Heart
-            className={`h-5 w-5 transition-colors ${
+            className={`h-6 w-6 transition-all duration-300 ${
               isFavorited
                 ? "text-red-500 fill-current"
-                : "text-muted-foreground hover:text-red-400"
+                : "text-neutral-700 hover:text-red-500"
+            } ${
+              isAnimating ? "scale-125" : ""
             }`}
           />
         </button>
 
         <div className="absolute bottom-3 left-3 flex gap-2">
-          <Badge variant="secondary" className="bg-primary/10 text-primary text-sm px-3 py-1">
+          <Badge variant="secondary" className="bg-background/90 text-foreground text-sm px-3 py-1">
             {gender}
           </Badge>
-          <Badge variant="secondary" className="bg-accent/10 text-accent text-sm px-3 py-1">
+          <Badge variant="secondary" className="bg-green-300 text-brown-800 text-sm px-3 py-1">
             {size}
           </Badge>
         </div>
@@ -88,10 +97,10 @@ const FeaturedPetCard = ({ id, name, breed, birthDate, location, imageUrl, gende
             <h3 className="text-xl font-semibold text-foreground">
               {name}
             </h3>
-            <p className="text-muted-foreground">{breed}</p>
+            <p className="text-neutral-700">{breed}</p>
           </div>
 
-          <div className="flex items-center gap-4 text-sm text-muted-foreground">
+          <div className="flex items-center gap-4 text-sm text-neutral-700">
             <div className="flex items-center gap-1">
               <Calendar className="h-4 w-4" />
               <span>{calculateAge(birthDate)}</span>
@@ -216,7 +225,7 @@ const FeaturedPets = () => {
           <h2 className="section-heading">
             입양을 기다리는 친구들
           </h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-lg text-neutral-700 max-w-2xl mx-auto">
             사랑스러운 반려 친구들이 평생의 가족을 찾고 있어요.
             <br/>모두가 따뜻한 마음을 가지고 있으며, 지금 새로운 시작을 함께할 주인을 기다립니다.
           </p>
@@ -224,29 +233,28 @@ const FeaturedPets = () => {
 
         {/* Airbnb-like pill search bar with inline toggles */}
         <div className="mb-12">
-          <div className="w-full max-w-3xl mx-auto rounded-full bg-background border border-border shadow-warm px-2 py-2">
+          <div className="w-full max-w-3xl mx-auto rounded-full bg-brown-100 border border-brown-400 shadow-warm px-2 py-2">
             <div className="flex items-center">
               <div className="grid grid-cols-5 gap-0 flex-1 px-3 py-2">
                 {/* Search (col-span-2) */}
                 <div className="col-span-2 flex items-center h-12 px-4">
-                  <Search className="h-5 w-5 text-muted-foreground mr-3" />
+                  <Search className="h-5 w-5 text-neutral-700 mr-3" />
                   <Input
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     placeholder="이름으로 검색(2글자 이상)"
-                    className="h-10 bg-transparent border-0 focus-visible:ring-0 px-0"
-                  />
+                    className="h-10 bg-transparent border-0 focus-visible:ring-0 focus:ring-0 focus:outline-none focus-visible:outline-none focus:border-transparent focus-visible:ring-offset-0 px-0"                  />
                 </div>
                 {/* Breed (col-span-1) */}
-                <div className="col-span-1 flex items-center h-12 px-4 border-l border-border">
+                <div className="col-span-1 flex items-center h-12 px-4 border-l border-neutral-200">
                   <Popover>
-                    <PopoverTrigger className="flex items-center gap-2 text-left w-full">
-                      <span className="text-sm text-muted-foreground">견종</span>
+                    <PopoverTrigger className="flex items-center gap-2 text-left w-full whitespace-nowrap">
+                      <span className="text-sm text-neutral-700">견종</span>
                       <span className="text-sm font-medium text-foreground truncate">
                         {filters.dogBreed || filters.dogSize || "선택"}
                       </span>
                     </PopoverTrigger>
-                    <PopoverContent className="w-80" align="start">
+                    <PopoverContent className="w-80 rounded-2xl bg-brown-100 border border-brown-400" align="start" side="bottom" sideOffset={40} alignOffset={-16} avoidCollisions={false} collisionPadding={0}>
                       <div className="space-y-3">
                         <div>
                           <label className="text-sm font-medium text-foreground mb-2 block">견종 크기</label>
@@ -279,15 +287,15 @@ const FeaturedPets = () => {
                   </Popover>
                 </div>
                 {/* Gender (col-span-1) */}
-                <div className="col-span-1 flex items-center h-12 px-4 border-l border-border">
+                <div className="col-span-1 flex items-center h-12 px-4 border-l border-neutral-200">
                   <Popover>
-                    <PopoverTrigger className="flex items-center gap-2 text-left w-full">
-                      <span className="text-sm text-muted-foreground">성별</span>
+                    <PopoverTrigger className="flex items-center gap-2 text-left w-full whitespace-nowrap">
+                      <span className="text-sm text-neutral-700">성별</span>
                       <span className="text-sm font-medium text-foreground truncate">
                         {gender === "male" ? "수컷" : gender === "female" ? "암컷" : "선택"}
                       </span>
                     </PopoverTrigger>
-                    <PopoverContent className="w-60" align="start">
+                    <PopoverContent className="w-60 rounded-2xl bg-brown-100 border border-brown-400" align="start" side="bottom" sideOffset={40} alignOffset={-16} avoidCollisions={false} collisionPadding={0}>
                       <div>
                         <label className="text-sm font-medium text-foreground mb-2 block">성별</label>
                         <Select value={gender} onValueChange={(v) => setGender(v)}>
@@ -304,15 +312,15 @@ const FeaturedPets = () => {
                   </Popover>
                 </div>
                 {/* Region (col-span-1) */}
-                <div className="col-span-1 flex items-center h-12 px-4 border-l border-border">
+                <div className="col-span-1 flex items-center h-12 px-4 border-l border-neutral-200">
                   <Popover>
-                    <PopoverTrigger className="flex items-center gap-2 text-left w-full">
-                      <span className="text-sm text-muted-foreground">지역</span>
+                    <PopoverTrigger className="flex items-center gap-2 text-left w-full whitespace-nowrap">
+                      <span className="text-sm text-neutral-700">지역</span>
                       <span className="text-sm font-medium text-foreground truncate">
                         {filters.location || "선택"}
                       </span>
                     </PopoverTrigger>
-                    <PopoverContent className="w-[420px]" align="start">
+                    <PopoverContent className="w-[300px] rounded-2xl bg-brown-100 border border-brown-400" align="end" sideOffset={40} alignOffset={-90} avoidCollisions={false} collisionPadding={0}>
                       <RegionSelector 
                         initialProvince={regionProvince}
                         initialCity={regionCity}
@@ -328,7 +336,7 @@ const FeaturedPets = () => {
                 </div>
               </div>
               <button
-                className="ml-2 h-12 w-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center hover:bg-primary/90 transition-smooth"
+                className="mr-2 h-12 w-12 rounded-full bg-green-500 text-white flex items-center justify-center hover:bg-green-700 transition-smooth"
                 onClick={() => navigate(searchTerm ? `/pets?q=${encodeURIComponent(searchTerm)}` : "/pets")}
               >
                 <Search className="h-5 w-5" />
@@ -341,18 +349,18 @@ const FeaturedPets = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 md:gap-14 mb-16">
             {Array.from({ length: 6 }).map((_, index) => (
               <div key={index} className="p-8 border rounded-3xl animate-pulse">
-                <div className="aspect-video bg-gray-200 rounded-2xl mb-6"></div>
+                <div className="aspect-video bg-neutral-200 rounded-2xl mb-6"></div>
                 <div className="space-y-3">
-                  <div className="h-6 bg-gray-200 rounded w-3/4"></div>
-                  <div className="h-4 bg-gray-200 rounded w-1/2"></div>
-                  <div className="h-4 bg-gray-200 rounded w-2/3"></div>
+                  <div className="h-6 bg-neutral-200 rounded w-3/4"></div>
+                  <div className="h-4 bg-neutral-200 rounded w-1/2"></div>
+                  <div className="h-4 bg-neutral-200 rounded w-2/3"></div>
                 </div>
               </div>
             ))}
           </div>
         ) : featuredDogs.length === 0 ? (
-          <div className="text-center py-16">
-            <p className="text-lg text-muted-foreground">등록된 유기견이 없습니다.</p>
+          <div className="text-center py-60">
+            <p className="text-lg text-neutral-700">등록된 유기견이 없습니다.</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 md:gap-14 mb-16">
@@ -377,7 +385,7 @@ const FeaturedPets = () => {
         <div className="text-center">
           <Button
             size="lg"
-            className="bg-primary hover:bg-brown-800 text-primary-foreground shadow-warm transition-smooth rounded-3xl text-lg px-8 py-4 h-auto group"
+            className="bg-green-500 hover:bg-green-700 text-white shadow-warm transition-smooth rounded-3xl text-lg px-8 py-4 h-auto group"
             onClick={() => navigate("/pets")}
           >
             더 많은 친구들 보기

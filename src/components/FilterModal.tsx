@@ -97,7 +97,7 @@ const FilterModal = ({ isOpen, onClose, onFilterChange }: FilterModalProps) => {
                 variant="ghost"
                 size="sm"
                 onClick={clearFilters}
-                className="text-muted-foreground hover:text-foreground"
+                className="text-neutral-700 hover:text-brown-800"
               >
                 <X className="mr-1 h-4 w-4" />
                 초기화

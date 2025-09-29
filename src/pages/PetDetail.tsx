@@ -227,10 +227,10 @@ const PetDetail = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col">
       <Navbar />
       
-      <main className="mx-auto px-8 sm:px-16 md:px-24 lg:px-48 py-8">
+      <main className="mx-auto px-8 sm:px-16 md:px-24 lg:px-48 py-8 flex-1">
         {/* Back Button */}
         <Button
           variant="ghost"
@@ -244,16 +244,16 @@ const PetDetail = () => {
               navigate(-1);
             }
           }}
-          className="mb-2 text-muted-foreground hover:bg-primary/10 hover:text-primary"
+          className="mb-6 text-brown-700 hover:text-brown-900 px-4 py-3 text-base"
         >
-          <ArrowLeft className="h-4 w-4 mr-2" />
+          <ArrowLeft className="h-5 w-5 mr-2" strokeWidth={3} />
           돌아가기
         </Button>
 
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-12 items-start">
           {/* Pet Image Carousel */}
           <div className="lg:col-span-2 flex flex-col h-full">
-            <Card className="overflow-hidden h-fit">
+            <Card className="overflow-hidden h-fit rounded-2xl">
               <div className="relative">
                 <Carousel className="w-full">
                   <CarouselContent>
@@ -297,7 +297,11 @@ const PetDetail = () => {
               {/* 분양 신청 버튼 */}
               <Button
                 size="lg"
-                className="w-full bg-accent hover:bg-accent/90 text-accent-foreground text-lg py-4"
+                className={`w-full text-lg py-4 rounded-full ${
+                  (dog && dog.member.memberId === currentMemberId)
+                    ? "bg-green-500 hover:bg-green-600 text-white"
+                    : "bg-green-500 hover:bg-green-600 text-white"
+                }`}
                 onClick={handleAdoptionApply}
                 disabled={
                   applyLoading ||
@@ -316,7 +320,7 @@ const PetDetail = () => {
               {/* 채팅 버튼 */}
               <Button
                 size="lg"
-                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground text-lg py-4"
+                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground text-lg py-4 rounded-full"
                 onClick={handleStartChat}
                 disabled={chatLoading || !currentMemberId || (dog && dog.member.memberId === currentMemberId)}
               >
@@ -328,17 +332,17 @@ const PetDetail = () => {
 
             {/* Buddy Information */}
             <div className="mt-6 flex-1">
-              <Card className="h-full">
-                <CardContent className="p-6 h-full flex flex-col justify-center">
+              <Card className="h-full rounded-2xl">
+                <CardContent className="p-10 h-full flex flex-col justify-center">
                   <div className="mb-4">
-                    <h1 className="text-3xl font-bold text-foreground mb-2">{dog.name}</h1>
-                    <p className="text-xl text-muted-foreground mb-4">{dog.breed.name}</p>
+                    <h1 className="text-3xl font-bold text-foreground mb-2 whitespace-nowrap truncate">{dog.name}</h1>
+                    <p className="text-xl text-muted-foreground mb-4 whitespace-nowrap truncate">{dog.breed.name}</p>
 
-                    <div className="flex flex-wrap gap-2 mb-4">
+                    <div className="flex gap-2 mb-4 whitespace-nowrap overflow-hidden">
                       <Badge variant="secondary" className="bg-primary/10 text-primary text-sm px-3 py-1">
                         {dog.gender === 'MALE' ? '수컷' : '암컷'}
                       </Badge>
-                      <Badge variant="secondary" className="bg-accent/10 text-accent text-sm px-3 py-1">
+                      <Badge variant="secondary" className="bg-green-300 text-brown-800 text-sm px-3 py-1">
                         {dog.dogSize}
                       </Badge>
                       <Badge variant="secondary" className="bg-secondary text-secondary-foreground text-sm px-3 py-1">
@@ -346,14 +350,14 @@ const PetDetail = () => {
                       </Badge>
                     </div>
 
-                    <div className="flex items-center gap-4 text-muted-foreground">
+                    <div className="flex items-center gap-4 text-muted-foreground whitespace-nowrap overflow-hidden">
                       <div className="flex items-center gap-2">
                         <Calendar className="h-4 w-4" />
-                        <span className="text-sm">{calculateAge(dog.birthDate)}</span>
+                        <span className="text-sm truncate">{calculateAge(dog.birthDate)}</span>
                       </div>
                       <div className="flex items-center gap-2">
                         <MapPin className="h-4 w-4" />
-                        <span className="text-sm">{dog.shelter?.name || "보호소 정보 없음"}</span>
+                        <span className="text-sm truncate">{dog.shelter?.name || "보호소 정보 없음"}</span>
                       </div>
                     </div>
                   </div>
@@ -363,16 +367,16 @@ const PetDetail = () => {
           </div>
 
           {/* Care Information Cards - Horizontal Layout */}
-          <div className="lg:col-span-3 space-y-6 flex flex-col h-full">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <Card>
+          <div className="lg:col-span-3 space-y-8 flex flex-col h-full">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <Card className="rounded-2xl">
                 <CardContent className="p-6">
                   <h3 className="text-lg font-semibold text-foreground mb-4">의료 정보</h3>
                   <p className="text-sm text-muted-foreground">{dog.healthStatus}</p>
                 </CardContent>
               </Card>
 
-              <Card>
+              <Card className="rounded-2xl">
                 <CardContent className="p-6">
                   <h3 className="text-lg font-semibold text-foreground mb-4">담당자 정보</h3>
                   <p className="text-sm text-muted-foreground">{dog.member.nickname}</p>
@@ -381,7 +385,7 @@ const PetDetail = () => {
             </div>
 
             {/* Description */}
-            <Card className="flex-1">
+            <Card className="flex-1 rounded-2xl">
               <CardContent className="p-8">
                 <h3 className="text-xl font-semibold text-foreground mb-6">기타 설명</h3>
                 <p className="text-muted-foreground leading-relaxed text-base">
@@ -392,7 +396,7 @@ const PetDetail = () => {
 
             {/* Additional Information for larger screens */}
             <div className="hidden lg:block">
-              <Card className="flex-1">
+              <Card className="flex-1 rounded-2xl">
                 <CardContent className="p-8">
                   <h3 className="text-xl font-semibold text-foreground mb-6">입양 과정</h3>
                   <div className="space-y-4 text-muted-foreground">
@@ -419,8 +423,11 @@ const PetDetail = () => {
           </div>
         </div>
       </main>
+      
 
-      <Footer />
+      <div className="mt-12">
+        <Footer />
+      </div>
 
       <LoginModal
         isOpen={showLoginModal}

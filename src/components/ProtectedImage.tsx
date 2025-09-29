@@ -37,7 +37,7 @@ export const ProtectedImage: React.FC<ProtectedImageProps> = ({
 
     if (loading) {
         return (
-            <div className="animate-pulse bg-gray-200 rounded w-full h-48 flex items-center justify-center">
+            <div className="animate-pulse bg-neutral-200 rounded w-full h-48 flex items-center justify-center">
                 로딩 중...
             </div>
         );

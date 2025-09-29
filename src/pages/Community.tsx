@@ -199,23 +199,22 @@ const Community = () => {
           <p className="text-lg text-muted-foreground">유기견 입양 및 보호 정보 공유 공간</p>
         </div>
 
-        {/* Search Bar (Home style) */}
-        <div className="mb-10 md:mb-12">
-          <div className="w-full max-w-3xl mx-auto rounded-full bg-background border border-border shadow-warm px-2 py-2">
+        {/* Search Bar (FeaturedPets style) */}
+        <div className="mb-12">
+          <div className="w-full max-w-3xl mx-auto rounded-full bg-brown-100 border border-brown-400 shadow-warm px-2 py-2 transition-smooth hover:shadow-xl hover:-translate-y-0.5 will-change-transform">
             <div className="flex items-center">
               <div className="flex-1 flex items-center px-4 py-2">
-                <Search className="h-5 w-5 text-muted-foreground mr-3" />
+                <Search className="h-5 w-5 text-neutral-700 mr-3" />
                 <Input
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   placeholder="게시글을 검색해보세요... (2글자 이상 입력해주세요.)"
-                  className="h-10 bg-transparent border-0 focus-visible:ring-0 px-0"
+                  className="h-10 bg-transparent border-0 focus-visible:ring-0 focus:ring-0 focus:outline-none focus-visible:outline-none focus:border-transparent focus-visible:ring-offset-0 px-0"
                 />
               </div>
               <button
-                className="ml-2 h-12 w-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center hover:bg-primary/90 transition-smooth"
+                className="mr-2 h-12 w-12 rounded-full bg-green-500 text-white flex items-center justify-center hover:bg-green-700 transition-smooth"
                 onClick={() => {
-                  // 페이지를 1로 리셋하고 검색 수행
                   navigate("/community?page=1");
                 }}
               >

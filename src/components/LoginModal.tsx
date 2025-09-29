@@ -240,14 +240,14 @@ const LoginModal = ({ isOpen, onClose, onSuccess, kakaoCode, isProfileCompletion
           <DialogHeader>
             <DialogTitle className="text-center">
               <div className="flex items-center justify-center space-x-2 mb-4">
-                <Heart className="h-8 w-8 text-primary fill-current" />
-                <span className="text-2xl font-handwritten font-bold text-primary">Petner</span>
+                <Heart className="h-8 w-8 text-orange-700 fill-current" />
+                <span className="text-2xl font-handwritten font-bold text-orange-700">Petner</span>
               </div>
               <h1 className="text-3xl font-bold text-foreground mb-2">로그인</h1>
-              <p className="text-muted-foreground">펫너에서 새로운 가족을 만나보세요</p>
+              <p className="text-neutral-700">펫너에서 새로운 가족을 만나보세요</p>
             </DialogTitle>
           </DialogHeader>
-          <Card className="border-border shadow-elegant">
+          <Card className="border-neutral-200 shadow-elegant">
             <CardContent className="space-y-4 pt-6">
               <Button variant="kakao" className="w-full h-12 text-base font-medium" onClick={handleKakaoLogin}>
                 <img src={kakaoLogo} alt="카카오" className="mr-2 h-5 w-5" />
@@ -255,7 +255,7 @@ const LoginModal = ({ isOpen, onClose, onSuccess, kakaoCode, isProfileCompletion
               </Button>
             </CardContent>
           </Card>
-          <div className="text-center mt-4 text-sm text-muted-foreground">
+          <div className="text-center mt-4 text-sm text-neutral-700">
             <p>로그인하면 Petner의 서비스 약관 및 개인정보 보호정책에 동의하게 됩니다.</p>
           </div>
         </DialogContent>
@@ -319,7 +319,7 @@ const LoginModal = ({ isOpen, onClose, onSuccess, kakaoCode, isProfileCompletion
               {!isProfileCompletionRequired && (
                 <Button type="button" variant="outline" onClick={() => setShowProfileModal(false)}>뒤로</Button>
               )}
-              <Button type="submit" className="bg-primary hover:bg-primary/90 text-primary-foreground" disabled={!isFormValid}>완료</Button>
+              <Button type="submit" className="bg-orange-700 hover:bg-orange-700/90 text-white" disabled={!isFormValid}>완료</Button>
             </div>
           </form>
         </DialogContent>

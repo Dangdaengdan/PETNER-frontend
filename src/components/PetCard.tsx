@@ -19,6 +19,7 @@ interface PetCardProps {
 
 const PetCard = ({ id, name, breed, birthDate, location, image, gender, size }: PetCardProps) => {
   const [isFavorited, setIsFavorited] = useState(false);
+  const [isAnimating, setIsAnimating] = useState(false);
 
   const calculateAge = (birthDate: string) => {
     if (!birthDate || birthDate.length < 6) {
@@ -52,7 +53,7 @@ const PetCard = ({ id, name, breed, birthDate, location, image, gender, size }: 
   const displayAge = calculateAge(birthDate);
 
   return (
-    <Card className="group overflow-hidden bg-card border-border rounded-3xl shadow-petcard w-full transition-transform duration-300 hover:-translate-y-2 p-8">
+    <Card className="group overflow-hidden bg-card border-brown-400 rounded-3xl shadow-petcard w-full transition-transform duration-300 hover:-translate-y-2 p-8">
       <div className="relative overflow-hidden rounded-2xl">
         <AspectRatio ratio={16 / 9}>
           <img
@@ -62,14 +63,22 @@ const PetCard = ({ id, name, breed, birthDate, location, image, gender, size }: 
           />
         </AspectRatio>
         <button
-          onClick={() => setIsFavorited(!isFavorited)}
+          onClick={() => {
+            if (!isAnimating) {
+              setIsFavorited(!isFavorited);
+              setIsAnimating(true);
+              setTimeout(() => setIsAnimating(false), 600);
+            }
+          }}
           className="absolute top-3 right-3 p-3 rounded-full bg-background/80 backdrop-blur-sm"
         >
           <Heart
-            className={`h-5 w-5 ${
+            className={`h-6 w-6 transition-all duration-300 ${
               isFavorited 
                 ? "text-accent fill-current" 
-                : "text-muted-foreground"
+                : "text-muted-foreground hover:text-green-600"
+            } ${
+              isAnimating ? "scale-125" : ""
             }`}
           />
         </button>
@@ -78,7 +87,7 @@ const PetCard = ({ id, name, breed, birthDate, location, image, gender, size }: 
           <Badge variant="secondary" className="bg-background/90 text-foreground">
             {gender}
           </Badge>
-          <Badge variant="secondary" className="bg-background/90 text-foreground">
+          <Badge variant="secondary" className="bg-green-300 text-brown-800">
             {size}
           </Badge>
         </div>

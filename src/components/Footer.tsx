@@ -15,13 +15,13 @@ const Footer = () => {
               Connecting loving hearts with pets in need. Every adoption creates a beautiful story of hope and love.
             </p>
             <div className="flex space-x-3">
-              <Button variant="ghost" size="icon" className="text-background/80 hover:text-primary hover:bg-background/10">
+              <Button variant="ghost" size="icon" className="text-brown-100/80 hover:text-orange-700 hover:bg-brown-100/10">
                 <Facebook className="h-5 w-5" />
               </Button>
-              <Button variant="ghost" size="icon" className="text-background/80 hover:text-primary hover:bg-background/10">
+              <Button variant="ghost" size="icon" className="text-brown-100/80 hover:text-orange-700 hover:bg-brown-100/10">
                 <Twitter className="h-5 w-5" />
               </Button>
-              <Button variant="ghost" size="icon" className="text-background/80 hover:text-primary hover:bg-background/10">
+              <Button variant="ghost" size="icon" className="text-brown-100/80 hover:text-orange-700 hover:bg-brown-100/10">
                 <Instagram className="h-5 w-5" />
               </Button>
             </div>
@@ -36,15 +36,15 @@ const Footer = () => {
             <h3 className="text-lg font-semibold text-background">Contact</h3>
             <div className="flex items-center md:justify-end justify-start gap-3">
               <span className="text-background/80">(555) 123-PETS</span>
-              <Phone className="h-4 w-4 text-primary" />
+              <Phone className="h-4 w-4 text-orange-700" />
             </div>
             <div className="flex items-center md:justify-end justify-start gap-3">
               <span className="text-background/80">hello@petner.com</span>
-              <Mail className="h-4 w-4 text-primary" />
+              <Mail className="h-4 w-4 text-orange-700" />
             </div>
             <div className="flex items-center md:justify-end justify-start gap-3">
               <span className="text-background/80 text-right">123 Adoption Lane, Pet City, PC 12345</span>
-              <MapPin className="h-4 w-4 text-primary" />
+              <MapPin className="h-4 w-4 text-orange-700" />
             </div>
           </div>
         </div>

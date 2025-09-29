@@ -13,14 +13,12 @@ import RegionSelector from "@/components/RegionSelector";
 import { ProtectedImage } from "@/components/ProtectedImage";
 import { getDogs, DogListResponseDto, searchDogs, DogSearchRequestDto } from "@/api/dog";
 import { calculateAge } from "@/utils/ageCalculator";
-import { useToast } from "@/hooks/use-toast";
 
 const ITEMS_PER_PAGE = 6;
 
 const Pets = () => {
   const [params] = useSearchParams();
   const navigate = useNavigate();
-  const { toast } = useToast();
   const currentPage = Math.max(1, Number(params.get("page") || 1));
   const [query, setQuery] = useState<string>(params.get("q") || "");
 
@@ -121,10 +119,7 @@ const Pets = () => {
       // 모든 검색 조건이 비어있으면 경고
       const hasSearchCriteria = query.trim() || filters.dogSize || filters.dogBreed || gender || filters.location;
       if (!hasSearchCriteria) {
-        toast({
-          title: "검색 조건 필요",
-          description: "검색 조건을 하나 이상 입력해주세요.",
-        });
+        alert('검색 조건을 하나 이상 입력해주세요.');
         setLoading(false);
         setIsSearchMode(false);
         return;
@@ -230,31 +225,36 @@ const Pets = () => {
       <Navbar />
 
       <main className="mx-auto px-8 sm:px-16 md:px-24 lg:px-48 py-8">
-        {/* Airbnb-like pill search bar (same as Home) */}
-        <div className="mb-10 md:mb-12">
-          <div className="w-full max-w-5xl mx-auto rounded-full bg-background border border-border shadow-warm px-2 py-2">
+         {/* Search CTA */}
+         <div className="mb-12 md:mb-16 text-center">
+          <h2 className="section-heading">유기견 검색하기</h2>
+          <p className="text-lg text-muted-foreground">원하는 조건을 선택하면 나와 맞는 유기견을 빠르게 검색할 수 있습니다.</p>
+        </div>
+
+        <div className="mb-16">
+          <div className="w-full max-w-3xl mx-auto rounded-full bg-brown-100 border border-brown-400 shadow-warm px-2 py-2 transition-smooth hover:shadow-xl hover:-translate-y-0.5 will-change-transform">
             <div className="flex items-center">
               <div className="grid grid-cols-5 gap-0 flex-1 px-3 py-2">
                 {/* Search (col-span-2) */}
                 <div className="col-span-2 flex items-center h-12 px-4">
-                  <Search className="h-5 w-5 text-muted-foreground mr-3" />
+                  <Search className="h-5 w-5 text-neutral-700 mr-3" />
                   <Input
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
                     placeholder="이름으로 검색"
-                    className="h-10 bg-transparent border-0 focus-visible:ring-0 px-0"
+                    className="h-10 bg-transparent border-0 focus-visible:ring-0 focus:ring-0 focus:outline-none focus-visible:outline-none focus:border-transparent focus-visible:ring-offset-0 px-0"
                   />
                 </div>
                 {/* Breed (col-span-1) */}
-                <div className="col-span-1 flex items-center h-12 px-4 border-l border-border">
+                <div className="col-span-1 flex items-center h-12 px-4 border-l border-neutral-200">
                   <Popover>
-                    <PopoverTrigger className="flex items-center gap-2 text-left w-full">
-                      <span className="text-sm text-muted-foreground">견종</span>
+                    <PopoverTrigger className="flex items-center gap-2 text-left w-full whitespace-nowrap">
+                      <span className="text-sm text-neutral-700">견종</span>
                       <span className="text-sm font-medium text-foreground truncate">
                         {filters.dogBreed || filters.dogSize || "선택"}
                       </span>
                     </PopoverTrigger>
-                    <PopoverContent className="w-80" align="start">
+                    <PopoverContent className="w-80 rounded-2xl bg-brown-100 border border-brown-400" align="start" side="bottom" sideOffset={40} alignOffset={-16} avoidCollisions={false} collisionPadding={0}>
                       <div className="space-y-3">
                         <div>
                           <label className="text-sm font-medium text-foreground mb-2 block">견종 크기</label>
@@ -287,15 +287,15 @@ const Pets = () => {
                   </Popover>
                 </div>
                 {/* Gender (col-span-1) */}
-                <div className="col-span-1 flex items-center h-12 px-4 border-l border-border">
+                <div className="col-span-1 flex items-center h-12 px-4 border-l border-neutral-200">
                   <Popover>
-                    <PopoverTrigger className="flex items-center gap-2 text-left w-full">
-                      <span className="text-sm text-muted-foreground">성별</span>
+                    <PopoverTrigger className="flex items-center gap-2 text-left w-full whitespace-nowrap">
+                      <span className="text-sm text-neutral-700">성별</span>
                       <span className="text-sm font-medium text-foreground truncate">
                         {gender === "male" ? "수컷" : gender === "female" ? "암컷" : "선택"}
                       </span>
                     </PopoverTrigger>
-                    <PopoverContent className="w-60" align="start">
+                    <PopoverContent className="w-60 rounded-2xl bg-brown-100 border border-brown-400" align="start" side="bottom" sideOffset={40} alignOffset={-16} avoidCollisions={false} collisionPadding={0}>
                       <div>
                         <label className="text-sm font-medium text-foreground mb-2 block">성별</label>
                         <Select value={gender} onValueChange={(v) => setGender(v)}>
@@ -312,15 +312,15 @@ const Pets = () => {
                   </Popover>
                 </div>
                 {/* Region (col-span-1) */}
-                <div className="col-span-1 flex items-center h-12 px-4 border-l border-border">
+                <div className="col-span-1 flex items-center h-12 px-4 border-l border-neutral-200">
                   <Popover>
-                    <PopoverTrigger className="flex items-center gap-2 text-left w-full">
-                      <span className="text-sm text-muted-foreground">지역</span>
+                    <PopoverTrigger className="flex items-center gap-2 text-left w-full whitespace-nowrap">
+                      <span className="text-sm text-neutral-700">지역</span>
                       <span className="text-sm font-medium text-foreground truncate">
                         {filters.location || "선택"}
                       </span>
                     </PopoverTrigger>
-                    <PopoverContent className="w-[420px]" align="start">
+                    <PopoverContent className="w-[300px] rounded-2xl bg-brown-100 border border-brown-400" align="end" side="bottom" sideOffset={40} alignOffset={-90} avoidCollisions={false} collisionPadding={0}>
                       <RegionSelector 
                         initialProvince={regionProvince}
                         initialCity={regionCity}
@@ -336,7 +336,7 @@ const Pets = () => {
                 </div>
               </div>
               <button
-                className="ml-2 h-12 w-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center hover:bg-primary/90 transition-smooth"
+                className="mr-2 h-12 w-12 rounded-full bg-green-500 text-white flex items-center justify-center hover:bg-green-700 transition-smooth"
                 onClick={handleSearch}
               >
                 <Search className="h-5 w-5" />
@@ -344,6 +344,7 @@ const Pets = () => {
             </div>
           </div>
         </div>
+
 
         {/* 검색 결과 표시 및 초기화 버튼 */}
         {isSearchMode && (
@@ -364,9 +365,9 @@ const Pets = () => {
         )}
 
         {loading ? (
-          <div className="space-y-4 mb-16">
+          <div className="space-y-6 mb-20">
             {Array.from({ length: ITEMS_PER_PAGE }).map((_, index) => (
-              <div key={index} className="border rounded-lg p-4 flex gap-4 items-center animate-pulse">
+              <div key={index} className="border rounded-lg p-4 flex gap-4 items-center animate-pulse transition-smooth hover:-translate-y-1 hover:shadow-xl will-change-transform">
                 <div className="w-28 h-28 bg-gray-200 rounded-md flex-shrink-0"></div>
                 <div className="flex-1 min-w-0">
                   <div className="h-5 bg-gray-200 rounded mb-2"></div>
@@ -377,37 +378,37 @@ const Pets = () => {
             ))}
           </div>
         ) : dogs.length === 0 ? (
-          <div className="text-center py-16">
+          <div className="text-center py-60">
             <p className="text-lg text-muted-foreground">등록된 유기견이 없습니다.</p>
           </div>
         ) : (
-          <div className="space-y-10 md:space-y-12 mb-16 overflow-visible">
+          <div className="space-y-14 md:space-y-16 mb-20 overflow-visible">
             {dogs.map((dog) => (
-              <div key={dog.dogId} className="border rounded-lg p-4 flex gap-4 items-center transition-smooth shadow-petcard m-2.5 overflow-visible">
+              <div key={dog.dogId} className="border rounded-2xl p-6 py-8 min-h-44 flex gap-6 items-center transition-smooth shadow-petcard m-2.5 overflow-visible hover:-translate-y-1 hover:shadow-xl will-change-transform">
                 <div className="w-28 h-28 flex-shrink-0">
                   {dog.imageUrl ? (
                     <ProtectedImage
                       objectName={dog.imageUrl}
                       alt={dog.name}
-                      className="w-28 h-28 rounded-md object-cover"
+                      className="w-28 h-28 rounded-2xl object-cover"
                     />
                   ) : (
-                    <div className="w-28 h-28 bg-gray-200 rounded-md flex items-center justify-center text-gray-500">
+                    <div className="w-28 h-28 bg-gray-200 rounded-2xl flex items-center justify-center text-gray-500">
                       이미지 없음
                     </div>
                   )}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-semibold text-foreground truncate">{dog.name}</h3>
-                    <div className="flex items-center gap-2 shrink-0">
-                      <Badge variant="secondary" className="bg-primary/10 text-primary text-sm px-3 py-1">
-                        {dog.gender === 'MALE' ? '수컷' : '암컷'}
-                      </Badge>
-                      <Badge variant="secondary" className="bg-accent/10 text-accent text-sm px-3 py-1">{dog.dogSize}</Badge>
-                    </div>
+                  <div className="flex items-center">
+                    <h3 className="text-2xl font-semibold text-foreground truncate">{dog.name}</h3>
                   </div>
-                  <div className="mt-1 flex items-center gap-4 text-sm text-muted-foreground">
+                  <div className="mt-3 flex items-center gap-3">
+                    <Badge variant="secondary" className="bg-primary/10 text-primary text-sm px-3 py-1">
+                      {dog.gender === 'MALE' ? '수컷' : '암컷'}
+                    </Badge>
+                    <Badge variant="secondary" className="bg-green-500/10 text-green-700 text-sm px-3 py-1">{dog.dogSize}</Badge>
+                  </div>
+                  <div className="mt-3 flex items-center gap-6 text-sm text-muted-foreground">
                     <div className="flex items-center gap-1">
                       <Calendar className="h-4 w-4" />
                       <span>{calculateAge(dog.birthDate)}</span>
@@ -419,7 +420,12 @@ const Pets = () => {
                     <span className="truncate">{dog.breedName}</span>
                   </div>
                 </div>
-                <Button asChild className="shrink-0">
+                <div className="shrink-0 mr-4">
+                  <Badge variant="secondary" className="bg-background/90 text-foreground text-xs px-2 py-1">
+                    {dog.healthStatus ? dog.healthStatus : "건강 정보 없음"}
+                  </Badge>
+                </div>
+                <Button asChild className="shrink-0 mr-10">
                   <a href={`/pet/${dog.dogId}`}>자세히</a>
                 </Button>
               </div>
@@ -466,11 +472,12 @@ const Pets = () => {
         )}
       </main>
 
-      <Footer />
+      <div className="mt-20">
+        <Footer />
+      </div>
     </div>
   );
 };
 
 export default Pets;
-
 

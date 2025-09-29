@@ -55,7 +55,7 @@ All colors MUST be HSL.
     --muted: 35 100% 90%;
     --muted-foreground: 25 20% 30%; /* toned #453021 for subdued text */
 
-    --accent: 6 100% 69%; /* Coral red #FF6F61 */
+    --accent: 78 14% 55%; /* Green (muted) replacing coral */
     --accent-foreground: 35 100% 97%;
 
     --destructive: 0 84.2% 60.2%;
@@ -103,7 +103,7 @@ All colors MUST be HSL.
     --muted: 35 30% 15%;
     --muted-foreground: 35 20% 65%;
 
-    --accent: 6 100% 69%;
+    --accent: 78 14% 55%;
     --accent-foreground: 35 20% 8%;
 
     --destructive: 0 62.8% 30.6%;
@@ -198,3 +198,4 @@ All colors MUST be HSL.
     }
   }
 }
+

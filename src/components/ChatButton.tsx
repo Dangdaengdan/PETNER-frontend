@@ -606,14 +606,14 @@ const ChatButton = forwardRef<ChatButtonRef>((props, ref) => {
     }`}>
       <CardContent className="p-0 h-full flex flex-col">
         {/* 헤더 */}
-        <div className="flex items-center justify-between p-4 border-b bg-primary text-primary-foreground">
+        <div className="flex items-center justify-between p-4 border-b bg-orange-700 text-white">
           <div className="flex items-center space-x-2">
             {selectedChat && (
               <Button 
                 variant="ghost" 
                 size="icon" 
                 onClick={handleBackToList}
-                className="text-primary-foreground hover:bg-primary-foreground/20"
+                className="text-white hover:bg-white/20"
               >
                 <ArrowLeft className="h-4 w-4" />
               </Button>
@@ -655,7 +655,7 @@ const ChatButton = forwardRef<ChatButtonRef>((props, ref) => {
                       variant="ghost"
                       size="sm"
                       onClick={() => handleAdoptionApply(dogId)}
-                      className="text-primary-foreground hover:bg-primary-foreground/20 gap-1"
+                      className="text-white hover:bg-white/20 gap-1"
                     >
                       <Heart className="h-4 w-4" />
                       분양 신청
@@ -665,7 +665,7 @@ const ChatButton = forwardRef<ChatButtonRef>((props, ref) => {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="text-primary-foreground hover:bg-primary-foreground/20"
+                  className="text-white hover:bg-white/20"
                 >
                   <Phone className="h-4 w-4" />
                 </Button>
@@ -673,7 +673,7 @@ const ChatButton = forwardRef<ChatButtonRef>((props, ref) => {
                   variant="ghost"
                   size="icon"
                   onClick={handleLeaveChatRoom}
-                  className="text-primary-foreground hover:bg-primary-foreground/20"
+                  className="text-white hover:bg-white/20"
                 >
                   <MoreVertical className="h-4 w-4" />
                 </Button>
@@ -684,7 +684,7 @@ const ChatButton = forwardRef<ChatButtonRef>((props, ref) => {
                 variant="ghost" 
                 size="icon" 
                 onClick={() => setIsFullscreen(!isFullscreen)}
-                className="text-primary-foreground hover:bg-primary-foreground/20"
+                className="text-white hover:bg-white/20"
               >
                 {isFullscreen ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
               </Button>
@@ -697,7 +697,7 @@ const ChatButton = forwardRef<ChatButtonRef>((props, ref) => {
                 setSelectedChat(null);
                 setCurrentMessages([]);
               }}
-              className="text-primary-foreground hover:bg-primary-foreground/20"
+              className="text-white hover:bg-white/20"
             >
               <X className="h-4 w-4" />
             </Button>
@@ -712,12 +712,12 @@ const ChatButton = forwardRef<ChatButtonRef>((props, ref) => {
               <div className="p-2">
                 {isLoading ? (
                   <div className="flex justify-center items-center h-32">
-                    <div className="text-sm text-muted-foreground">로딩 중...</div>
+                    <div className="text-sm text-neutral-700">로딩 중...</div>
                   </div>
                 ) : chatRooms.length === 0 ? (
                   <div className="flex flex-col items-center justify-center h-32 text-center">
-                    <MessageCircle className="h-8 w-8 text-muted-foreground mb-2" />
-                    <p className="text-sm text-muted-foreground">
+                    <MessageCircle className="h-8 w-8 text-neutral-700 mb-2" />
+                    <p className="text-sm text-neutral-700">
                       아직 채팅방이 없습니다
                     </p>
                   </div>
@@ -728,7 +728,7 @@ const ChatButton = forwardRef<ChatButtonRef>((props, ref) => {
                       onClick={() => handleChatClick(room)}
                       className={`flex items-center space-x-3 p-3 rounded-lg cursor-pointer transition-colors ${
                         hasUnreadMessage(room)
-                          ? 'bg-primary/5 hover:bg-primary/10' 
+                          ? 'bg-orange-700/5 hover:bg-orange-700/10' 
                           : 'hover:bg-muted/50'
                       }`}
                     >
@@ -756,7 +756,7 @@ const ChatButton = forwardRef<ChatButtonRef>((props, ref) => {
                           }`}>
                             {room.otherMemberInfo?.nickname || '알 수 없는 사용자'}
                             {room.dogInfo?.name && (
-                              <span className="text-xs text-muted-foreground ml-1 font-normal">
+                              <span className="text-xs text-neutral-700 ml-1 font-normal">
                                 ({room.dogInfo.name})
                               </span>
                             )}
@@ -766,7 +766,7 @@ const ChatButton = forwardRef<ChatButtonRef>((props, ref) => {
                               <span className={`text-xs ${
                                 hasUnreadMessage(room)
                                   ? 'text-foreground font-semibold' 
-                                  : 'text-muted-foreground'
+                                  : 'text-neutral-700'
                               }`}>
                                 {formatLastMessageTime(room.lastMessageSentAt)}
                               </span>
@@ -782,7 +782,7 @@ const ChatButton = forwardRef<ChatButtonRef>((props, ref) => {
                           <p className={`text-sm truncate ${
                             hasUnreadMessage(room)
                               ? 'text-foreground font-semibold' 
-                              : 'text-muted-foreground'
+                              : 'text-neutral-700'
                           }`}>
                             {room.lastMessageContent}
                           </p>
@@ -808,7 +808,7 @@ const ChatButton = forwardRef<ChatButtonRef>((props, ref) => {
                       <div
                         className={`max-w-[70%] rounded-lg px-3 py-2 ${
                           message.senderId === currentMemberId
-                            ? 'bg-primary text-primary-foreground'
+                            ? 'bg-orange-700 text-white'
                             : 'bg-muted'
                         }`}
                       >

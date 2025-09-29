@@ -96,7 +96,7 @@ const ShelterSelector = ({
               <SelectItem key={shelter.id} value={shelter.id.toString()}>
                 <div className="flex flex-col">
                   <span className="font-medium">{shelter.name}</span>
-                  <span className="text-xs text-muted-foreground">{shelter.address}</span>
+                  <span className="text-xs text-neutral-700">{shelter.address}</span>
                 </div>
               </SelectItem>
             ))}

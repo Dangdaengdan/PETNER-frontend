@@ -640,13 +640,13 @@ const PostDetail = () => {
       <Navbar />
 
       <main className="mx-auto px-8 sm:px-16 md:px-24 lg:px-48 py-8">
-        {/* Back Button - PetDetail 스타일 */}
+        {/* Back Button - Match PetDetail style */}
         <Button
           variant="ghost"
           onClick={navigateToCommunity}
-          className="mb-8 text-muted-foreground hover:bg-primary/10 hover:text-primary"
+          className="mb-6 text-brown-700 hover:text-brown-900 px-4 py-3 text-base"
         >
-          <ArrowLeft className="h-4 w-4 mr-2" />
+          <ArrowLeft className="h-5 w-5 mr-2" strokeWidth={3} />
           목록으로 돌아가기
         </Button>
 
